@@ -21,7 +21,7 @@ const wins = {
   errorWindow: null
 }
 
-const publicDir = path.join(__dirname, 'bfx-report-ui/build')
+const publicDir = path.join(__dirname, 'layouts/build') // TODO: bfx-report-ui/build
 const loadURL = serve({ directory: publicDir })
 
 const pathToLayouts = path.join(__dirname, 'layouts')

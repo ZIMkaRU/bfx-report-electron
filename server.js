@@ -67,7 +67,7 @@ void (async () => {
 
     const ipc = fork(modulePath, [
       `--env=${process.env.NODE_ENV}`,
-      '--wtype=wrk-report-framework-api',
+      '--wtype=wrk-report-service-api', // TODO: wrk-report-framework-api
       `--apiPort=${ports.workerApiPort}`,
       `--wsPort=${ports.workerWsPort}`,
       '--dbId=1',

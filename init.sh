@@ -46,17 +46,24 @@ rm -rf $backendFolder
 mkdir $frontendFolder
 mkdir $backendFolder
 
-git submodule sync
-git submodule update --init --recursive
-git pull --recurse-submodules
-git submodule update --remote
+// TODO:
+git clone /home/projects/bitfinex/bfx-report-ui $frontendFolder
+git clone /home/projects/bfx-report $backendFolder
+rm -rf $expressFolder
+mkdir $expressFolder
+git clone /home/projects/bfx-report-express $expressFolder
+
+# git submodule sync
+# git submodule update --init --recursive
+# git pull --recurse-submodules
+# git submodule update --remote
 
 cd $frontendFolder
 
-git submodule sync
-git submodule update --init --recursive
-git pull --recurse-submodules
-git submodule update --remote
+# git submodule sync
+# git submodule update --init --recursive
+# git pull --recurse-submodules
+# git submodule update --remote
 npm i
 
 sed -i -e "s/API_URL: .*,/API_URL: \'http:\/\/localhost:34343\/api\',/g" $frontendFolder/src/var/config.js

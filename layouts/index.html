@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="../bfx-report-ui/build/favicon.ico">
+  <title>Bitfinex Reports</title>
+  <style>
+    html {
+      height: 100%;
+    }
+
+    .body {
+      position: relative;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+      background-color: #394b59;
+    }
+
+    .output {
+      text-align: left;
+      padding: 20px;
+      margin-top: 15px;
+      background-color: #737373;
+    }
+
+    .input {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body class="body">
+  <h2>WebSocket Test</h2>
+
+  <p>
+    <b>ApiKey:</b><br>
+    <input id="api-key" class="input" type="text" size="50">
+  </p>
+  <p>
+    <b>ApiSecret:</b><br>
+    <input id="api-secret" class="input" type="text" size="50">
+  </p>
+
+  <button id="btn-connect" type="button">CONNECT</button>
+  <button id="btn-login" type="button" disabled>LOGIN</button>
+  <button id="btn-sync-now" type="button" disabled>SYNC NOW</button>
+
+  <div id="output" class="output"></div>
+</body>
+
+<script>
+  const wsUri = 'ws://127.0.0.1:34343/ws'
+
+  window.addEventListener('load', () => {
+    console.log('[LOAD]')
+
+    const output = document.getElementById('output')
+    const apiKeyInput = document.getElementById('api-key')
+    const apiSecretInput = document.getElementById('api-secret')
+    const loginBtn = document.getElementById('btn-login')
+    const syncNowBtn = document.getElementById('btn-sync-now')
+    const connectBtn = document.getElementById('btn-connect')
+
+    apiKeyInput.value = localStorage.getItem('apiKey')
+    apiSecretInput.value = localStorage.getItem('apiSecret')
+
+    let isConnected = false
+    let websocket = null
+
+    connectBtn.onclick = () => {
+      if (isConnected) {
+        if (websocket) {
+          websocket.close()
+        }
+
+        connectBtn.firstChild.data = 'CONNECT'
+        isConnected = false
+
+        return
+      }
+
+      connectBtn.firstChild.data = 'DISCONNECT'
+      isConnected = true
+
+      websocket = new WebSocket(wsUri)
+
+      const writeToScreen = (message) => {
+        const pre = document.createElement('p')
+
+        pre.style.wordWrap = 'break-word'
+        pre.innerHTML = message
+
+        output.insertBefore(pre, output.firstChild)
+      }
+
+      const rpcReq = (method = '', params = {}) => {
+        const apiKey = apiKeyInput.value
+        const apiSecret = apiSecretInput.value
+
+        localStorage.setItem('apiKey', apiKey)
+        localStorage.setItem('apiSecret', apiSecret)
+
+        const data = {
+          auth: {
+            apiKey,
+            apiSecret
+          },
+          method,
+          params
+        }
+        const mess = JSON.stringify(data)
+
+        writeToScreen(`[SENT]: ${mess}`)
+        websocket.send(mess)
+      }
+
+      const login = () => {
+        rpcReq('login')
+      }
+
+      const syncNow = () => {
+        rpcReq('syncNow')
+      }
+
+      websocket.onopen = (e) => {
+        writeToScreen('[CONNECTED]')
+
+        loginBtn.disabled = false
+        syncNowBtn.disabled = false
+      }
+      websocket.onclose = (e) => {
+        
+        if (e.wasClean) {
+          writeToScreen('[DISCONNECTED]: connection closed clean')
+        } else {
+          writeToScreen('[DISCONNECTED]')
+        }
+
+        writeToScreen(`[CODE]: ${event.code}, [REASON]: ${e.reason}`)
+
+        loginBtn.disabled = true
+        syncNowBtn.disabled = true
+      }
+      websocket.onmessage = (e) => {
+        writeToScreen(`<span style="color: #00ff82;">[RESPONSE]:</span> ${e.data}`)
+      }
+      websocket.onerror = (err) => {
+        console.log('[ERR_WS]', err)
+
+        writeToScreen(`<span style="color: red;">[ERROR]:</span> ${err.message || JSON.stringify(err)}`)
+
+        loginBtn.disabled = true
+        syncNowBtn.disabled = true
+      }
+
+      loginBtn.onclick = login
+      syncNowBtn.onclick = syncNow
+    }
+  })
+</script>
+
+</html>
