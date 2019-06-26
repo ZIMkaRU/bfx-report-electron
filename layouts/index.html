@@ -68,6 +68,44 @@
     apiKeyInput.value = localStorage.getItem('apiKey')
     apiSecretInput.value = localStorage.getItem('apiSecret')
 
+    const heartbeat = (websocket) => {
+      clearTimeout(websocket.pingTimeout)
+
+      websocket.pingTimeout = setTimeout(() => {
+        websocket.terminate()
+      }, 10000 + 1000)
+    }
+
+    const writeToScreen = (message) => {
+      const pre = document.createElement('p')
+
+      pre.style.wordWrap = 'break-word'
+      pre.innerHTML = message
+
+      output.insertBefore(pre, output.firstChild)
+    }
+
+    const rpcReq = (websocket, method = '', params = {}) => {
+      const apiKey = apiKeyInput.value
+      const apiSecret = apiSecretInput.value
+
+      localStorage.setItem('apiKey', apiKey)
+      localStorage.setItem('apiSecret', apiSecret)
+
+      const data = {
+        auth: {
+          apiKey,
+          apiSecret
+        },
+        method,
+        params
+      }
+      const mess = JSON.stringify(data)
+
+      writeToScreen(`[SENT]: ${mess}`)
+      websocket.send(mess)
+    }
+
     let isConnected = false
     let websocket = null
 
@@ -88,44 +126,6 @@
 
       websocket = new WebSocket(wsUri)
 
-      const writeToScreen = (message) => {
-        const pre = document.createElement('p')
-
-        pre.style.wordWrap = 'break-word'
-        pre.innerHTML = message
-
-        output.insertBefore(pre, output.firstChild)
-      }
-
-      const rpcReq = (method = '', params = {}) => {
-        const apiKey = apiKeyInput.value
-        const apiSecret = apiSecretInput.value
-
-        localStorage.setItem('apiKey', apiKey)
-        localStorage.setItem('apiSecret', apiSecret)
-
-        const data = {
-          auth: {
-            apiKey,
-            apiSecret
-          },
-          method,
-          params
-        }
-        const mess = JSON.stringify(data)
-
-        writeToScreen(`[SENT]: ${mess}`)
-        websocket.send(mess)
-      }
-
-      const login = () => {
-        rpcReq('login')
-      }
-
-      const syncNow = () => {
-        rpcReq('syncNow')
-      }
-
       websocket.onopen = (e) => {
         writeToScreen('[CONNECTED]')
 
@@ -144,6 +144,8 @@
 
         loginBtn.disabled = true
         syncNowBtn.disabled = true
+        connectBtn.firstChild.data = 'CONNECT'
+        isConnected = false
       }
       websocket.onmessage = (e) => {
         writeToScreen(`<span style="color: #00ff82;">[RESPONSE]:</span> ${e.data}`)
@@ -153,12 +155,23 @@
 
         writeToScreen(`<span style="color: red;">[ERROR]:</span> ${err.message || JSON.stringify(err)}`)
 
-        loginBtn.disabled = true
-        syncNowBtn.disabled = true
+        websocket.close()
+      }
+    }
+
+    loginBtn.onclick = () => {
+      if (!isConnected) {
+        return
       }
 
-      loginBtn.onclick = login
-      syncNowBtn.onclick = syncNow
+      rpcReq(websocket, 'login')
+    }
+    syncNowBtn.onclick = () => {
+      if (!isConnected) {
+        return
+      }
+
+      rpcReq(websocket, 'syncNow')
     }
   })
 </script>
