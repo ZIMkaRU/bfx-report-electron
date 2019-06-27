@@ -7,6 +7,10 @@
   <link rel="shortcut icon" href="../bfx-report-ui/build/favicon.ico">
   <title>Bitfinex Reports</title>
   <style>
+    * {
+      transition: all 0.5s; 
+    }
+
     html {
       height: 100%;
     }
@@ -24,32 +28,136 @@
       text-align: left;
       padding: 20px;
       margin-top: 15px;
-      background-color: #737373;
+      background-color: #2e3c47;
+      position: relative;
     }
 
     .input {
+      margin-top: 10px;
       text-align: center;
+      padding-right: 10px;
+      box-shadow: 0 0 0 0 rgba(19,124,189,0), 0 0 0 0 rgba(19,124,189,0), 0 0 0 0 rgba(19,124,189,0), inset 0 0 0 1px rgba(16,22,26,.3), inset 0 1px 1px rgba(16,22,26,.4);
+      background: rgba(16,22,26,.3);
+      color: #f5f8fa;
+      position: relative;
+      outline: none;
+      border: none;
+      border-radius: 3px;
+      height: 30px;
+      padding: 0 10px;
+      vertical-align: middle;
+      line-height: 30px;
+      font-size: 14px;
+      font-weight: 400;
+      transition: box-shadow .1s cubic-bezier(.4,1,.75,.9);
+      -webkit-appearance: none;
+      overflow: visible;
+    }
+
+    .input:focus {
+        box-shadow: 0 0 0 1px #137cbd, 0 0 0 1px #137cbd, 0 0 0 3px rgba(19,124,189,.3), inset 0 0 0 1px rgba(16,22,26,.3), inset 0 1px 1px rgba(16,22,26,.4);
+    }
+
+    .header-text {
+      color: #f5f8fa;
+    }
+
+    .btn {
+      box-shadow: none;
+      background-color: #506171;
+      background-image: linear-gradient(180deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,0));
+      color: #fff;
+      border-color: transparent;
+      margin-left: 5px;
+      margin-right: 5px;
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      padding: 5px 10px;
+      vertical-align: middle;
+      text-align: left;
+      font-size: 14px;
+      min-width: 30px;
+      min-height: 30px;
+      -webkit-appearance: button;
+      text-transform: none;
+      overflow: visible;
+      line-height: 1.15;
+    }
+
+    .btn:hover {
+      background-color: #45596d;
+      color: #fff;
+    }
+
+    .btn:disabled {
+      box-shadow: none;
+      background-image: none;
+      color: hsla(0,0%,100%,.3);
+      border-color: transparent;
+      background-color: #50617180;
+      cursor: not-allowed;
+    }
+
+    .btn-green {
+      background-color: #0f9960;
+      color: #fff;
+    }
+
+    .btn-green:hover {
+      background-color: #0d8050;
+      color: #fff;
+    }
+
+    .btn-clean {
+      background-color: #8c8f31;
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 0;
+      border-radius: 0;
+    }
+
+    .btn-clean:hover {
+      background-color: #6c6e24
+    }
+
+    .empty {
+      margin: auto;
+      width: 100%;
+      text-align: center;
+      text-transform: none;
+      line-height: 1.15;
+      font-size: 30px;
+      color: hsla(0,0%,100%,.3);
     }
   </style>
 </head>
 
 <body class="body">
-  <h2>WebSocket Test</h2>
+  <h1 class="header-text">WebSocket TEST</h1>
 
   <p>
-    <b>ApiKey:</b><br>
-    <input id="api-key" class="input" type="text" size="50">
+    <b class="header-text">API Key:</b><br>
+    <input id="api-key" class="input" type="text" size="50" placeholder="API Key:">
   </p>
   <p>
-    <b>ApiSecret:</b><br>
-    <input id="api-secret" class="input" type="text" size="50">
+    <b class="header-text">API Secret:</b><br>
+    <input id="api-secret" class="input" type="text" size="50" placeholder="API Secret:">
   </p>
 
-  <button id="btn-connect" type="button">CONNECT</button>
-  <button id="btn-login" type="button" disabled>LOGIN</button>
-  <button id="btn-sync-now" type="button" disabled>SYNC NOW</button>
+  <button id="btn-connect" class="btn btn-green" type="button">CONNECT</button>
+  <button id="btn-login" class="btn" type="button" disabled>LOGIN</button>
+  <button id="btn-sync-now" class="btn" type="button" disabled>SYNC NOW</button>
 
-  <div id="output" class="output"></div>
+  <div id="output" class="output">
+    <button id="btn-clean" class="btn btn-clean" type="button">CLEAN</button>
+    <div id="empty" class="empty">EMPTY</div>
+  </div>
 </body>
 
 <script>
@@ -59,11 +167,13 @@
     console.log('[LOAD]')
 
     const output = document.getElementById('output')
+    const empty = document.getElementById('empty')
     const apiKeyInput = document.getElementById('api-key')
     const apiSecretInput = document.getElementById('api-secret')
     const loginBtn = document.getElementById('btn-login')
     const syncNowBtn = document.getElementById('btn-sync-now')
     const connectBtn = document.getElementById('btn-connect')
+    const cleanBtn = document.getElementById('btn-clean')
 
     apiKeyInput.value = localStorage.getItem('apiKey')
     apiSecretInput.value = localStorage.getItem('apiSecret')
@@ -72,17 +182,62 @@
       clearTimeout(websocket.pingTimeout)
 
       websocket.pingTimeout = setTimeout(() => {
-        websocket.terminate()
+        websocket.close()
       }, 10000 + 1000)
     }
 
-    const writeToScreen = (message) => {
+    const disableBtn = (elem) => {
+      elem.classList.add("btn-disabled")
+      elem.disabled = true
+    }
+
+    const enableBtn = (elem) => {
+      elem.classList.remove("btn-disabled")
+      elem.disabled = false
+    }
+
+    const getMess = (message, styles = {}) => {
+      const mess = typeof message !== 'string'
+        ? String(message)
+        : message
+
+      const stylesArr = Object.entries(styles)
+      const styleProps = stylesArr.reduce((accum, [key, val]) => {
+        if (
+          !val ||
+          typeof val !== 'string'
+        ) {
+          return accum
+        }
+
+        return `${accum} ${key}: ${val};`
+      }, '')
+      const style = styleProps
+        ? ` style="${styleProps}"`
+        : ''
+
+      return `<span${style}>${mess}</span>`
+    }
+
+    const writeToScreen = (data = []) => {
+      if (!Array.isArray(data)) {
+        return
+      }
+
       const pre = document.createElement('p')
 
       pre.style.wordWrap = 'break-word'
-      pre.innerHTML = message
+      pre.style.color = '#fff'
+      pre.innerHTML = data.reduce((accum, obj) => {
+        const { mess = '', styles: s } = { ...obj }
+        const styles = { ...s }
+
+        return accum + getMess(mess, styles)
+      }, '')
 
       output.insertBefore(pre, output.firstChild)
+      empty.remove()
+      output.style.display = 'block'
     }
 
     const rpcReq = (websocket, method = '', params = {}) => {
@@ -102,12 +257,31 @@
       }
       const mess = JSON.stringify(data)
 
-      writeToScreen(`[SENT]: ${mess}`)
+      writeToScreen([
+        {
+          mess: '[SENT]:',
+          styles: { color: 'violet', 'margin-right': '5px' }
+        },
+        { mess }
+      ])
       websocket.send(mess)
+    }
+
+    const logErr = (err) => {
+      console.log('[ERR_WS]', err)
+
+      writeToScreen([
+        {
+          mess: '[ERROR]:',
+          styles: { color: 'red', 'margin-right': '5px' }
+        },
+        { mess: err.message || JSON.stringify(err) }
+      ])
     }
 
     let isConnected = false
     let websocket = null
+    let pingCount = 0
 
     connectBtn.onclick = () => {
       if (isConnected) {
@@ -127,33 +301,96 @@
       websocket = new WebSocket(wsUri)
 
       websocket.onopen = (e) => {
-        writeToScreen('[CONNECTED]')
+        heartbeat(websocket)
 
-        loginBtn.disabled = false
-        syncNowBtn.disabled = false
+        writeToScreen([
+          {
+            mess: '[CONNECTED]',
+            styles: { color: '#3d3dff' }
+          }
+        ])
+
+        enableBtn(loginBtn)
+        enableBtn(syncNowBtn)
       }
       websocket.onclose = (e) => {
-        
         if (e.wasClean) {
-          writeToScreen('[DISCONNECTED]: connection closed clean')
+          writeToScreen([
+            {
+              mess: '[DISCONNECTED]:',
+              styles: { color: 'yellow', 'margin-right': '5px' }
+            },
+            { mess: 'connection closed clean' }
+          ])
         } else {
-          writeToScreen('[DISCONNECTED]')
+          writeToScreen(
+            '[DISCONNECTED]',
+            { color: 'yellow' }
+          )
         }
 
-        writeToScreen(`[CODE]: ${event.code}, [REASON]: ${e.reason}`)
+        writeToScreen([
+          {
+            mess: '[CODE]:',
+            styles: { color: 'yellow', 'margin-right': '5px' }
+          },
+          {
+            mess: event.code,
+            styles: { 'margin-right': '5px' }
+          },
+          {
+            mess: '[REASON]:',
+            styles: { color: 'yellow', 'margin-right': '5px' }
+          },
+          { mess: e.reason }
+        ])
 
-        loginBtn.disabled = true
-        syncNowBtn.disabled = true
+        disableBtn(loginBtn)
+        disableBtn(syncNowBtn)
         connectBtn.firstChild.data = 'CONNECT'
         isConnected = false
       }
       websocket.onmessage = (e) => {
-        writeToScreen(`<span style="color: #00ff82;">[RESPONSE]:</span> ${e.data}`)
+        try {
+          const data = { ...JSON.parse(e.data) }
+
+          if (data.action === '__ping__') {
+            const hasPing = /\[PING.*\]/.test(output.firstChild.innerHTML)
+
+            if (hasPing) {
+              output.firstChild.remove()
+
+              pingCount += 1
+            } else {
+              pingCount = 1
+            }
+
+            writeToScreen([
+              {
+                mess: `[PING]${hasPing ? ':' : ''}`,
+                styles: { color: '#d0ff00', 'margin-right': '5px' }
+              },
+              { mess: hasPing ? String(pingCount) : '' }
+            ])
+
+            heartbeat(websocket)
+
+            return
+          }
+        } catch (err) {
+          logErr(err)
+        }
+
+        writeToScreen([
+          {
+            mess: '[RESPONSE]:',
+            styles: { color: '#00ff82', 'margin-right': '5px' }
+          },
+          { mess: e.data }
+        ])
       }
       websocket.onerror = (err) => {
-        console.log('[ERR_WS]', err)
-
-        writeToScreen(`<span style="color: red;">[ERROR]:</span> ${err.message || JSON.stringify(err)}`)
+        logErr(err)
 
         websocket.close()
       }
@@ -172,6 +409,16 @@
       }
 
       rpcReq(websocket, 'syncNow')
+    }
+    cleanBtn.onclick = () => {
+      while (
+        output.hasChildNodes()
+      ) {
+        output.removeChild(output.firstChild)
+      }
+
+      output.appendChild(cleanBtn)
+      output.appendChild(empty)
     }
   })
 </script>
