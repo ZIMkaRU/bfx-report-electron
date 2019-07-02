@@ -135,24 +135,44 @@
       font-size: 30px;
       color: hsla(0,0%,100%,.3);
     }
+
+    .ws-form {
+      margin: 0 20px;
+      text-align: center;
+    }
+
+    .input-wrapper {
+      display: inline-block;
+      text-align: left;
+    }
   </style>
 </head>
 
 <body class="body">
   <h1 class="header-text">WebSocket TEST</h1>
 
-  <p>
-    <b class="header-text">API Key:</b><br>
-    <input id="api-key" class="input" type="text" size="50" placeholder="API Key:">
-  </p>
-  <p>
-    <b class="header-text">API Secret:</b><br>
-    <input id="api-secret" class="input" type="text" size="50" placeholder="API Secret:">
-  </p>
+  <form class="ws-form">
+    <div>
+      <p class="input-wrapper">
+        <b class="header-text">WS address:</b><br>
+        <input id="ws-address" class="input" type="text" size="50" placeholder="WS address:">
+      </p>
+    </div>
+    <p class="input-wrapper">
+      <b class="header-text">API Key:</b><br>
+      <input id="api-key" class="input" type="text" size="50" placeholder="API Key:">
+    </p>
+    <p class="input-wrapper">
+      <b class="header-text">API Secret:</b><br>
+      <input id="api-secret" class="input" type="text" size="50" placeholder="API Secret:">
+    </p>
 
-  <button id="btn-connect" class="btn btn-green" type="button">CONNECT</button>
-  <button id="btn-login" class="btn" type="button" disabled>LOGIN</button>
-  <button id="btn-sync-now" class="btn" type="button" disabled>SYNC NOW</button>
+    <p>
+      <button id="btn-connect" class="btn btn-green" type="button">CONNECT</button>
+      <button id="btn-login" class="btn" type="button" disabled>LOGIN</button>
+      <button id="btn-sync-now" class="btn" type="button" disabled>SYNC NOW</button>
+    </p>
+  </form>
 
   <div id="output" class="output">
     <button id="btn-clean" class="btn btn-clean" type="button">CLEAN</button>
@@ -161,8 +181,6 @@
 </body>
 
 <script>
-  const wsUri = 'ws://127.0.0.1:34343/ws'
-
   window.addEventListener('load', () => {
     console.log('[LOAD]')
 
@@ -170,6 +188,7 @@
     const empty = document.getElementById('empty')
     const apiKeyInput = document.getElementById('api-key')
     const apiSecretInput = document.getElementById('api-secret')
+    const wsAddressInput = document.getElementById('ws-address')
     const loginBtn = document.getElementById('btn-login')
     const syncNowBtn = document.getElementById('btn-sync-now')
     const connectBtn = document.getElementById('btn-connect')
@@ -177,6 +196,7 @@
 
     apiKeyInput.value = localStorage.getItem('apiKey')
     apiSecretInput.value = localStorage.getItem('apiSecret')
+    wsAddressInput.value = localStorage.getItem('wsAddress') || 'ws://127.0.0.1:34343/ws'
 
     const heartbeat = (websocket) => {
       clearTimeout(websocket.pingTimeout)
@@ -298,7 +318,10 @@
       connectBtn.firstChild.data = 'DISCONNECT'
       isConnected = true
 
-      websocket = new WebSocket(wsUri)
+      const wsAddress = wsAddressInput.value
+      localStorage.setItem('wsAddress', wsAddress)
+
+      websocket = new WebSocket(wsAddress)
 
       websocket.onopen = (e) => {
         heartbeat(websocket)
