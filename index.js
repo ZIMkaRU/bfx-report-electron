@@ -5,7 +5,6 @@ const path = require('path')
 const url = require('url')
 const { fork } = require('child_process')
 const serve = require('electron-serve')
-const windowStateKeeper = require('./helpers/electron-window-state')
 
 const { app, BrowserWindow, Menu } = electron
 
@@ -46,10 +45,16 @@ const createMenu = () => {
     {
       label: 'Application',
       submenu: [
-        { label: 'Quit', accelerator: 'CmdOrCtrl+Q', click: () => app.quit() },
+        {
+          label: 'Quit',
+          accelerator: 'CmdOrCtrl+Q',
+          click: () => app.quit()
+        },
         { type: 'separator' },
         {
-          label: 'Open dev tools', accelerator: 'CmdOrCtrl+D', click: () => {
+          label: 'Open dev tools',
+          accelerator: 'CmdOrCtrl+D',
+          click: () => {
             if (!wins.mainWindow) {
               return
             }
@@ -58,7 +63,9 @@ const createMenu = () => {
           }
         },
         {
-          label: 'Refresh page', accelerator: 'CmdOrCtrl+R', click: () => {
+          label: 'Refresh page',
+          accelerator: 'CmdOrCtrl+R',
+          click: () => {
             if (!wins.mainWindow) {
               return
             }
@@ -98,31 +105,14 @@ const createWindow = (
     height: defaultHeight
   } = workAreaSize
   const isMainWindow = winName === 'mainWindow'
-  const {
-    width = defaultWidth,
-    height = defaultHeight,
-    x,
-    y,
-    isMaximized,
-    manage
-  } = isMainWindow
-    ? windowStateKeeper({
-      defaultWidth,
-      defaultHeight
-    })
-    : {}
   const _props = {
     autoHideMenuBar: true,
-    width,
-    height,
+    width: defaultWidth,
+    height: defaultHeight,
     minWidth: 1000,
     minHeight: 650,
-    x: !x
-      ? bounds.x
-      : x,
-    y: !y
-      ? bounds.y
-      : y,
+    x: bounds.x,
+    y: bounds.y,
     icon: path.join(__dirname, 'build/icons/512.png'),
     backgroundColor: '#394b59',
     show: false,
@@ -166,9 +156,7 @@ const createWindow = (
   })
 
   if (isMainWindow) {
-    isMainWinMaximized = isMaximized
-
-    manage(wins[winName])
+    isMainWinMaximized = true
   }
 }
 
