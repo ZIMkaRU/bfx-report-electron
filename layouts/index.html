@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="shortcut icon" href="../bfx-report-ui/build/favicon.ico">
+  <link rel="shortcut icon" href="../build/icon.ico">
   <title>Bitfinex Reports</title>
   <style>
     * {
@@ -145,11 +145,55 @@
       display: inline-block;
       text-align: left;
     }
+
+    .checkbox {
+      display: inline-flex;
+    }
+
+    .checkbox input[type="checkbox"] {
+      display: inline-block;
+      position: relative;
+      width: 50px;
+      height: 26px;
+      background: #ccd1da;
+      box-shadow: inset 0 2px 3px rgba(0,0,0,.2);
+      border-radius: 13px;
+      -webkit-appearance: none;
+      outline: none;
+      cursor: pointer;
+      transition: all .3s;
+    }
+
+    .checkbox input[type="checkbox"]:after {
+      display: block;
+      content: '';
+      position: relative;
+      top: 2px;
+      left: 2px;
+      width: 22px;
+      height: 22px;
+      border-radius: 11px;
+      background: #fafafa;
+      box-shadow: 0 2px 5px rgba(0,0,0,.3);
+    }
+
+    .checkbox input[type="checkbox"]:checked {
+      padding-left: 24px;
+      background: #509cba;
+    }
+
+    .checkbox__text {
+      position: relative;
+      display: inline-block;
+      padding: 7px 0 0 10px;
+      cursor: pointer;
+      color: #fff;
+    }
   </style>
 </head>
 
 <body class="body">
-  <h1 class="header-text">WebSocket TEST</h1>
+  <h1 class="header-text">BFX WEB SOCKET TESTER</h1>
 
   <form class="ws-form">
     <div>
@@ -159,12 +203,19 @@
       </p>
     </div>
     <p class="input-wrapper">
-      <b class="header-text">API Key:</b><br>
-      <input id="api-key" class="input" type="text" size="50" placeholder="API Key:">
+      <b class="header-text">Email:</b><br>
+      <input id="email" class="input" type="text" size="50" placeholder="Email:">
     </p>
     <p class="input-wrapper">
-      <b class="header-text">API Secret:</b><br>
-      <input id="api-secret" class="input" type="text" size="50" placeholder="API Secret:">
+      <b class="header-text">Password:</b><br>
+      <input id="password" class="input" type="text" size="50" placeholder="Password:">
+    </p>
+
+    <p>
+      <label class="checkbox">
+        <input id="is-sub-account" type="checkbox"/>
+        <span class="checkbox__text">SUB-ACCOUNT</span>
+      </label>
     </p>
 
     <p>
@@ -186,16 +237,18 @@
 
     const output = document.getElementById('output')
     const empty = document.getElementById('empty')
-    const apiKeyInput = document.getElementById('api-key')
-    const apiSecretInput = document.getElementById('api-secret')
+    const emailInput = document.getElementById('email')
+    const passwordInput = document.getElementById('password')
+    const isSubAccountCheckbox = document.getElementById('is-sub-account')
     const wsAddressInput = document.getElementById('ws-address')
     const loginBtn = document.getElementById('btn-login')
     const syncNowBtn = document.getElementById('btn-sync-now')
     const connectBtn = document.getElementById('btn-connect')
     const cleanBtn = document.getElementById('btn-clean')
 
-    apiKeyInput.value = localStorage.getItem('apiKey')
-    apiSecretInput.value = localStorage.getItem('apiSecret')
+    emailInput.value = localStorage.getItem('email')
+    passwordInput.value = localStorage.getItem('password')
+    isSubAccountCheckbox.checked = localStorage.getItem('isSubAccount')
     wsAddressInput.value = localStorage.getItem('wsAddress') || 'ws://127.0.0.1:34343/ws'
 
     const heartbeat = (websocket) => {
@@ -261,16 +314,19 @@
     }
 
     const rpcReq = (websocket, method = '', params = {}) => {
-      const apiKey = apiKeyInput.value
-      const apiSecret = apiSecretInput.value
+      const email = emailInput.value
+      const password = passwordInput.value
+      const isSubAccount = !!isSubAccountCheckbox.checked
 
-      localStorage.setItem('apiKey', apiKey)
-      localStorage.setItem('apiSecret', apiSecret)
+      localStorage.setItem('email', email)
+      localStorage.setItem('password', password)
+      localStorage.setItem('isSubAccount', isSubAccount)
 
       const data = {
         auth: {
-          apiKey,
-          apiSecret
+          email,
+          password,
+          isSubAccount
         },
         method,
         params
@@ -424,7 +480,7 @@
         return
       }
 
-      rpcReq(websocket, 'login')
+      rpcReq(websocket, 'signIn')
     }
     syncNowBtn.onclick = () => {
       if (!isConnected) {
