@@ -189,6 +189,10 @@
       cursor: pointer;
       color: #fff;
     }
+
+    .checkbox-bar {
+      text-align: left;
+    }
   </style>
 </head>
 
@@ -202,27 +206,42 @@
         <input id="ws-address" class="input" type="text" size="50" placeholder="WS address:">
       </p>
     </div>
-    <p class="input-wrapper">
-      <b class="header-text">Email:</b><br>
-      <input id="email" class="input" type="text" size="50" placeholder="Email:">
-    </p>
-    <p class="input-wrapper">
-      <b class="header-text">Password:</b><br>
-      <input id="password" class="input" type="text" size="50" placeholder="Password:">
-    </p>
-
-    <p>
-      <label class="checkbox">
-        <input id="is-sub-account" type="checkbox"/>
-        <span class="checkbox__text">SUB-ACCOUNT</span>
-      </label>
-    </p>
-
-    <p>
-      <button id="btn-connect" class="btn btn-green" type="button">CONNECT</button>
-      <button id="btn-login" class="btn" type="button" disabled>LOGIN</button>
-      <button id="btn-sync-now" class="btn" type="button" disabled>SYNC NOW</button>
-    </p>
+    <div>
+      <p class="input-wrapper jwt-wrapper">
+        <b class="header-text">JWT:</b><br>
+        <input id="jwt" class="input" type="text" size="50" placeholder="JWT:">
+      </p>
+      <p class="input-wrapper base-auth-wrapper">
+        <b class="header-text">Email:</b><br>
+        <input id="email" class="input" type="text" size="50" placeholder="Email:">
+      </p>
+      <p class="input-wrapper base-auth-wrapper">
+        <b class="header-text">Password:</b><br>
+        <input id="password" class="input" type="text" size="50" placeholder="Password:">
+      </p>
+    </div>
+  
+    <div class="checkbox-bar">
+      <p>
+        <label class="checkbox">
+          <input id="is-used-jwt" type="checkbox"/>
+          <span class="checkbox__text">USE JWT</span>
+        </label>
+      </p>
+  
+      <p>
+        <label class="checkbox">
+          <input id="is-sub-account" type="checkbox"/>
+          <span class="checkbox__text">SUB-ACCOUNT</span>
+        </label>
+      </p>
+    </div>
+  
+      <p>
+        <button id="btn-connect" class="btn btn-green" type="button">CONNECT</button>
+        <button id="btn-login" class="btn" type="button" disabled>LOGIN</button>
+        <button id="btn-sync-now" class="btn" type="button" disabled>SYNC NOW</button>
+      </p>
   </form>
 
   <div id="output" class="output">
@@ -237,8 +256,10 @@
 
     const output = document.getElementById('output')
     const empty = document.getElementById('empty')
+    const jwtInput = document.getElementById('jwt')
     const emailInput = document.getElementById('email')
     const passwordInput = document.getElementById('password')
+    const isUsedJwtCheckbox = document.getElementById('is-used-jwt')
     const isSubAccountCheckbox = document.getElementById('is-sub-account')
     const wsAddressInput = document.getElementById('ws-address')
     const loginBtn = document.getElementById('btn-login')
@@ -246,10 +267,32 @@
     const connectBtn = document.getElementById('btn-connect')
     const cleanBtn = document.getElementById('btn-clean')
 
+    const baseAuthWrapper = document.getElementsByClassName('base-auth-wrapper')
+    const jwtWrapper = document.getElementsByClassName('jwt-wrapper')
+
+    jwtInput.value = localStorage.getItem('jwt')
     emailInput.value = localStorage.getItem('email')
     passwordInput.value = localStorage.getItem('password')
+    isUsedJwtCheckbox.checked = localStorage.getItem('isUsedJwt')
     isSubAccountCheckbox.checked = localStorage.getItem('isSubAccount')
     wsAddressInput.value = localStorage.getItem('wsAddress') || 'ws://127.0.0.1:34343/ws'
+
+    const switchAuthMode = () => {
+      const isUsedJwt = !!isUsedJwtCheckbox.checked
+
+      for (const elem of baseAuthWrapper) {
+        elem.style.display = isUsedJwt ? 'none' : 'inline-block'
+      }
+      for (const elem of jwtWrapper) {
+        elem.style.display = isUsedJwt ? 'inline-block' : 'none'
+      }
+
+      isSubAccountCheckbox.disabled = isUsedJwt
+      isSubAccountCheckbox.closest('label')
+        .style.opacity = isUsedJwt ? 0.25 : 1
+    }
+    isUsedJwtCheckbox.onclick = switchAuthMode
+    switchAuthMode()
 
     const heartbeat = (websocket) => {
       clearTimeout(websocket.pingTimeout)
@@ -314,20 +357,28 @@
     }
 
     const rpcReq = (websocket, method = '', params = {}) => {
+      const jwt = jwtInput.value
       const email = emailInput.value
       const password = passwordInput.value
+      const isUsedJwt = !!isUsedJwtCheckbox.checked
       const isSubAccount = !!isSubAccountCheckbox.checked
 
+      localStorage.setItem('jwt', jwt)
       localStorage.setItem('email', email)
       localStorage.setItem('password', password)
+      localStorage.setItem('isUsedJwt', isUsedJwt)
       localStorage.setItem('isSubAccount', isSubAccount)
 
-      const data = {
-        auth: {
+      const auth = isUsedJwt
+        ? { jwt }
+        : {
           email,
           password,
           isSubAccount
-        },
+        }
+
+      const data = {
+        auth,
         method,
         params
       }
