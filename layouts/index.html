@@ -54,6 +54,10 @@
       overflow: visible;
     }
 
+    .textarea {
+      height: 210px;
+    }
+
     .input:focus {
         box-shadow: 0 0 0 1px #137cbd, 0 0 0 1px #137cbd, 0 0 0 3px rgba(19,124,189,.3), inset 0 0 0 1px rgba(16,22,26,.3), inset 0 1px 1px rgba(16,22,26,.4);
     }
@@ -114,16 +118,15 @@
     }
 
     .btn-clean {
-      background-color: #8c8f31;
       position: absolute;
       top: 0;
       right: 0;
       margin: 0;
-      border-radius: 0;
+      border-radius: 0 0 0 3px;
     }
 
-    .btn-clean:hover {
-      background-color: #6c6e24
+    .btn-clean:hover, .btn-clean:focus, .btn-clean:active {
+      background-color: #509cba;
     }
 
     .empty {
@@ -144,6 +147,10 @@
     .input-wrapper {
       display: inline-block;
       text-align: left;
+    }
+
+    .auth-input-bar {
+      min-height: 275px;
     }
 
     .checkbox {
@@ -206,10 +213,10 @@
         <input id="ws-address" class="input" type="text" size="50" placeholder="WS address:">
       </p>
     </div>
-    <div>
+    <div class="auth-input-bar">
       <p class="input-wrapper jwt-wrapper">
         <b class="header-text">JWT:</b><br>
-        <input id="jwt" class="input" type="text" size="50" placeholder="JWT:">
+        <textarea rows="8" cols="47" id="jwt" class="input textarea" type="text" placeholder="JWT:"></textarea>
       </p>
       <p class="input-wrapper base-auth-wrapper">
         <b class="header-text">Email:</b><br>
@@ -239,7 +246,7 @@
   
       <p>
         <button id="btn-connect" class="btn btn-green" type="button">CONNECT</button>
-        <button id="btn-login" class="btn" type="button" disabled>LOGIN</button>
+        <button id="btn-login" class="btn" type="button" disabled>SIGN IN</button>
         <button id="btn-sync-now" class="btn" type="button" disabled>SYNC NOW</button>
       </p>
   </form>
@@ -312,12 +319,31 @@
       elem.disabled = false
     }
 
-    const getMess = (message, styles = {}) => {
-      const mess = typeof message !== 'string'
-        ? String(message)
+    const stringify = (message) => {
+      return typeof message !== 'string'
+        ? JSON.stringify(message, null, 2)
         : message
+    }
 
-      const stylesArr = Object.entries(styles)
+    const serializ = (message) => {
+      try {
+        const deserialized = JSON.parse(message)
+
+        return stringify(deserialized)
+      } catch (err) {
+        return stringify(message)
+      }
+    }
+
+    const getMess = (message, styles = {}) => {
+      const mess = serializ(message)
+      const _styles = {
+        display: 'inline',
+        'white-space': 'pre-wrap',
+        ...styles
+      }
+
+      const stylesArr = Object.entries(_styles)
       const styleProps = stylesArr.reduce((accum, [key, val]) => {
         if (
           !val ||
@@ -332,7 +358,7 @@
         ? ` style="${styleProps}"`
         : ''
 
-      return `<span${style}>${mess}</span>`
+      return `<pre${style}>${mess}</pre>`
     }
 
     const writeToScreen = (data = []) => {
@@ -513,7 +539,7 @@
 
         writeToScreen([
           {
-            mess: '[RESPONSE]:',
+            mess: '[RESPONDED]:',
             styles: { color: '#00ff82', 'margin-right': '5px' }
           },
           { mess: e.data }
