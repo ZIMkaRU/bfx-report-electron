@@ -150,7 +150,9 @@
     }
 
     .auth-input-bar {
-      min-height: 275px;
+      /* when uses textarea */
+      /* min-height: 275px; */
+      min-height: 185px;
     }
 
     .checkbox {
@@ -214,9 +216,10 @@
       </p>
     </div>
     <div class="auth-input-bar">
-      <p class="input-wrapper jwt-wrapper">
-        <b class="header-text">JWT:</b><br>
-        <textarea rows="8" cols="47" id="jwt" class="input textarea" type="text" placeholder="JWT:"></textarea>
+      <p class="input-wrapper token-wrapper">
+        <b class="header-text">Token:</b><br>
+        <!-- <textarea rows="8" cols="47" id="token" class="input textarea" type="text" placeholder="TOKEN:"></textarea> -->
+        <input id="token" class="input" type="text" size="50" placeholder="TOKEN:">
       </p>
       <p class="input-wrapper base-auth-wrapper">
         <b class="header-text">Email:</b><br>
@@ -231,8 +234,8 @@
     <div class="checkbox-bar">
       <p>
         <label class="checkbox">
-          <input id="is-used-jwt" type="checkbox"/>
-          <span class="checkbox__text">USE JWT</span>
+          <input id="is-used-token" type="checkbox"/>
+          <span class="checkbox__text">USE TOKEN</span>
         </label>
       </p>
   
@@ -263,10 +266,10 @@
 
     const output = document.getElementById('output')
     const empty = document.getElementById('empty')
-    const jwtInput = document.getElementById('jwt')
+    const tokenInput = document.getElementById('token')
     const emailInput = document.getElementById('email')
     const passwordInput = document.getElementById('password')
-    const isUsedJwtCheckbox = document.getElementById('is-used-jwt')
+    const isUsedTokenCheckbox = document.getElementById('is-used-token')
     const isSubAccountCheckbox = document.getElementById('is-sub-account')
     const wsAddressInput = document.getElementById('ws-address')
     const loginBtn = document.getElementById('btn-login')
@@ -275,30 +278,30 @@
     const cleanBtn = document.getElementById('btn-clean')
 
     const baseAuthWrapper = document.getElementsByClassName('base-auth-wrapper')
-    const jwtWrapper = document.getElementsByClassName('jwt-wrapper')
+    const tokenWrapper = document.getElementsByClassName('token-wrapper')
 
-    jwtInput.value = localStorage.getItem('jwt')
+    tokenInput.value = localStorage.getItem('token')
     emailInput.value = localStorage.getItem('email')
     passwordInput.value = localStorage.getItem('password')
-    isUsedJwtCheckbox.checked = localStorage.getItem('isUsedJwt')
+    isUsedTokenCheckbox.checked = localStorage.getItem('isUsedToken')
     isSubAccountCheckbox.checked = localStorage.getItem('isSubAccount')
     wsAddressInput.value = localStorage.getItem('wsAddress') || 'ws://127.0.0.1:34343/ws'
 
     const switchAuthMode = () => {
-      const isUsedJwt = !!isUsedJwtCheckbox.checked
+      const isUsedToken = !!isUsedTokenCheckbox.checked
 
       for (const elem of baseAuthWrapper) {
-        elem.style.display = isUsedJwt ? 'none' : 'inline-block'
+        elem.style.display = isUsedToken ? 'none' : 'inline-block'
       }
-      for (const elem of jwtWrapper) {
-        elem.style.display = isUsedJwt ? 'inline-block' : 'none'
+      for (const elem of tokenWrapper) {
+        elem.style.display = isUsedToken ? 'inline-block' : 'none'
       }
 
-      isSubAccountCheckbox.disabled = isUsedJwt
+      isSubAccountCheckbox.disabled = isUsedToken
       isSubAccountCheckbox.closest('label')
-        .style.opacity = isUsedJwt ? 0.25 : 1
+        .style.opacity = isUsedToken ? 0.25 : 1
     }
-    isUsedJwtCheckbox.onclick = switchAuthMode
+    isUsedTokenCheckbox.onclick = switchAuthMode
     switchAuthMode()
 
     const heartbeat = (websocket) => {
@@ -383,20 +386,20 @@
     }
 
     const rpcReq = (websocket, method = '', params = {}) => {
-      const jwt = jwtInput.value
+      const token = tokenInput.value
       const email = emailInput.value
       const password = passwordInput.value
-      const isUsedJwt = !!isUsedJwtCheckbox.checked
+      const isUsedToken = !!isUsedTokenCheckbox.checked
       const isSubAccount = !!isSubAccountCheckbox.checked
 
-      localStorage.setItem('jwt', jwt)
+      localStorage.setItem('token', token)
       localStorage.setItem('email', email)
       localStorage.setItem('password', password)
-      localStorage.setItem('isUsedJwt', isUsedJwt)
+      localStorage.setItem('isUsedToken', isUsedToken)
       localStorage.setItem('isSubAccount', isSubAccount)
 
-      const auth = isUsedJwt
-        ? { jwt }
+      const auth = isUsedToken
+        ? { token }
         : {
           email,
           password,
