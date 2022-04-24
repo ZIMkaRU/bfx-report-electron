@@ -1,170 +1,67 @@
 {
-  "name": "bfx-report-electron",
-  "version": "0.7.0",
-  "description": "Reporting tool",
-  "author": "bitfinex.com",
+  "name": "bfx-web-socket-tester",
+  "version": "1.0.0",
+  "description": "BFX web socket tester",
   "main": "index.js",
+  "engine": {
+    "node": ">=14.16.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitfinexcom/bfx-report-electron.git"
+  },
   "license": "Apache-2.0",
+  "contributors": [
+    "Vladimir Voronkov <vsvoronkov@gmail.com>",
+    "Paolo Ardoino <paolo@btifinex.com>",
+    "Ezequiel Wernicke <ezequiel.wernicke@bitfinex.com>"
+  ],
+  "keywords": [
+    "bitfinex"
+  ],
   "dependencies": {
-    "async": "^2.6.1",
-    "bittorrent-dht": "^8.4.0",
-    "electron-serve": "0.2.0",
-    "find-free-port": "^2.0.0",
-    "grenache-grape": "^0.9.8"
+    "better-npm-run": "0.1.1",
+    "config": "3.3.6",
+    "cors": "2.8.5",
+    "express": "4.17.1"
   },
   "devDependencies": {
-    "ajv": "^6.5.1",
-    "electron": "2.0.18",
-    "electron-builder": "20.42.0",
-    "electron-rebuild": "^1.8.2",
-    "eslint": "^4.19.1",
-    "eslint-config-standard": "^11.0.0",
-    "eslint-plugin-import": "^2.12.0",
-    "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-promise": "^3.8.0",
-    "eslint-plugin-standard": "^3.1.0",
-    "node-pre-gyp": "^0.11.0",
-    "standard": "^12.0.1"
+    "standard": "16.0.4",
+    "nodemon": "2.0.14"
   },
-  "standard": {
-    "globals": [
-      "describe",
-      "it",
-      "before",
-      "after"
+  "nodemonConfig": {
+    "verbose": true,
+    "ignore": [
+      "node_modules/",
+      "logs/",
+      ".git/",
+      ".idea/",
+      ".vscode/"
     ]
   },
-  "scripts": {
-    "start": "npm run init&&npm run dist-linux&& npm run dist-win&& npm run dist-mac",
-    "startDev": "npm run initDev&&npm run dist-linux&& npm run dist-win&& npm run dist-mac",
-    "init": "./init.sh",
-    "initDev": "./init.sh -d",
-    "dist-win": "./reinstall-deps.sh win32&&electron-builder build --win",
-    "dist-linux": "./reinstall-deps.sh linux&&electron-builder build --linux",
-    "dist-mac": "./reinstall-deps.sh darwin&&electron-builder build --mac",
-    "electron": "export NODE_ENV=development&&export DEBUG=*&&electron .",
-    "test": "standard"
-  },
-  "build": {
-    "extends": null,
-    "asar": false,
-    "productName": "bfx-report-electron",
-    "appId": "com.report.bitfinex",
-    "files": [
-      "**/*",
-      "!init.sh",
-      "!reinstall-deps.sh",
-      "!README.md",
-      "build/icons",
-      "bfx-reports-framework",
-      "!bfx-reports-framework/init.sh",
-      "!bfx-reports-framework/README.md",
-      "!bfx-reports-framework/bfx-report-ui",
-      "!bfx-reports-framework/.mocha.opts",
-      "!bfx-reports-framework/test",
-      "!bfx-report-ui",
-      "bfx-report-ui/build",
-      "bfx-report-ui/bfx-report-express",
-      "!bfx-report-ui/bfx-report-express/README.md",
-      "!bfx-report-ui/bfx-report-express/pm2.config.js",
-      {
-        "from": "bfx-reports-framework/node_modules",
-        "to": "bfx-reports-framework/node_modules",
-        "filter": [
-          "**/*",
-          "!.bin",
-          "!**/node_modules/.bin",
-          "!**/*.md",
-          "!**/LICENSE",
-          "!**/CHANGELOG",
-          "!**/test"
-        ]
-      },
-      {
-        "from": "bfx-reports-framework/node_modules/bfx-api-node-rest/node_modules",
-        "to": "bfx-reports-framework/node_modules/bfx-api-node-rest/node_modules",
-        "filter": [
-          "**/*",
-          "!.bin",
-          "!**/node_modules/.bin",
-          "!**/*.md",
-          "!**/LICENSE",
-          "!**/CHANGELOG",
-          "!**/test"
-        ]
-      },
-      {
-        "from": "bfx-reports-framework/node_modules/bfx-report",
-        "to": "bfx-reports-framework/node_modules/bfx-report",
-        "filter": [
-          "**/*",
-          "!.bin",
-          "!**/node_modules/.bin",
-          "!**/*.md",
-          "!**/LICENSE",
-          "!**/CHANGELOG",
-          "!**/test"
-        ]
-      },
-      {
-        "from": "bfx-report-ui/bfx-report-express/node_modules",
-        "to": "bfx-report-ui/bfx-report-express/node_modules",
-        "filter": [
-          "**/*",
-          "!.bin",
-          "!**/node_modules/.bin",
-          "!**/*.md",
-          "!**/LICENSE",
-          "!**/CHANGELOG",
-          "!**/test"
-        ]
+  "betterScripts": {
+    "start:prod": {
+      "command": "node index.js",
+      "env": {
+        "NODE_ENV": "production"
       }
-    ],
-    "linux": {
-      "artifactName": "${productName}-${version}-${arch}-${os}.${ext}",
-      "description": "Reporting tool",
-      "maintainer": "<bitfinex.com>",
-      "category": "Network",
-      "target": [
-        "dir",
-        "zip"
-      ]
     },
-    "win": {
-      "target": [
-        "dir",
-        "zip"
-      ],
-      "publisherName": "Reporting tool"
+    "start:dev": {
+      "command": "nodemon index.js",
+      "env": {
+        "NODE_ENV": "development"
+      }
     },
-    "mac": {
-      "hardenedRuntime": true,
-      "artifactName": "${productName}-${version}-${arch}-${os}.${ext}",
-      "category": "public.app-category.productivity",
-      "target": [
-        "dmg",
-        "zip"
-      ]
-    },
-    "dmg": {
-      "iconSize": 100,
-      "contents": [
-        {
-          "x": 380,
-          "y": 280,
-          "type": "link",
-          "path": "/Applications"
-        },
-        {
-          "x": 110,
-          "y": 280,
-          "type": "file"
-        }
-      ],
-      "window": {
-        "width": 500,
-        "height": 500
+    "test": {
+      "command": "standard",
+      "env": {
+        "NODE_ENV": "test"
       }
     }
+  },
+  "scripts": {
+    "start": "better-npm-run start:prod",
+    "startDev": "better-npm-run start:dev",
+    "test": "better-npm-run test"
   }
 }
