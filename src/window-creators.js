@@ -57,9 +57,9 @@ const _createWindow = async (
     manage
   } = isMainWindow
     ? windowStateKeeper({
-        defaultWidth,
-        defaultHeight
-      })
+      defaultWidth,
+      defaultHeight
+    })
     : {}
   const _props = {
     autoHideMenuBar: true,
@@ -87,10 +87,10 @@ const _createWindow = async (
 
   const startUrl = pathname
     ? url.format({
-        pathname,
-        protocol: 'file:',
-        slashes: true
-      })
+      pathname,
+      protocol: 'file:',
+      slashes: true
+    })
     : 'app://-'
 
   if (!pathname) {
