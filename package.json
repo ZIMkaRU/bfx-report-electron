@@ -39,7 +39,7 @@
     "app-builder-bin": "4.1.0",
     "electron": "14.2.9",
     "electron-builder": "23.0.9",
-    "standard": "16.0.4"
+    "standard": "17.0.0"
   },
   "standard": {
     "globals": [
