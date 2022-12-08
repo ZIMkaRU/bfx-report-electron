@@ -94,7 +94,7 @@ jobs:
           "./package.json"
     - uses: actions/setup-node@v3
       with:
-        node-version: 14.16.0
+        node-version: 14.17.0
     - name: Cache Electron binaries
       id: electron-cache
       uses: actions/cache@v3
