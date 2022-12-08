@@ -84,7 +84,8 @@ const _fireFrameless = (alert, opts) => {
     backgroundColor: '#172d3e',
     hasShadow: false,
     webPreferences: {
-      contextIsolation: false
+      contextIsolation: false,
+      nativeWindowOpen: true
     }
   }
   const swalOptions = {

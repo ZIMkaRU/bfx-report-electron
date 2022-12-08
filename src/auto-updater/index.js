@@ -97,7 +97,8 @@ const _fireToast = (
     parent: win,
     modal: false,
     webPreferences: {
-      contextIsolation: false
+      contextIsolation: false,
+      nativeWindowOpen: true
     }
   }
   const swalOptions = {

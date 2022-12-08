@@ -76,7 +76,11 @@ const _createWindow = async (
     icon: path.join(__dirname, '../build/icons/512x512.png'),
     backgroundColor: '#172d3e',
     show: false,
-    ...props
+    ...props,
+    webPreferences: {
+      nativeWindowOpen: true,
+      ...props?.webPreferences
+    }
   }
 
   wins[winName] = new BrowserWindow(_props)

@@ -96,7 +96,8 @@ const _fireAlert = (params) => {
     modal: true,
     width: 1000,
     webPreferences: {
-      contextIsolation: false
+      contextIsolation: false,
+      nativeWindowOpen: true
     }
   }
   const swalOptions = {
