@@ -103,6 +103,8 @@ const _fireToast = (
     backgroundColor: '#172d3e',
     darkTheme: false,
     height,
+    width: opts?.width ?? 800,
+    resizable: true,
     parent: win,
     modal: false,
     webPreferences: {
@@ -165,6 +167,11 @@ const _fireToast = (
     sound
   )
 
+  ipcMain.on('auto-update-toast:width', (event, data) => {
+    alert.browserWindow?.setBounds({
+      width: Math.round(data?.width ?? 0)
+    })
+  })
   ipcMain.on(alert.uid + 'reposition', () => {
     const { x, y, width } = win.getContentBounds()
     const { width: alWidth } = alert.browserWindow.getContentBounds()
