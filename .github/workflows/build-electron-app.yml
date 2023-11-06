@@ -169,7 +169,7 @@ jobs:
       with:
         node-version: 18.17.1
     - name: Install main dev deps
-      run: npm i --development --no-audit --progress=false --force
+      run: npm i --no-audit --progress=false --force
     - name: Download Linux Unpacked build
       uses: actions/download-artifact@v3
       with:
