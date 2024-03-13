@@ -1,6 +1,6 @@
 # bfx-report-electron
 
-## Binaries
+## Binaries of the App
 
 Already complied binaries can be found on release section [release section](https://github.com/bitfinexcom/bfx-report-electron/releases)
 
