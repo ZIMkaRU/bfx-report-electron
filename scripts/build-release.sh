@@ -45,6 +45,7 @@ source "$ROOT/scripts/helpers/change-dir-ownership-to-curr-user.sh"
 
 programname=$0
 targetPlatform=""
+osArch=$ARCH
 countReqOSs=0
 bfxApiUrl="$BFX_API_URL"
 productName=$(getConfValue "productName" "$ROOT" "$ELECTRON_BUILDER_CONFIG_FILE_NAME")
@@ -130,6 +131,7 @@ if [ $buildWin == 1 ]; then
 fi
 if [ $buildMac == 1 ]; then
   targetPlatform="mac"
+  osArch="universal"
 fi
 
 cp "$ROOT/$ELECTRON_ENV_FILE_NAME.example" \
@@ -227,7 +229,7 @@ fi
 
 rm -rf "$DIST_FOLDER/"*"$targetPlatform"*
 node "$ROOT/node_modules/.bin/electron-builder" \
-  "build" "--$targetPlatform" "--$ARCH" \
+  "build" "--$targetPlatform" "--$osArch" \
   "--config" "$ELECTRON_BUILDER_CONFIG_FILE_PATH" \
   $publishOption
 
