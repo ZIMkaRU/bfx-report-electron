@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.41.0] - 2026-02-04
+
+### Added
+
+- Added `auto-update` bypass for dev mode on mac for the implementation of auto-update toast UI under main UI control. PR: [bfx-report-electron#588](https://github.com/bitfinexcom/bfx-report-electron/pull/588)
+- Implemented own module to get the app root path as the `electron-root-path` lib is not supported for a lot of time and brings some conflicts to the dependence tree (only works with `npm i --force`). PR: [bfx-report-electron#585](https://github.com/bitfinexcom/bfx-report-electron/pull/585)
+- Provided feature to open exported report in file manager. PRs: [bfx-report-electron#579](https://github.com/bitfinexcom/bfx-report-electron/pull/579), [bfx-report-ui#1018](https://github.com/bitfinexcom/bfx-report-ui/pull/1018)
+- Implemented showing the year for the charts values for periods longer than a year. PR: [bfx-report-ui#1015](https://github.com/bitfinexcom/bfx-report-ui/pull/1015)
+
+### Changed
+
+- Prevented writing logs to the file for the hosted version only, delegating it to the stderr stream and then to process management logging. PR: [bfx-report#464](https://github.com/bitfinexcom/bfx-report/pull/464)
+- Removed deprecated Turkish translations. PRs: [bfx-report#463](https://github.com/bitfinexcom/bfx-report/pull/463), [bfx-reports-framework#497](https://github.com/bitfinexcom/bfx-reports-framework/pull/497), [bfx-report-electron#589](https://github.com/bitfinexcom/bfx-report-electron/pull/589), [bfx-report-ui#1009](https://github.com/bitfinexcom/bfx-report-ui/pull/1009)
+- Updated copyright to 2026 for pdf reports. PR: [bfx-report#462](https://github.com/bitfinexcom/bfx-report/pull/462)
+- Provided the new BFX icon to the electron app with corresponding formats and sizes. PR: [bfx-report-electron#587](https://github.com/bitfinexcom/bfx-report-electron/pull/587)
+- Used and adapted the implemented modal window for the `change-sync-frequency` module instead of the `electron-alert` library. PR: [bfx-report-electron#582](https://github.com/bitfinexcom/bfx-report-electron/pull/582)
+- Used and adapted the implemented modal window for the `restore-db` module instead of the `electron-alert` library. PR: [bfx-report-electron#581](https://github.com/bitfinexcom/bfx-report-electron/pull/581)
+- Adjusted the `Movements` report date columns. PR: [bfx-report-ui#1007](https://github.com/bitfinexcom/bfx-report-ui/pull/1007)
+- Actualized BFX favicon. PR: [bfx-report-ui#1006](https://github.com/bitfinexcom/bfx-report-ui/pull/1006)
+- Removed `Trading fees charged in the last 30 days` section from the web `Account Summary` page. PR: [bfx-report-ui#1005](https://github.com/bitfinexcom/bfx-report-ui/pull/1005)
+
+### Fixed
+
+- Fixed file descriptor consumption issue to prevent leaks and reaching the allocated limit of descriptors for each process. PR: [bfx-report#465](https://github.com/bitfinexcom/bfx-report/pull/465)
+- Fixed the export date format in report files. The issue is in passing params to the corresponding formatter functions. PR: [bfx-report#461](https://github.com/bitfinexcom/bfx-report/pull/461)
+- Fixed a bypass for the getting actual ccy price, first look up in the candles table, if no price, look up in pub trades via bfx api (not in synced local db). PR: [bfx-reports-framework#495](https://github.com/bitfinexcom/bfx-reports-framework/pull/495)
+- Rolled back to react 17+ as a `quick fix` for the noted incompatibility 18+ versions with the currently used connected-react-router and related issues noted in some scenarios. PR: [bfx-report-ui#1027](https://github.com/bitfinexcom/bfx-report-ui/pull/1027)
+- Fixed an issue when the app renders before translations are loaded noted in some rare cases. PR: [bfx-report-ui#1020](https://github.com/bitfinexcom/bfx-report-ui/pull/1020)
+- Fixed the issue related to the app-only nav items displaying for the web, noted after recent updates. PR: [bfx-report-ui#1016](https://github.com/bitfinexcom/bfx-report-ui/pull/1016)
+
+### Security
+
+- Fixed `node module` vulnerabilities. PR: [bfx-report-electron#586](https://github.com/bitfinexcom/bfx-report-electron/pull/586)
+- Updates dependencies to fix vulnerabilities, fixed conflicts and actualized configurations. PR: [bfx-report-ui#1019](https://github.com/bitfinexcom/bfx-report-ui/pull/1019), [bfx-report-ui#1008](https://github.com/bitfinexcom/bfx-report-ui/pull/1008)
+
 ## [4.40.1] - 2025-12-19
 
 ### Changed
