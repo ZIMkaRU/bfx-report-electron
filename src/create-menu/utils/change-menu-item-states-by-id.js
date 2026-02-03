@@ -39,6 +39,10 @@ module.exports = (menuItemId, opts) => {
       ? id
       : menu.getMenuItemById(id)
 
+    if (!menuItem) {
+      continue
+    }
+
     for (const [name, val] of Object.entries(props)) {
       menuItem[name] = val
     }
