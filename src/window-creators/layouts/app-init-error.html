@@ -127,32 +127,34 @@
 
       try {
         description = await window.bfxReportElectronApi?.translate({
-            key: 'appInitError.description',
-            opts: { defaultValue: defaultDescription }
-          }) ?? defaultDescription
+          key: 'appInitError.description',
+          opts: { defaultValue: defaultDescription }
+        }) ?? defaultDescription
         closeBtnText = await window.bfxReportElectronApi?.translate({
-            key: 'appInitError.closeBtnText',
-            opts: { defaultValue: defaultCloseBtnText }
-          }) ?? defaultCloseBtnText
-
-        descriptionElem.innerText = description
-        closeBtnElem.innerText = closeBtnText
-        
-        closeBtnElem.onclick = async () => {
-          try {
-            disableBtn(closeBtnElem)
-            await window.bfxReportElectronApi?.exit()
-            enableBtn(closeBtnElem)
-          } catch (err) {
-            enableBtn(closeBtnElem)
-            console.error(err)
-          }
-        }
+          key: 'appInitError.closeBtnText',
+          opts: { defaultValue: defaultCloseBtnText }
+        }) ?? defaultCloseBtnText
       } catch (err) {
-        descriptionElem.innerText = description ??
-          `${defaultDescription}: translation service error`
+        if (!err.toString().includes('Error: No handler registered for \'translations:translate\'')) {
+          descriptionElem.innerText = description ??
+            `${defaultDescription}: translation service error`
+        }
 
         console.error(err)
+      }
+
+      descriptionElem.innerText = description ?? defaultDescription
+      closeBtnElem.innerText = closeBtnText ?? defaultCloseBtnText
+
+      closeBtnElem.onclick = async () => {
+        try {
+          disableBtn(closeBtnElem)
+          await window.bfxReportElectronApi?.exit()
+          enableBtn(closeBtnElem)
+        } catch (err) {
+          enableBtn(closeBtnElem)
+          console.error(err)
+        }
       }
     })
   </script>
