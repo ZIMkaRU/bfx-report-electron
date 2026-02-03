@@ -1,13 +1,13 @@
 'use strict'
 
-const path = require('path')
-const fs = require('fs')
-const fsPromises = require('fs/promises')
-const { spawn } = require('child_process')
+const path = require('node:path')
+const fs = require('node:fs')
+const { mkdir, rm } = require('node:fs/promises')
+const { spawn } = require('node:child_process')
 const { MacUpdater } = require('electron-updater')
 const extract = require('extract-zip')
 
-const { rootPath: appDir } = require('electron-root-path')
+const { rootPath } = require('../helpers/root-path')
 
 class BfxMacUpdater extends MacUpdater {
   constructor (...args) {
@@ -51,11 +51,21 @@ class BfxMacUpdater extends MacUpdater {
 
       const downloadedFilePath = this.getDownloadedFilePath()
 
-      const root = path.join(appDir, '../../..')
-      const dist = path.join(root, '..')
-      const exec = path.join(root, 'Contents/MacOS/Bitfinex Report')
+      const root = this.forceDevUpdateConfig
+        ? path.join(rootPath, 'stub.mac-release')
+        : path.join(rootPath, '../../..')
+      const dist = this.forceDevUpdateConfig
+        ? root
+        : path.join(root, '..')
+      const exec = this.forceDevUpdateConfig
+        ? path.join(root, 'Bitfinex Report.app/Contents/MacOS/Bitfinex Report')
+        : path.join(root, 'Contents/MacOS/Bitfinex Report')
 
-      await fsPromises.rm(root, { recursive: true })
+      await rm(root, { recursive: true, force: true })
+
+      if (this.forceDevUpdateConfig) {
+        await mkdir(root, { recursive: true })
+      }
 
       await extract(
         downloadedFilePath,

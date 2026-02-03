@@ -51,9 +51,47 @@ window.addEventListener('load', async () => {
     let toastId = null
     let timeout = null
 
+    const getInputRadioValue = () => {
+      const radioElems = document.getElementsByName('input-radio')
+
+      for (const radioElem of radioElems) {
+        if (!radioElem.checked) {
+          continue
+        }
+
+        return radioElem.value
+      }
+
+      return null
+    }
+
+    const getInputCheckboxValue = () => {
+      const radioElems = document.getElementsByName('input-checkbox')
+      const res = []
+
+      for (const radioElem of radioElems) {
+        if (!radioElem.checked) {
+          continue
+        }
+
+        res.push(radioElem.value)
+      }
+
+      return res
+    }
+
+    const getInputRangeValue = () => {
+      const rangeElems = document.getElementsByName('input-range')
+
+      return [...rangeElems].map((elem) => elem.value)
+    }
+
     const sendModalClosedEvent = (args) => {
       window.bfxReportElectronApi?.sendModalClosedEvent({
         dismiss: DISMISS_REASONS.CANCEL,
+        inputRadioValue: getInputRadioValue(),
+        inputCheckboxValue: getInputCheckboxValue(),
+        inputRangeValue: getInputRangeValue(),
 
         ...args
       })
@@ -85,10 +123,21 @@ window.addEventListener('load', async () => {
         confirmHotkey = 'Enter',
         containerClassName = '',
         textClassName = '',
-        showWinCloseButton = false
+        showWinCloseButton = false,
+        inputRadioOptions = [],
+        makeInputRadioInline = false,
+        inputCheckboxOptions = [],
+        makeInputCheckboxInline = false,
+        inputRangeOptions = [],
+        makeInputRangeInline = false,
+        progressSteps = [],
+        currentProgressStep = 0
       } = args ?? {}
       const elems = []
       const btnElems = []
+      const inputRadioElems = []
+      const inputCheckboxElems = []
+      const inputRangeElems = []
       const _confirmHotkey = (
         confirmHotkey &&
         typeof confirmHotkey === 'string' &&
@@ -119,6 +168,34 @@ window.addEventListener('load', async () => {
 
       const iconHTML = iconMap[icon]
 
+      if (
+        Array.isArray(progressSteps) &&
+        progressSteps.length > 0
+      ) {
+        const progressStepElems = []
+        const currStep = Number.isInteger(currentProgressStep)
+          ? currentProgressStep
+          : 0
+
+        for (const [i, progressStep] of progressSteps.entries()) {
+          const activeClassName = i <= currStep
+            ? ' modal__progress-step--active'
+            : ''
+
+          progressStepElems.push(`
+            <div class="modal__progress-step${activeClassName}">
+              <span class="modal__progress-step-separator"></span>
+              <span class="modal__progress-step-number">${progressStep}</span>
+            </div>
+          `)
+        }
+
+        elems.push(`
+          <div class="modal__progress-steps">
+            ${progressStepElems.join('\n')}
+          </div>
+        `)
+      }
       if (iconHTML) {
         elems.push(iconHTML)
       }
@@ -135,6 +212,92 @@ window.addEventListener('load', async () => {
 
         elems.push(`<div class="modal__text${className}">${text}</div>`)
       }
+      if (
+        Array.isArray(inputRadioOptions) &&
+        inputRadioOptions.length > 0
+      ) {
+        for (const inputRadioOpt of inputRadioOptions) {
+          if (
+            !inputRadioOpt ||
+            typeof inputRadioOpt !== 'object' ||
+            (
+              typeof inputRadioOpt.value !== 'string' &&
+              !Number.isFinite(inputRadioOpt.value)
+            )
+          ) {
+            continue
+          }
+
+          inputRadioElems.push(`
+            <label class="modal__input">
+              <input
+                ${inputRadioOpt?.checked ? ' checked' : ''}
+                value="${inputRadioOpt?.value}"
+                type="radio"
+                name="input-radio">
+              ${inputRadioOpt?.label ?? inputRadioOpt?.value}
+            </label>
+          `)
+        }
+      }
+      if (
+        Array.isArray(inputCheckboxOptions) &&
+        inputCheckboxOptions.length > 0
+      ) {
+        for (const inputCheckboxOpt of inputCheckboxOptions) {
+          if (
+            !inputCheckboxOpt ||
+            typeof inputCheckboxOpt !== 'object' ||
+            (
+              typeof inputCheckboxOpt.value !== 'string' &&
+              !Number.isFinite(inputCheckboxOpt.value)
+            )
+          ) {
+            continue
+          }
+
+          inputCheckboxElems.push(`
+            <label class="modal__input">
+              <input
+                ${inputCheckboxOpt?.checked ? ' checked' : ''}
+                value="${inputCheckboxOpt?.value}"
+                type="checkbox"
+                name="input-checkbox">
+              ${inputCheckboxOpt?.label ?? inputCheckboxOpt?.value}
+            </label>
+          `)
+        }
+      }
+      if (
+        Array.isArray(inputRangeOptions) &&
+        inputRangeOptions.length > 0
+      ) {
+        for (const inputRangeOpt of inputRangeOptions) {
+          if (
+            !inputRangeOpt ||
+            typeof inputRangeOpt !== 'object' ||
+            (
+              typeof inputRangeOpt.value !== 'string' &&
+              !Number.isFinite(inputRangeOpt.value)
+            )
+          ) {
+            continue
+          }
+
+          inputRangeElems.push(`
+            <label class="modal__input">
+              <input
+                value="${inputRangeOpt?.value}"
+                min="${inputRangeOpt?.min}"
+                max="${inputRangeOpt?.max}"
+                step="${inputRangeOpt?.step ?? 1}"
+                type="range"
+                name="input-range">
+              ${inputRangeOpt?.label ?? inputRangeOpt?.value}
+            </label>
+          `)
+        }
+      }
       if (showConfirmButton) {
         btnElems.push(`<button\
 ${focusConfirm ? ' autofocus' : ''} \
@@ -147,15 +310,39 @@ ${focusCancel ? ' autofocus' : ''} \
 id="cancelBtn" \
 class="modal__btn modal__btn--cancel">${cancelButtonText}</button>`)
       }
+      if (inputRadioElems.length > 0) {
+        elems.push(`<div \
+class="modal__radio-inputs${makeInputRadioInline ? ' modal__radio-inputs--inline' : ''}">\
+${inputRadioElems.join('\n')}</div>`)
+      }
+      if (inputCheckboxElems.length > 0) {
+        elems.push(`<div \
+class="modal__checkbox-inputs${makeInputCheckboxInline ? ' modal__checkbox-inputs--inline' : ''}">\
+${inputCheckboxElems.join('\n')}</div>`)
+      }
+      if (inputRangeElems.length > 0) {
+        elems.push(`<div \
+class="modal__range-inputs${makeInputRangeInline ? ' modal__range-inputs--inline' : ''}">\
+${inputRangeElems.join('\n')}</div>`)
+      }
       if (btnElems.length > 0) {
         elems.push(`<div class="modal__btns">${btnElems.join('\n')}</div>`)
       }
 
       modalElem.innerHTML = elems.join('\n')
 
+      const rangeElems = document.getElementsByName('input-range')
       const confirmBtnElem = document.getElementById('confirmBtn')
       const cancelBtnElem = document.getElementById('cancelBtn')
 
+      if (rangeElems.length > 0) {
+        for (const rangeElem of rangeElems) {
+          rangeElem.addEventListener('input', (e) => {
+            e.currentTarget.nextSibling
+              .nodeValue = e.currentTarget.value
+          })
+        }
+      }
       if (showConfirmButton) {
         confirmBtnElem.addEventListener('click', (e) => {
           finalizeModalWindow({
@@ -223,6 +410,11 @@ class="modal__btn modal__btn--cancel">${cancelButtonText}</button>`)
       renderModal(args)
       showModal()
       setTimeout(() => {
+        if (args?.preventSettingHeightToContent) {
+          modalElem.style.height = '100%'
+          modalElem.lastElementChild.style.flex = '1 1 auto'
+        }
+
         window.bfxReportElectronApi?.setWindowHeight({
           height: args?.preventSettingHeightToContent
             ? null

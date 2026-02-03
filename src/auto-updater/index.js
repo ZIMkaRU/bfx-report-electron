@@ -1,7 +1,6 @@
 'use strict'
 
 const { app, ipcMain } = require('electron')
-const { rootPath: appDir } = require('electron-root-path')
 const fs = require('fs')
 const path = require('path')
 const {
@@ -27,6 +26,7 @@ const {
 const {
   closeAlert
 } = require('../modal-dialog-src/utils')
+const { rootPath } = require('../helpers/root-path')
 const parseEnvValToBool = require('../helpers/parse-env-val-to-bool')
 const {
   WINDOW_EVENT_NAMES,
@@ -76,7 +76,7 @@ let isProgressToastEmittingUnlocked = false
 let electronBuilderConfig = {}
 
 try {
-  electronBuilderConfig = require(path.join(appDir, 'electron-builder-config'))
+  electronBuilderConfig = require(path.join(rootPath, 'electron-builder-config'))
 } catch (err) {}
 
 const fonts = `<style>${fontsStyle}</style>`
@@ -332,6 +332,10 @@ const _autoUpdaterFactory = () => {
   if (process.platform === 'darwin') {
     autoUpdater = new BfxMacUpdater()
 
+    if (process.env.IS_AUTO_UPDATE_BEING_TESTED) {
+      autoUpdater.forceDevUpdateConfig = true
+    }
+
     autoUpdater.addInstallingUpdateEventHandler(() => {
       return showLoadingWindow({
         windowName: WINDOW_NAMES.LOADING_WINDOW,
@@ -359,14 +363,7 @@ const _autoUpdaterFactory = () => {
       )
 
       fs.closeSync(fs.openSync(process.env.APPIMAGE, 'w'))
-      Object.defineProperty(autoUpdater.app, 'isPackaged', {
-        get () { return true }
-      })
-      Object.defineProperty(autoUpdater.app, 'appUpdateConfigPath', {
-        get () {
-          return path.join(this.app.getAppPath(), 'dev-app-update.yml')
-        }
-      })
+      autoUpdater.forceDevUpdateConfig = true
     }
   }
 
