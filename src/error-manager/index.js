@@ -2,7 +2,6 @@
 
 const { app } = require('electron')
 const os = require('os')
-const cleanStack = require('clean-stack')
 const i18next = require('i18next')
 
 const isDevEnv = process.env.NODE_ENV === 'development'
@@ -11,6 +10,7 @@ const { isENetError } = require(
   '../../bfx-reports-framework/workers/loc.api/helpers/api-errors-testers'
 )
 
+const cleanStack = require('./clean-stack')
 const log = require('./log')
 const getErrorDescription = require('./get-error-description')
 const showModalDialog = require('./show-modal-dialog')
