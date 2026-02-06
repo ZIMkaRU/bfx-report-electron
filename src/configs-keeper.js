@@ -1,34 +1,43 @@
 'use strict'
 
-const { promisify } = require('util')
-const path = require('path')
-const fs = require('fs')
-const { cloneDeep } = require('lib-js-util-base')
-
+const { app } = require('electron')
+const path = require('node:path')
 const {
   writeFileSync,
   mkdirSync,
   accessSync,
+  chmodSync,
   constants: { F_OK, W_OK }
-} = fs
-const access = promisify(fs.access)
-const mkdir = promisify(fs.mkdir)
-const writeFile = promisify(fs.writeFile)
+} = require('node:fs')
+const {
+  writeFile,
+  mkdir,
+  access,
+  chmod
+} = require('node:fs/promises')
+const { cloneDeep, merge } = require('lib-js-util-base')
 
-const { CONFIGS_FILE_NAME } = require('./const')
+const {
+  DEFAULT_CONFIGS_KEEPER_NAME,
+  CONFIGS_FILE_NAME
+} = require('./const')
 const {
   WrongPathToUserDataError
 } = require('./errors')
 
 class ConfigsKeeper {
-  constructor (
-    {
-      pathToUserData,
-      configsFileName = CONFIGS_FILE_NAME
-    } = {},
-    configsByDefault
-  ) {
-    if (!pathToUserData) {
+  #dirMode = '766'
+  #queue = new Set()
+  #configs = {}
+
+  constructor (opts) {
+    const {
+      pathToUserData = app.getPath('userData'),
+      configsFileName = CONFIGS_FILE_NAME,
+      configsByDefault = {}
+    } = opts ?? {}
+
+    if (!path.isAbsolute(pathToUserData)) {
       throw new WrongPathToUserDataError()
     }
 
@@ -40,69 +49,75 @@ class ConfigsKeeper {
       this.pathToUserData,
       this.configsFileName
     )
-    this.configs = {
-      ...this.configsByDefault,
-      ...this._loadConfigs()
-    }
 
-    this.queue = []
+    this.#configs = merge(
+      this.#configs,
+      this.configsByDefault,
+      this.#loadConfigs()
+    )
   }
 
-  _loadConfigs () {
+  #loadConfigs () {
     try {
       return require(this.pathToConfigsFile)
     } catch (err) {}
   }
 
   getConfigs () {
-    return cloneDeep(this.configs)
+    return cloneDeep(this.#configs)
   }
 
   getConfigByName (name) {
     return (
-      this.configs[name] &&
-      typeof this.configs[name] === 'object'
+      this.#configs[name] &&
+      typeof this.#configs[name] === 'object'
     )
-      ? cloneDeep(this.configs[name])
-      : this.configs[name]
+      ? cloneDeep(this.#configs[name])
+      : this.#configs[name]
   }
 
-  setConfigs (configs) {
-    this.configs = {
-      ...this.configs,
-      ...configs
-    }
+  #setConfigs (configs) {
+    this.#configs = merge(
+      this.#configs,
+      configs
+    )
 
-    return this
+    return JSON.stringify(this.#configs, null, 2)
   }
 
-  async _process () {
-    for (const promise of [...this.queue]) {
+  async #process () {
+    for (const promise of this.#queue) {
       await promise
 
-      this.queue.shift()
+      this.#queue.delete(promise)
     }
   }
 
-  async _saveConfigs (configs) {
+  async #saveConfigs (configs) {
     try {
-      await this._process()
-
-      const dir = path.dirname(this.pathToConfigsFile)
+      await this.#process()
 
       try {
-        await access(dir, F_OK | W_OK)
+        await access(this.pathToUserData, F_OK | W_OK)
       } catch (err) {
-        await mkdir(dir, { recursive: true })
+        if (err.code === 'ENOENT') {
+          await mkdir(
+            this.pathToUserData,
+            { recursive: true, mode: this.#dirMode }
+          )
+        }
+        if (err.code === 'EACCES') {
+          await chmod(this.pathToUserData, this.#dirMode)
+        }
+
+        throw err
       }
 
-      const _configs = this
-        .setConfigs(configs)
-        .getConfigs()
+      const jsonConfigs = this.#setConfigs(configs)
 
       await writeFile(
         this.pathToConfigsFile,
-        JSON.stringify(_configs, null, 2)
+        jsonConfigs
       )
 
       return true
@@ -114,8 +129,8 @@ class ConfigsKeeper {
   }
 
   async saveConfigs (configs) {
-    const task = this._saveConfigs(configs)
-    this.queue.push(task)
+    const task = this.#saveConfigs(configs)
+    this.#queue.add(task)
 
     const res = await task
 
@@ -124,21 +139,25 @@ class ConfigsKeeper {
 
   saveConfigsSync (configs) {
     try {
-      const dir = path.dirname(this.pathToConfigsFile)
-
       try {
-        accessSync(dir, F_OK | W_OK)
+        accessSync(this.pathToUserData, F_OK | W_OK)
       } catch (err) {
-        mkdirSync(dir, { recursive: true })
+        if (err.code === 'ENOENT') {
+          mkdirSync(
+            this.pathToUserData,
+            { recursive: true, mode: this.#dirMode }
+          )
+        }
+        if (err.code === 'EACCES') {
+          chmodSync(this.pathToUserData, this.#dirMode)
+        }
       }
 
-      const _configs = this
-        .setConfigs(configs)
-        .getConfigs()
+      const jsonConfigs = this.#setConfigs(configs)
 
       writeFileSync(
         this.pathToConfigsFile,
-        JSON.stringify(_configs, null, 2)
+        jsonConfigs
       )
 
       return true
@@ -151,21 +170,19 @@ class ConfigsKeeper {
 }
 
 module.exports = {
-  configsKeeperFactory: (
-    opts = {},
-    configsByDefault
-  ) => {
-    const {
-      configsKeeperName = 'main'
-    } = opts
+  configsKeeperFactory: (opts) => {
+    const configsKeeperName = opts?.configsKeeperName ??
+      DEFAULT_CONFIGS_KEEPER_NAME
 
-    const configsKeeper = new ConfigsKeeper(
-      opts,
-      configsByDefault
-    )
+    const configsKeeper = new ConfigsKeeper(opts)
     this[configsKeeperName] = configsKeeper
 
     return configsKeeper
   },
-  getConfigsKeeperByName: (name) => this[name]
+
+  getConfigsKeeperByName: (name) => {
+    const configsKeeperName = name ?? DEFAULT_CONFIGS_KEEPER_NAME
+
+    return this[configsKeeperName]
+  }
 }
