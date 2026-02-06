@@ -150,13 +150,15 @@ const _manageConfigs = (params) => {
     )
 
   const configsKeeper = configsKeeperFactory(
-    { pathToUserData },
     {
-      theme: ThemeIpcChannelHandlers.THEME_SOURCES.SYSTEM,
-      language: null,
-      pathToUserReportFiles,
-      schedulerRule,
-      triggeredSyncAfterUpdatesVer: '0.0.0'
+      pathToUserData,
+      configsByDefault: {
+        theme: ThemeIpcChannelHandlers.THEME_SOURCES.SYSTEM,
+        language: null,
+        pathToUserReportFiles,
+        schedulerRule,
+        triggeredSyncAfterUpdatesVer: '0.0.0'
+      }
     }
   )
   _resetReportFilesPath(
