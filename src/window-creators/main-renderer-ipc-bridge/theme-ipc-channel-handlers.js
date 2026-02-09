@@ -130,7 +130,7 @@ class ThemeIpcChannelHandlers extends IpcChannelHandlers {
       }
     }
 
-    const configsKeeper = getConfigsKeeperByName('main')
+    const configsKeeper = getConfigsKeeperByName()
     const isSaved = await configsKeeper
       ?.saveConfigs?.({ theme })
 

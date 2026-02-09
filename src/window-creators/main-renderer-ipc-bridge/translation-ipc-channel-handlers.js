@@ -28,7 +28,7 @@ class TranslationIpcChannelHandlers extends IpcChannelHandlers {
       createMenu()
     }
 
-    const configsKeeper = getConfigsKeeperByName('main')
+    const configsKeeper = getConfigsKeeperByName()
     const isSaved = await configsKeeper
       ?.saveConfigs?.({ language })
 

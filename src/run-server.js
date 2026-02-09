@@ -14,7 +14,7 @@ module.exports = ({
   secretKey,
   portsMap
 }) => {
-  const mainConfsKeeper = getConfigsKeeperByName('main')
+  const mainConfsKeeper = getConfigsKeeperByName()
   const {
     grape1DhtPort,
     grape1ApiPort,

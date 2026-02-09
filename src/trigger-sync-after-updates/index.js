@@ -68,7 +68,7 @@ const _requestSyncAfterUpdates = (opts) => {
 module.exports = async () => {
   try {
     const { version } = getDebugInfo()
-    const configsKeeper = getConfigsKeeperByName('main')
+    const configsKeeper = getConfigsKeeperByName()
     const triggeredSyncAfterUpdatesVer = await configsKeeper
       .getConfigByName('triggeredSyncAfterUpdatesVer')
 

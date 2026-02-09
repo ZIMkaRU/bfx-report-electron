@@ -55,7 +55,7 @@ module.exports = ({ pathToUserDocuments }) => {
       }
 
       await pauseApp()
-      const isSaved = await getConfigsKeeperByName('main')
+      const isSaved = await getConfigsKeeperByName()
         .saveConfigs({
           reportFilesPathVersion: REPORT_FILES_PATH_VERSION,
           pathToUserReportFiles: filePaths[0]

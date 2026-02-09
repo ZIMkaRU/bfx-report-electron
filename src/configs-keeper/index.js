@@ -5,6 +5,8 @@ const ConfigsKeeper = require('./configs.keeper')
 const CONFIGS_KEEPER_NAMES = require('./configs.keeper.names')
 
 module.exports = {
+  CONFIGS_KEEPER_NAMES,
+
   configsKeeperFactory: (opts) => {
     const configsKeeperName = opts?.configsKeeperName ??
       CONFIGS_KEEPER_NAMES.MAIN
@@ -17,7 +19,6 @@ module.exports = {
 
     return configsKeeper
   },
-
   getConfigsKeeperByName: (name) => {
     const configsKeeperName = name ?? CONFIGS_KEEPER_NAMES.MAIN
 

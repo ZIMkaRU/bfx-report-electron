@@ -95,7 +95,7 @@ const _fireAlert = async (params) => {
 }
 
 module.exports = () => {
-  const configsKeeper = getConfigsKeeperByName('main')
+  const configsKeeper = getConfigsKeeperByName()
 
   const getAlertOpts = (timeFormat, timeData) => {
     const timeFormatMap = {

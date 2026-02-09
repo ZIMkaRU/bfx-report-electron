@@ -111,9 +111,8 @@ module.exports = (options) => {
       updateState(win)
     }
 
-    getConfigsKeeperByName('main')
-      .setConfigs({ windowState: state })
-      .saveConfigsSync()
+    getConfigsKeeperByName()
+      .saveConfigsSync({ windowState: state })
   }
 
   const stateChangeHandler = () => {
@@ -150,7 +149,7 @@ module.exports = (options) => {
     }
   }
 
-  state = getConfigsKeeperByName('main')
+  state = getConfigsKeeperByName()
     .getConfigByName('windowState')
 
   validateState()
