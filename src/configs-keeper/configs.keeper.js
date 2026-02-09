@@ -15,7 +15,7 @@ const {
   access,
   chmod
 } = require('node:fs/promises')
-const { cloneDeep, merge } = require('lib-js-util-base')
+const { cloneDeep, merge, get } = require('lib-js-util-base')
 
 const CONFIGS_KEEPER_NAMES = require('./configs.keeper.names')
 const CONFIGS_KEEPER_FILE_NAME_MAP = require(
@@ -66,12 +66,14 @@ class ConfigsKeeper {
   }
 
   getConfigByName (name) {
+    const value = get(this.#configs, name)
+
     return (
-      this.#configs[name] &&
-      typeof this.#configs[name] === 'object'
+      value &&
+      typeof value === 'object'
     )
-      ? cloneDeep(this.#configs[name])
-      : this.#configs[name]
+      ? cloneDeep(value)
+      : value
   }
 
   #setConfigs (configs) {
