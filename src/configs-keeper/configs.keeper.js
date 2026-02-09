@@ -17,9 +17,10 @@ const {
 } = require('node:fs/promises')
 const { cloneDeep, merge } = require('lib-js-util-base')
 
-const {
-  CONFIGS_FILE_NAME
-} = require('../const')
+const CONFIGS_KEEPER_NAMES = require('./configs.keeper.names')
+const CONFIGS_KEEPER_FILE_NAME_MAP = require(
+  './configs.keeper.file.name.map'
+)
 const {
   WrongPathToUserDataError
 } = require('../errors')
@@ -30,19 +31,17 @@ class ConfigsKeeper {
   #configs = {}
 
   constructor (opts) {
-    const {
-      pathToUserData = app.getPath('userData'),
-      configsFileName = CONFIGS_FILE_NAME,
-      configsByDefault = {}
-    } = opts ?? {}
+    this.configsKeeperName = opts?.configsKeeperName ??
+      CONFIGS_KEEPER_NAMES.MAIN
+    this.configsFileName = opts?.configsFileName ??
+      CONFIGS_KEEPER_FILE_NAME_MAP[this.configsKeeperName]
+    this.configsByDefault = opts?.configsByDefault ?? {}
+    this.pathToUserData = opts?.pathToUserData ??
+      app.getPath('userData')
 
-    if (!path.isAbsolute(pathToUserData)) {
+    if (!path.isAbsolute(this.pathToUserData)) {
       throw new WrongPathToUserDataError()
     }
-
-    this.pathToUserData = pathToUserData
-    this.configsFileName = configsFileName
-    this.configsByDefault = configsByDefault
 
     this.pathToConfigsFile = path.join(
       this.pathToUserData,

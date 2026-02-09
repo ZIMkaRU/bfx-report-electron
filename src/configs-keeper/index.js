@@ -9,7 +9,10 @@ module.exports = {
     const configsKeeperName = opts?.configsKeeperName ??
       CONFIGS_KEEPER_NAMES.MAIN
 
-    const configsKeeper = new ConfigsKeeper(opts)
+    const configsKeeper = new ConfigsKeeper({
+      ...opts,
+      configsKeeperName
+    })
     this[configsKeeperName] = configsKeeper
 
     return configsKeeper
