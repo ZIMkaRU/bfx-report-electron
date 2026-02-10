@@ -93,25 +93,32 @@ class ConfigsKeeper {
     }
   }
 
+  async #manageConfigsDir () {
+    try {
+      await access(this.pathToUserData, F_OK | W_OK)
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        await mkdir(
+          this.pathToUserData,
+          { recursive: true, mode: this.#dirMode }
+        )
+
+        return
+      }
+      if (err.code === 'EACCES') {
+        await chmod(this.pathToUserData, this.#dirMode)
+
+        return
+      }
+
+      throw err
+    }
+  }
+
   async #saveConfigs (configs) {
     try {
       await this.#process()
-
-      try {
-        await access(this.pathToUserData, F_OK | W_OK)
-      } catch (err) {
-        if (err.code === 'ENOENT') {
-          await mkdir(
-            this.pathToUserData,
-            { recursive: true, mode: this.#dirMode }
-          )
-        }
-        if (err.code === 'EACCES') {
-          await chmod(this.pathToUserData, this.#dirMode)
-        }
-
-        throw err
-      }
+      await this.#manageConfigsDir()
 
       const jsonConfigs = this.#setConfigs(configs)
 
