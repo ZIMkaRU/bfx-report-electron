@@ -115,6 +115,28 @@ class ConfigsKeeper {
     }
   }
 
+  #manageConfigsDirSync () {
+    try {
+      accessSync(this.pathToUserData, F_OK | W_OK)
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        mkdirSync(
+          this.pathToUserData,
+          { recursive: true, mode: this.#dirMode }
+        )
+
+        return
+      }
+      if (err.code === 'EACCES') {
+        chmodSync(this.pathToUserData, this.#dirMode)
+
+        return
+      }
+
+      throw err
+    }
+  }
+
   async #saveConfigs (configs) {
     try {
       await this.#process()
@@ -146,19 +168,7 @@ class ConfigsKeeper {
 
   saveConfigsSync (configs) {
     try {
-      try {
-        accessSync(this.pathToUserData, F_OK | W_OK)
-      } catch (err) {
-        if (err.code === 'ENOENT') {
-          mkdirSync(
-            this.pathToUserData,
-            { recursive: true, mode: this.#dirMode }
-          )
-        }
-        if (err.code === 'EACCES') {
-          chmodSync(this.pathToUserData, this.#dirMode)
-        }
-      }
+      this.#manageConfigsDirSync()
 
       const jsonConfigs = this.#setConfigs(configs)
 
