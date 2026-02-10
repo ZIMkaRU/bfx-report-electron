@@ -85,8 +85,8 @@ class ConfigsKeeper {
     return JSON.stringify(this.#configs, null, 2)
   }
 
-  async #process () {
-    for (const promise of this.#queue) {
+  async #process (queue) {
+    for (const promise of queue) {
       await promise
 
       this.#queue.delete(promise)
@@ -137,9 +137,9 @@ class ConfigsKeeper {
     }
   }
 
-  async #saveConfigs (configs) {
+  async #saveConfigs (configs, queue) {
     try {
-      await this.#process()
+      await this.#process(queue)
       await this.#manageConfigsDir()
 
       const jsonConfigs = this.#setConfigs(configs)
@@ -158,7 +158,7 @@ class ConfigsKeeper {
   }
 
   async saveConfigs (configs) {
-    const task = this.#saveConfigs(configs)
+    const task = this.#saveConfigs(configs, [...this.#queue])
     this.#queue.add(task)
 
     const res = await task
