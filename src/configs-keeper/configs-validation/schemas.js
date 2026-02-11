@@ -7,6 +7,14 @@ const MAIN = {
   type: 'object',
   additionalProperties: false,
   properties: {
+    createdAt: {
+      type: 'string',
+      format: 'iso-date-time'
+    },
+    updatedAt: {
+      type: 'string',
+      format: 'iso-date-time'
+    },
     language: {
       type: 'string',
       minLength: 2,
