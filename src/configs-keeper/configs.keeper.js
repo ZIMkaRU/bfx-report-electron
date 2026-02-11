@@ -57,6 +57,7 @@ class ConfigsKeeper {
       this.configsByDefault,
       this.#loadConfigs()
     )
+    this.saveConfigsSync(this.#configs)
   }
 
   #loadConfigs () {
@@ -94,7 +95,10 @@ class ConfigsKeeper {
   }
 
   #setConfigs (configs) {
-    if (!this.#validateConfigs(configs)) {
+    if (
+      !this.#validateConfigs(configs) ||
+      this.#configs === configs // if the same ref
+    ) {
       return JSON.stringify(this.#configs, null, 2)
     }
 
