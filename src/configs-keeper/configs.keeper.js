@@ -32,7 +32,7 @@ const {
 class ConfigsKeeper {
   #dirMode = '766'
   #queue = new Set()
-  #configs = {}
+  #configs = { createdAt: new Date().toISOString() }
 
   constructor (opts) {
     this.configsKeeperName = opts?.configsKeeperName ??
