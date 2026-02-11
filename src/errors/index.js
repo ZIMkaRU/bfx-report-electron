@@ -1,11 +1,15 @@
 'use strict'
 
 class BaseError extends Error {
-  constructor (message) {
+  constructor (message, data) {
     super(message)
 
     this.name = this.constructor.name
     this.message = message
+
+    if (data) {
+      this.data = data
+    }
 
     Error.captureStackTrace(this, this.constructor)
   }
@@ -119,6 +123,15 @@ class ThemeParamPassingError extends BaseError {
   }
 }
 
+class DataValidationError extends BaseError {
+  constructor (args) {
+    super(
+      args?.message ?? 'ERR_DATA_IS_INVALID',
+      args?.data
+    )
+  }
+}
+
 module.exports = {
   BaseError,
   InvalidFilePathError,
@@ -138,5 +151,6 @@ module.exports = {
   DbRestoringError,
   ShowingChangelogError,
   TriggeringSyncAfterUpdatesError,
-  ThemeParamPassingError
+  ThemeParamPassingError,
+  DataValidationError
 }
