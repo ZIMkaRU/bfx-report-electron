@@ -101,7 +101,8 @@ class ConfigsKeeper {
 
     this.#configs = merge(
       this.#configs,
-      configs
+      configs,
+      { updatedAt: new Date().toISOString() }
     )
 
     return JSON.stringify(this.#configs, null, 2)
