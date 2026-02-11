@@ -12,32 +12,27 @@ const {
   DataValidationError
 } = require('../../errors')
 
-let ajv
+const ajv = new Ajv({
+  // Compile schema on initialization
+  schemas,
 
-const init = () => {
-  ajv = new Ajv({
-    // Compile schema on initialization
-    schemas,
+  // Strict mode
+  strict: true,
+  strictRequired: true,
+  allowMatchingProperties: true,
+  allowUnionTypes: true,
 
-    // Strict mode
-    strict: true,
-    strictRequired: true,
-    allowMatchingProperties: true,
-    allowUnionTypes: true,
-
-    coerceTypes: true,
-    useDefaults: 'empty',
-    removeAdditional: true,
-    $data: true,
-    ownProperties: true,
-    allErrors: true,
-    messages: true,
-    formats: { reserved: true },
-    verbose: isDevEnv
-  })
-
-  addFormats(ajv)
-}
+  coerceTypes: true,
+  useDefaults: 'empty',
+  removeAdditional: true,
+  $data: true,
+  ownProperties: true,
+  allErrors: true,
+  messages: true,
+  formats: { reserved: true },
+  verbose: isDevEnv
+})
+addFormats(ajv)
 
 const validate = (configs, schemaId) => {
   const validate = ajv.getSchema(schemaId)
@@ -62,7 +57,5 @@ const validate = (configs, schemaId) => {
 
 module.exports = {
   SCHEMA_IDS,
-
-  init,
   validate
 }

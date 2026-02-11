@@ -24,7 +24,7 @@ const CONFIGS_KEEPER_FILE_NAME_MAP = require(
 const CONFIGS_KEEPER_VALIDATION_ID_MAP = require(
   './configs.keeper.validation.id.map'
 )
-const configsValidation = require('./configs-validation')
+const { validate } = require('./configs-validation')
 const {
   WrongPathToUserDataError
 } = require('../errors')
@@ -51,7 +51,6 @@ class ConfigsKeeper {
       this.pathToUserData,
       this.configsFileName
     )
-    configsValidation.init()
 
     this.#configs = merge(
       this.#configs,
@@ -73,7 +72,7 @@ class ConfigsKeeper {
   }
 
   #validateConfigs (configs) {
-    return configsValidation.validate(
+    return validate(
       configs,
       CONFIGS_KEEPER_VALIDATION_ID_MAP[this.configsKeeperName]
     )
