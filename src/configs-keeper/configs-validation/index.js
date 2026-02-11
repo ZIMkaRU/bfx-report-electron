@@ -6,6 +6,9 @@ const isDevEnv = process.env.NODE_ENV === 'development'
 
 const SCHEMA_IDS = require('./schema.ids')
 const schemas = require('./schemas')
+const {
+  DataValidationError
+} = require('../../errors')
 
 let ajv
 
@@ -45,7 +48,10 @@ const validate = (configs, schemaId) => {
   const res = validate(configs)
 
   if (validate.errors) {
-    console.debug(validate.errors)
+    console.debug(new DataValidationError({
+      message: `ERR_DATA_IS_INVALID_WITH_ID: ${schemaId}`,
+      data: validate.errors
+    }))
   }
 
   return res
