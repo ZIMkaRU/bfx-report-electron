@@ -21,6 +21,10 @@ const CONFIGS_KEEPER_NAMES = require('./configs.keeper.names')
 const CONFIGS_KEEPER_FILE_NAME_MAP = require(
   './configs.keeper.file.name.map'
 )
+const CONFIGS_KEEPER_VALIDATION_ID_MAP = require(
+  './configs.keeper.validation.id.map'
+)
+const configsValidation = require('./configs-validation')
 const {
   WrongPathToUserDataError
 } = require('../errors')
@@ -47,6 +51,7 @@ class ConfigsKeeper {
       this.pathToUserData,
       this.configsFileName
     )
+    configsValidation.init()
 
     this.#configs = merge(
       this.#configs,
@@ -57,8 +62,21 @@ class ConfigsKeeper {
 
   #loadConfigs () {
     try {
-      return require(this.pathToConfigsFile)
+      const loadedConfigs = require(this.pathToConfigsFile)
+
+      if (!this.#validateConfigs(loadedConfigs)) {
+        return
+      }
+
+      return loadedConfigs
     } catch (err) {}
+  }
+
+  #validateConfigs (configs) {
+    return configsValidation.validate(
+      configs,
+      CONFIGS_KEEPER_VALIDATION_ID_MAP[this.configsKeeperName]
+    )
   }
 
   getConfigs () {
@@ -77,6 +95,10 @@ class ConfigsKeeper {
   }
 
   #setConfigs (configs) {
+    if (!this.#validateConfigs(configs)) {
+      return JSON.stringify(this.#configs, null, 2)
+    }
+
     this.#configs = merge(
       this.#configs,
       configs
