@@ -7,6 +7,7 @@ const isDevEnv = process.env.NODE_ENV === 'development'
 const SCHEMA_IDS = require('./schema.ids')
 const schemas = require('./schemas')
 const {
+  DataValidationSchemaDefError,
   DataValidationError
 } = require('../../errors')
 
@@ -39,8 +40,7 @@ const validate = (configs, schemaId) => {
   const validate = ajv.getSchema(schemaId)
 
   if (typeof validate !== 'function') {
-    // TODO:
-    console.debug('Config validation schema is not defined')
+    console.error(new DataValidationSchemaDefError())
 
     return false
   }
