@@ -123,6 +123,12 @@ class ThemeParamPassingError extends BaseError {
   }
 }
 
+class DataValidationSchemaDefError extends BaseError {
+  constructor (message = 'ERR_DATA_VALIDATION_SCHEMA_IS_UNDEFINED') {
+    super(message)
+  }
+}
+
 class DataValidationError extends BaseError {
   constructor (args) {
     super(
@@ -152,5 +158,6 @@ module.exports = {
   ShowingChangelogError,
   TriggeringSyncAfterUpdatesError,
   ThemeParamPassingError,
-  DataValidationError
+  DataValidationError,
+  DataValidationSchemaDefError
 }
