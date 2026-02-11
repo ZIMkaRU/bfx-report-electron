@@ -26,7 +26,7 @@ process.send = process.send || (() => {})
 process.env.NODE_CONFIG_DIR = pathToExpressConfDir
 
 const env = { ...process.env }
-const serializeError = require('./src/helpers/utils')
+const { serializeError } = require('./src/helpers/utils')
 
 const {
   WrongPathToUserDataError,
