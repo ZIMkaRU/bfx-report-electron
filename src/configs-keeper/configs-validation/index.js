@@ -1,6 +1,7 @@
 'use strict'
 
 const Ajv = require('ajv')
+const addFormats = require('ajv-formats')
 
 const isDevEnv = process.env.NODE_ENV === 'development'
 
@@ -34,6 +35,8 @@ const init = () => {
     formats: { reserved: true },
     verbose: isDevEnv
   })
+
+  addFormats(ajv)
 }
 
 const validate = (configs, schemaId) => {
