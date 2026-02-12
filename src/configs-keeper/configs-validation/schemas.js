@@ -20,6 +20,11 @@ const MAIN = {
       minLength: 1,
       enum: ['system', 'dark', 'light']
     },
+    schedulerRule: {
+      type: 'string',
+      minLength: 1,
+      format: 'cron-expression'
+    },
     language: {
       type: 'string',
       minLength: 2,
