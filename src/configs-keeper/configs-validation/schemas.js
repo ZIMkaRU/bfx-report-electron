@@ -18,7 +18,8 @@ const MAIN = {
     theme: {
       type: 'string',
       minLength: 1,
-      enum: ['system', 'dark', 'light']
+      enum: ['system', 'dark', 'light'],
+      default: 'system'
     },
     schedulerRule: {
       type: 'string',
@@ -28,8 +29,7 @@ const MAIN = {
     },
     language: {
       type: 'string',
-      minLength: 2,
-      default: 'en'
+      minLength: 2
     },
     pathToUserReportFiles: {
       type: 'string',
