@@ -1,5 +1,6 @@
 'use strict'
 
+const path = require('node:path')
 const Ajv = require('ajv')
 const addFormats = require('ajv-formats')
 
@@ -33,6 +34,10 @@ const ajv = new Ajv({
   verbose: isDevEnv
 })
 addFormats(ajv)
+ajv.addFormat('abs-path', {
+  type: 'string',
+  validate: (val) => path.isAbsolute(val)
+})
 
 const validate = (configs, schemaId) => {
   const validate = ajv.getSchema(schemaId)
