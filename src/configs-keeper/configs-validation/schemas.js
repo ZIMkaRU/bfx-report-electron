@@ -15,6 +15,11 @@ const MAIN = {
       type: 'string',
       format: 'iso-date-time'
     },
+    theme: {
+      type: 'string',
+      minLength: 1,
+      enum: ['system', 'dark', 'light']
+    },
     language: {
       type: 'string',
       minLength: 2,
