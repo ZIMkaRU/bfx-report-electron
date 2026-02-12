@@ -3,6 +3,7 @@
 const path = require('node:path')
 const Ajv = require('ajv')
 const addFormats = require('ajv-formats')
+const cronValidate = require('cron-validate')
 
 const isDevEnv = process.env.NODE_ENV === 'development'
 
@@ -37,6 +38,10 @@ addFormats(ajv)
 ajv.addFormat('abs-path', {
   type: 'string',
   validate: (val) => path.isAbsolute(val)
+})
+ajv.addFormat('cron-expression', {
+  type: 'string',
+  validate: (val) => cronValidate(val).isValid()
 })
 
 const validate = (configs, schemaId) => {
