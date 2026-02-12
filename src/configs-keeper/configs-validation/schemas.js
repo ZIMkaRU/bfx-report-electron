@@ -20,6 +20,15 @@ const MAIN = {
       minLength: 2,
       default: 'en'
     },
+    pathToUserReportFiles: {
+      type: 'string',
+      format: 'abs-path'
+    },
+    reportFilesPathVersion: {
+      type: 'integer',
+      minimum: 1,
+      default: 1
+    },
     windowState: {
       type: 'object',
       additionalProperties: false,
