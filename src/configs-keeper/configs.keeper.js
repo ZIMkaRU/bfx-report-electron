@@ -95,18 +95,22 @@ class ConfigsKeeper {
   }
 
   #setConfigs (configs) {
-    if (
-      !this.#validateConfigs(configs) ||
-      this.#configs === configs // if the same ref
-    ) {
+    // if the same ref
+    if (this.#configs === configs) {
+      this.#validateConfigs(this.#configs)
+
       return JSON.stringify(this.#configs, null, 2)
     }
 
-    this.#configs = merge(
+    const _configs = merge(
       this.#configs,
       configs,
       { updatedAt: new Date().toISOString() }
     )
+
+    this.#configs = this.#validateConfigs(_configs)
+      ? _configs
+      : this.#configs
 
     return JSON.stringify(this.#configs, null, 2)
   }
