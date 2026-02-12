@@ -27,6 +27,12 @@ const MAIN = {
       format: 'cron-expression',
       default: '0 */2 * * *'
     },
+    triggeredSyncAfterUpdatesVer: {
+      type: 'string',
+      minLength: 1,
+      format: 'semver',
+      default: '0.0.0'
+    },
     language: {
       type: 'string',
       minLength: 2
