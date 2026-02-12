@@ -4,6 +4,7 @@ const path = require('node:path')
 const Ajv = require('ajv')
 const addFormats = require('ajv-formats')
 const cronValidate = require('cron-validate')
+const { validateStrict } = require('compare-versions')
 
 const isDevEnv = process.env.NODE_ENV === 'development'
 
@@ -42,6 +43,10 @@ ajv.addFormat('abs-path', {
 ajv.addFormat('cron-expression', {
   type: 'string',
   validate: (val) => cronValidate(val).isValid()
+})
+ajv.addFormat('semver', {
+  type: 'string',
+  validate: (val) => validateStrict(val)
 })
 
 const validate = (configs, schemaId) => {
