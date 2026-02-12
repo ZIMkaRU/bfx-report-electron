@@ -1,6 +1,7 @@
 'use strict'
 
 const cronValidate = require('cron-validate')
+const cron = cronValidate.default ?? cronValidate
 const i18next = require('i18next')
 
 const { createModalWindow } = require('./window-creators')
@@ -39,7 +40,7 @@ const _getTime = (timeFormat, time) => {
 }
 
 const _getTimeDataFromRule = (rule) => {
-  const cronResult = cronValidate(rule)
+  const cronResult = cron(rule)
 
   if (!cronResult.isValid()) {
     return { timeFormat: 'hours', timeValue: 2 }
