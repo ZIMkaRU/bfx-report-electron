@@ -23,7 +23,8 @@ const MAIN = {
     schedulerRule: {
       type: 'string',
       minLength: 1,
-      format: 'cron-expression'
+      format: 'cron-expression',
+      default: '0 */2 * * *'
     },
     language: {
       type: 'string',
