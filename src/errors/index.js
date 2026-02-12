@@ -7,11 +7,23 @@ class BaseError extends Error {
     this.name = this.constructor.name
     this.message = message
 
-    if (data) {
-      this.data = data
+    Error.captureStackTrace(this, this.constructor)
+
+    if (!data) {
+      return
     }
 
-    Error.captureStackTrace(this, this.constructor)
+    this.data = data
+    let dataStr = ''
+
+    try {
+      const json = JSON.stringify(this.data, null, 2)
+        .replaceAll('\n', '\n    ')
+
+      dataStr = `\n    data: ${json}`
+
+      this.stack = `${this.stack}${dataStr}`
+    } catch (err) {}
   }
 }
 
