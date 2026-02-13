@@ -61,10 +61,6 @@ const manageWorkerMessages = require(
 )
 const printToPDF = require('./print-to-pdf')
 
-const { rule: schedulerRule } = require(
-  '../bfx-reports-framework/config/schedule.json'
-)
-
 const _resetReportFilesPath = async (
   configsKeeper,
   opts = {}
@@ -152,13 +148,7 @@ const _manageConfigs = (params) => {
   const configsKeeper = configsKeeperFactory(
     {
       pathToUserData,
-      configsByDefault: {
-        theme: ThemeIpcChannelHandlers.THEME_SOURCES.SYSTEM,
-        language: null,
-        pathToUserReportFiles,
-        schedulerRule,
-        triggeredSyncAfterUpdatesVer: '0.0.0'
-      }
+      configsByDefault: { pathToUserReportFiles }
     }
   )
   _resetReportFilesPath(

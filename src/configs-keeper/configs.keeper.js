@@ -97,6 +97,7 @@ class ConfigsKeeper {
   #setConfigs (configs) {
     // if the same ref
     if (this.#configs === configs) {
+      // Enter default vals and remove undeclared fields
       this.#validateConfigs(this.#configs)
 
       return JSON.stringify(this.#configs, null, 2)
