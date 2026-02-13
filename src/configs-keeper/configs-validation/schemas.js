@@ -35,10 +35,13 @@ const MAIN = {
     },
     language: {
       type: 'string',
-      minLength: 2
+      minLength: 2,
+      nullable: true,
+      default: null
     },
     pathToUserReportFiles: {
       type: 'string',
+      minLength: 1,
       format: 'abs-path'
     },
     reportFilesPathVersion: {
@@ -63,11 +66,48 @@ const MAIN = {
         },
         width: {
           type: 'integer',
-          minimum: 400
+          minimum: 400,
+          default: 800
         },
         height: {
           type: 'integer',
-          minimum: 400
+          minimum: 400,
+          default: 600
+        },
+        isMaximized: {
+          type: 'boolean',
+          default: true
+        },
+        isFullScreen: {
+          type: 'boolean',
+          default: false
+        },
+        displayBounds: {
+          type: 'object',
+          additionalProperties: false,
+          default: {},
+          properties: {
+            x: {
+              type: 'integer',
+              minimum: 0,
+              default: 0
+            },
+            y: {
+              type: 'integer',
+              minimum: 0,
+              default: 0
+            },
+            width: {
+              type: 'integer',
+              minimum: 400,
+              default: 800
+            },
+            height: {
+              type: 'integer',
+              minimum: 400,
+              default: 600
+            }
+          }
         }
       }
     }
