@@ -1,11 +1,7 @@
 'use strict'
 
 const { app } = require('electron')
-const path = require('path')
 const i18next = require('i18next')
-
-const isMac = process.platform === 'darwin'
-const { REPORT_FILES_PATH_VERSION } = require('./const')
 
 const TranslationIpcChannelHandlers = require(
   './window-creators/main-renderer-ipc-bridge/translation-ipc-channel-handlers'
@@ -38,16 +34,14 @@ const {
 const WINDOW_NAMES = require('./window-creators/window.names')
 const makeOrReadSecretKey = require('./make-or-read-secret-key')
 const {
-  configsKeeperFactory
-} = require('./configs-keeper')
-const {
   IpcMessageError,
   AppInitializationError
 } = require('./errors')
 const {
   deserializeError,
   getFreePort,
-  initIpcChannelHandlers
+  initIpcChannelHandlers,
+  manageConfigs
 } = require('./helpers')
 const getUserDataPath = require('./helpers/get-user-data-path')
 const {
@@ -60,28 +54,6 @@ const manageWorkerMessages = require(
   './manage-worker-messages'
 )
 const printToPDF = require('./print-to-pdf')
-
-const _resetReportFilesPath = async (
-  configsKeeper,
-  opts = {}
-) => {
-  const {
-    pathToUserReportFiles
-  } = opts
-
-  // Need to use a new report folder path for export
-  const reportFilesPathVersion = configsKeeper
-    .getConfigByName('reportFilesPathVersion')
-
-  if (reportFilesPathVersion === REPORT_FILES_PATH_VERSION) {
-    return
-  }
-
-  await configsKeeper.saveConfigs({
-    reportFilesPathVersion: REPORT_FILES_PATH_VERSION,
-    pathToUserReportFiles
-  })
-}
 
 const _ipcMessToPromise = (ipc) => {
   return new Promise((resolve, reject) => {
@@ -131,34 +103,6 @@ const _ipcMessToPromise = (ipc) => {
   })
 }
 
-const _manageConfigs = (params) => {
-  const {
-    pathToUserData,
-    pathToUserDocuments,
-    pathToUserDownloads
-  } = params ?? {}
-
-  const pathToUserReportFiles = isMac
-    ? pathToUserDownloads
-    : path.join(
-      pathToUserDocuments,
-      'bitfinex/reports'
-    )
-
-  const configsKeeper = configsKeeperFactory(
-    {
-      pathToUserData,
-      configsByDefault: { pathToUserReportFiles }
-    }
-  )
-  _resetReportFilesPath(
-    configsKeeper,
-    { pathToUserReportFiles }
-  )
-
-  return configsKeeper
-}
-
 module.exports = async () => {
   try {
     initIpcChannelHandlers(
@@ -187,7 +131,7 @@ module.exports = async () => {
     const pathToUserDocuments = app.getPath('documents')
     const pathToUserDownloads = app.getPath('downloads')
 
-    const configsKeeper = _manageConfigs({
+    const configsKeeper = manageConfigs({
       pathToUserData,
       pathToUserDocuments,
       pathToUserDownloads

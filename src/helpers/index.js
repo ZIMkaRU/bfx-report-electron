@@ -19,6 +19,7 @@ const parseEnvValToBool = require('./parse-env-val-to-bool')
 const isBfxApiStaging = require('./is-bfx-api-staging')
 const waitPort = require('./wait-port')
 const getUIFontsAsCSSString = require('./get-ui-fonts-as-css-string')
+const manageConfigs = require('./manage-configs')
 
 module.exports = {
   getFreePort,
@@ -33,5 +34,6 @@ module.exports = {
   parseEnvValToBool,
   isBfxApiStaging,
   waitPort,
-  getUIFontsAsCSSString
+  getUIFontsAsCSSString,
+  manageConfigs
 }
