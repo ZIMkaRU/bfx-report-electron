@@ -175,7 +175,8 @@ module.exports = {
     target: [
       'dir',
       ...macSpecificTargets
-    ]
+    ],
+    x64ArchFiles: '*'
   },
   files: [
     '**/*',
