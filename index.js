@@ -16,7 +16,13 @@ try {
   require('dotenv').config({ override: true })
 } catch (err) {}
 
+process.traceDeprecation = true
+process.traceProcessWarnings = true
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true
+
 const { app } = require('electron')
+app.allowRendererProcessReuse = true
+
 require('./src/i18next')
   .initI18next()
 
@@ -24,10 +30,6 @@ const isTestEnv = process.env.NODE_ENV === 'test'
 
 const productName = require('./src/helpers/product-name')
 app.setName(productName)
-
-process.traceProcessWarnings = true
-app.allowRendererProcessReuse = true
-process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true
 
 require('./src/error-manager')
   .initLogger()
