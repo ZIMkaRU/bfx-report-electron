@@ -5,9 +5,12 @@ const path = require('path')
 
 const ipcs = require('./ipcs')
 const { getConfigsKeeperByName } = require('./configs-keeper')
+const { rootPath, unpackedPath, serverCwd } = require('./helpers/root-path')
 
-const serverPath = path.join(__dirname, '../server.js')
-const cwd = path.join(__dirname, '..')
+const serverPath = path.join(
+  unpackedPath,
+  'server.js'
+)
 
 module.exports = ({
   pathToUserData,
@@ -27,6 +30,7 @@ module.exports = ({
 
   const env = {
     ...process.env,
+    NODE_PATH: path.join(rootPath, 'node_modules'),
     PATH_TO_USER_DATA: pathToUserData,
     PATH_TO_USER_REPORT_FILES: mainConfsKeeper
       .getConfigByName('pathToUserReportFiles'),
@@ -43,7 +47,7 @@ module.exports = ({
   }
   const ipc = fork(serverPath, [], {
     env,
-    cwd,
+    cwd: serverCwd,
     silent: false
   })
 
