@@ -2,7 +2,12 @@
 
 const path = require('node:path')
 const fs = require('node:fs')
-const { mkdir, rm } = require('node:fs/promises')
+const { mkdir } = require('node:fs/promises')
+/*
+ * https://github.com/electron/electron/issues/40943
+ * https://github.com/electron/electron/issues/41008
+ */
+const { rm } = require('node:original-fs/promises')
 const { spawn } = require('node:child_process')
 const { MacUpdater } = require('electron-updater')
 const extract = require('extract-zip')
