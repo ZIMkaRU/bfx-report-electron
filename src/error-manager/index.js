@@ -245,7 +245,9 @@ const initLogger = () => {
         /Cannot download differentially/gi.test(error) ||
         /objects\.githubusercontent\.com/gi.test(error) ||
         /Error: ERR_FAILED \(-2\) loading 'file:.*\.html'/gi.test(error) ||
-        /Failed to generate PDF/gi.test(error)
+        /Failed to generate PDF/gi.test(error) ||
+        // https://github.com/electron/electron/issues/47390
+        /DeprecationWarning: fs\.Stats/gi.test(error)
       ) {
         return message
       }
