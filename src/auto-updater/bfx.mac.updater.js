@@ -1,16 +1,17 @@
 'use strict'
 
 const path = require('node:path')
-const fs = require('node:fs')
+const { existsSync } = require('node:fs')
 const { mkdir } = require('node:fs/promises')
 /*
  * https://github.com/electron/electron/issues/40943
  * https://github.com/electron/electron/issues/41008
  */
-const { rm } = require('node:original-fs/promises')
+const originalFs = require('node:original-fs')
+const { rm } = originalFs.promises
 const { spawn } = require('node:child_process')
 const { MacUpdater } = require('electron-updater')
-const extract = require('extract-zip')
+const { extractWithOriginFs } = require('../archiver')
 
 const { rootPath } = require('../helpers/root-path')
 
@@ -72,7 +73,7 @@ class BfxMacUpdater extends MacUpdater {
         await mkdir(root, { recursive: true })
       }
 
-      await extract(
+      await extractWithOriginFs(
         downloadedFilePath,
         {
           dir: dist,
@@ -95,6 +96,7 @@ class BfxMacUpdater extends MacUpdater {
 
       return true
     } catch (err) {
+      this._logger.warn('[---ERR_MAC_UPDATE--]:', err)
       this.dispatchError(err)
 
       return false
@@ -123,7 +125,7 @@ class BfxMacUpdater extends MacUpdater {
   quitAndInstall (...args) {
     const downloadedFilePath = this.getDownloadedFilePath()
 
-    if (!fs.existsSync(downloadedFilePath)) {
+    if (!existsSync(downloadedFilePath)) {
       return
     }
     if (path.extname(downloadedFilePath) !== '.zip') {
