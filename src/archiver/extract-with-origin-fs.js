@@ -5,7 +5,13 @@
  *   - need to fix zip end detection
  */
 const path = require('node:path')
-const originalFs = require('node:original-fs')
+const { createWriteStream } = require('node:original-fs')
+const {
+  readFile,
+  mkdir,
+  realpath,
+  symlink: fsSymlink
+} = require('node:original-fs/promises')
 const { promisify } = require('node:util')
 const { pipeline } = require('node:stream/promises')
 const yauzl = require('yauzl')
@@ -20,7 +26,7 @@ class Extractor {
   }
 
   async extract () {
-    const buffer = await originalFs.promises.readFile(this.zipPath)
+    const buffer = await readFile(this.zipPath)
     this.zipfile = await openZip(buffer, { lazyEntries: true })
     this.canceled = false
 
@@ -50,9 +56,9 @@ class Extractor {
         const destDir = path.dirname(path.join(this.opts.dir, entry.fileName))
 
         try {
-          await originalFs.promises.mkdir(destDir, { recursive: true })
+          await mkdir(destDir, { recursive: true })
 
-          const canonicalDestDir = await originalFs.promises.realpath(destDir)
+          const canonicalDestDir = await realpath(destDir)
           const relativeDestDir = path.relative(this.opts.dir, canonicalDestDir)
 
           if (relativeDestDir.split(path.sep).includes('..')) {
@@ -109,7 +115,7 @@ class Extractor {
     if (isDir) {
       mkdirOptions.mode = procMode
     }
-    await originalFs.promises.mkdir(destDir, mkdirOptions)
+    await mkdir(destDir, mkdirOptions)
     if (isDir) return
 
     const readStream = await promisify(this.zipfile.openReadStream.bind(this.zipfile))(entry)
@@ -117,9 +123,9 @@ class Extractor {
     if (symlink) {
       const { default: getStream } = await getStreamPromise
       const link = await getStream(readStream)
-      await originalFs.promises.symlink(link, dest)
+      await fsSymlink(link, dest)
     } else {
-      await pipeline(readStream, originalFs.createWriteStream(dest, { mode: procMode }))
+      await pipeline(readStream, createWriteStream(dest, { mode: procMode }))
     }
   }
 
@@ -155,8 +161,8 @@ module.exports = async (zipPath, opts) => {
     throw new Error('Target directory is expected to be absolute')
   }
 
-  await originalFs.promises.mkdir(opts.dir, { recursive: true })
-  opts.dir = await originalFs.promises.realpath(opts.dir)
+  await mkdir(opts.dir, { recursive: true })
+  opts.dir = await realpath(opts.dir)
 
   return new Extractor(zipPath, opts).extract()
 }
