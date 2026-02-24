@@ -1,8 +1,7 @@
 'use strict'
 
-/**
+/*
  * TODO:
- *   - refactoring: need to divide into separate files
  *   - need to fix zip end detection
  */
 const path = require('node:path')
@@ -151,16 +150,13 @@ class Extractor {
   }
 }
 
-const extractWithOriginFs = async function (zipPath, opts) {
+module.exports = async (zipPath, opts) => {
   if (!path.isAbsolute(opts.dir)) {
     throw new Error('Target directory is expected to be absolute')
   }
 
   await originalFs.promises.mkdir(opts.dir, { recursive: true })
   opts.dir = await originalFs.promises.realpath(opts.dir)
-  return new Extractor(zipPath, opts).extract()
-}
 
-module.exports = {
-  extractWithOriginFs
+  return new Extractor(zipPath, opts).extract()
 }
