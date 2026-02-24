@@ -22,7 +22,7 @@ const openZip = promisify(yauzl.fromBuffer)
 class Extractor {
   constructor (zipPath, opts) {
     this.zipPath = zipPath
-    this.opts = opts
+    this.opts = opts ?? {}
   }
 
   async extract () {
@@ -106,7 +106,7 @@ class Extractor {
     const madeBy = entry.versionMadeBy >> 8
     if (!isDir) isDir = (madeBy === 0 && entry.externalFileAttributes === 16)
 
-    const procMode = this.getExtractedMode(mode, isDir) & 0o777
+    const procMode = this.getExtractedMode({ mode, isDir }) & 0o777
 
     // always ensure folders are created
     const destDir = isDir ? dest : path.dirname(dest)
@@ -129,27 +129,30 @@ class Extractor {
     }
   }
 
-  getExtractedMode (entryMode, isDir) {
-    let mode = entryMode
-    // Set defaults, if necessary
-    if (mode === 0) {
-      if (isDir) {
-        if (this.opts.defaultDirMode) {
-          mode = parseInt(this.opts.defaultDirMode, 10)
-        }
+  getExtractedMode (args) {
+    const { mode: entryMode, isDir } = args ?? {}
 
-        if (!mode) {
-          mode = 0o755
-        }
-      } else {
-        if (this.opts.defaultFileMode) {
-          mode = parseInt(this.opts.defaultFileMode, 10)
-        }
+    if (entryMode !== 0) {
+      return entryMode
+    }
+    if (isDir) {
+      const mode = this.opts.defaultDirMode
+        ? Number.parseInt(this.opts.defaultDirMode, 10)
+        : entryMode
 
-        if (!mode) {
-          mode = 0o644
-        }
+      if (!mode) {
+        return 0o755
       }
+
+      return mode
+    }
+
+    const mode = this.opts.defaultFileMode
+      ? Number.parseInt(this.opts.defaultFileMode, 10)
+      : entryMode
+
+    if (!mode) {
+      return 0o644
     }
 
     return mode
@@ -157,12 +160,15 @@ class Extractor {
 }
 
 module.exports = async (zipPath, opts) => {
-  if (!path.isAbsolute(opts.dir)) {
+  if (!path.isAbsolute(opts?.dir)) {
     throw new Error('Target directory is expected to be absolute')
   }
 
-  await mkdir(opts.dir, { recursive: true })
-  opts.dir = await realpath(opts.dir)
+  await mkdir(opts?.dir, { recursive: true })
+  const _opts = {
+    ...opts,
+    dir: await realpath(opts?.dir)
+  }
 
-  return new Extractor(zipPath, opts).extract()
+  return new Extractor(zipPath, _opts).extract()
 }
