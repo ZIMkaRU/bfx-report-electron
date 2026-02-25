@@ -96,7 +96,7 @@ class BfxMacUpdater extends MacUpdater {
 
       return true
     } catch (err) {
-      this._logger.warn('[---ERR_MAC_UPDATE--]:', err)
+      this._logger.warn('Install on macos failed:', err)
       this.dispatchError(err)
 
       return false
