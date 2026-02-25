@@ -1,13 +1,20 @@
 'use strict'
 
 const path = require('node:path')
-const { createWriteStream } = require('node:original-fs')
 const {
-  readFile,
-  mkdir,
-  realpath,
-  symlink: fsSymlink
-} = require('node:original-fs/promises')
+  createWriteStream,
+  promises: {
+    readFile,
+    mkdir,
+    realpath,
+    symlink
+  },
+  constants: {
+    S_IFMT,
+    S_IFDIR,
+    S_IFLNK
+  }
+} = require('node:original-fs')
 const { promisify } = require('node:util')
 const { pipeline } = require('node:stream/promises')
 const yauzl = require('yauzl')
@@ -96,14 +103,17 @@ class Extractor {
 
     const dest = path.join(this.opts.dir, entry.fileName)
 
-    // convert external file attr int into a fs stat mode int
+    /*
+     * convert external file attr int into a fs stat mode int
+     * https://github.com/thejoshwolfe/yauzl/issues/57
+     * https://github.com/thejoshwolfe/yazl/blob/master/README.md#external-file-attributes
+     * https://github.com/thejoshwolfe/yauzl/issues/101#issuecomment-448073570
+     */
     const mode = (entry.externalFileAttributes >> 16) & 0xFFFF
     // check if it's a symlink or dir (using stat mode constants)
-    const IFMT = 61440
-    const IFDIR = 16384
-    const IFLNK = 40960
-    const symlink = (mode & IFMT) === IFLNK
-    let isDir = (mode & IFMT) === IFDIR
+    // https://github.com/thejoshwolfe/yauzl/issues/94#issuecomment-1983447854
+    const isSymlink = (mode & S_IFMT) === S_IFLNK
+    let isDir = (mode & S_IFMT) === S_IFDIR
 
     // Failsafe, borrowed from jsZip
     if (
@@ -141,10 +151,10 @@ class Extractor {
     const readStream = await promisify(this.#zipfile.openReadStream
       .bind(this.#zipfile))(entry)
 
-    if (symlink) {
+    if (isSymlink) {
       const { default: getStream } = await getStreamPromise
       const link = await getStream(readStream)
-      await fsSymlink(link, dest)
+      await symlink(link, dest)
 
       return
     }
