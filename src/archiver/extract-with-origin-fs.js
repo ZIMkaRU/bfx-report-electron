@@ -20,6 +20,10 @@ const { pipeline } = require('node:stream/promises')
 const yauzl = require('yauzl')
 const getStreamPromise = import('get-stream')
 
+const {
+  OutOfZipBoundPathError
+} = require('../errors')
+
 const openZip = promisify(yauzl.fromBuffer)
 
 class Extractor {
@@ -77,7 +81,9 @@ class Extractor {
           )
 
           if (relativeDestDir.split(path.sep).includes('..')) {
-            throw new Error(`Out of bound path "${canonicalDestDir}" found while processing file ${entry.fileName}`)
+            throw new OutOfZipBoundPathError({
+              data: { path: canonicalDestDir, file: entry.fileName }
+            })
           }
 
           await this.#extractEntry(entry)
