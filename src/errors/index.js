@@ -159,6 +159,15 @@ class OutOfZipBoundPathError extends BaseError {
   }
 }
 
+class AbsoluteUnzipDestinationPathError extends BaseError {
+  constructor (args) {
+    super(
+      args?.message ?? 'ERR_DESTINATION_DIR_OF_UNZIP_IS EXPECTED_TO_BE_ABSOLUTE',
+      args?.data
+    )
+  }
+}
+
 module.exports = {
   BaseError,
   InvalidFilePathError,
@@ -181,5 +190,6 @@ module.exports = {
   ThemeParamPassingError,
   DataValidationError,
   DataValidationSchemaDefError,
-  OutOfZipBoundPathError
+  OutOfZipBoundPathError,
+  AbsoluteUnzipDestinationPathError
 }
