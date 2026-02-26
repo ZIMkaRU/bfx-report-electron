@@ -21,7 +21,8 @@ const yauzl = require('yauzl')
 const getStreamPromise = import('get-stream')
 
 const {
-  OutOfZipBoundPathError
+  OutOfZipBoundPathError,
+  AbsoluteUnzipDestinationPathError
 } = require('../errors')
 
 const openZip = promisify(yauzl.fromBuffer)
@@ -200,7 +201,9 @@ class Extractor {
 
 module.exports = async (zipPath, opts) => {
   if (!path.isAbsolute(opts?.dir)) {
-    throw new Error('Target directory is expected to be absolute')
+    throw new AbsoluteUnzipDestinationPathError(
+      { data: { path: opts?.dir } }
+    )
   }
 
   await mkdir(opts?.dir, { recursive: true })
