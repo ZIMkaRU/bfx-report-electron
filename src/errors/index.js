@@ -150,6 +150,15 @@ class DataValidationError extends BaseError {
   }
 }
 
+class OutOfZipBoundPathError extends BaseError {
+  constructor (args) {
+    super(
+      args?.message ?? 'ERR_OUT_OF_BOUND_PATH_FOUND_WHILE_PROCESSING_FILE',
+      args?.data
+    )
+  }
+}
+
 module.exports = {
   BaseError,
   InvalidFilePathError,
@@ -171,5 +180,6 @@ module.exports = {
   TriggeringSyncAfterUpdatesError,
   ThemeParamPassingError,
   DataValidationError,
-  DataValidationSchemaDefError
+  DataValidationSchemaDefError,
+  OutOfZipBoundPathError
 }
