@@ -1,8 +1,8 @@
 'use strict'
 
-const bytesToSize = (bytes) => {
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
 
+const bytesToSize = (bytes) => {
   if (bytes <= 0) {
     return '0 Byte'
   }
