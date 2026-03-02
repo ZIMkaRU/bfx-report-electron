@@ -1,6 +1,8 @@
 'use strict'
 
-const isMac = process.platform === 'darwin'
+const {
+  IS_MAC
+} = require('../helpers/platform-identifiers')
 
 const CONJUCTION_CHARACTER = '+'
 const KEY_MODIFIERS = {
@@ -189,7 +191,7 @@ const getPlatformShortcut = (shortcut) => {
     shortcut.includes(KEY_MODIFIERS.CMD_OR_CTRL) ||
     shortcut.includes(KEY_MODIFIERS.COMMAND_OR_CONTROL)
   ) {
-    const cmdOrCtrlShortcut = isMac
+    const cmdOrCtrlShortcut = IS_MAC
       ? KEY_MODIFIERS.CMD
       : KEY_MODIFIERS.CTRL
 
