@@ -5,7 +5,6 @@ const path = require('path')
 const { URL } = require('url')
 
 const isDevEnv = process.env.NODE_ENV === 'development'
-const isMac = process.platform === 'darwin'
 
 const WINDOW_NAMES = require('./window.names')
 const wins = require('./windows')
@@ -26,7 +25,10 @@ const {
 const {
   isBfxApiStaging,
   parseEnvValToBool,
-  waitPort
+  waitPort,
+  platformIdentifiers: {
+    IS_MAC
+  }
 } = require('../helpers')
 const MenuIpcChannelHandlers = require(
   './main-renderer-ipc-bridge/menu-ipc-channel-handlers'
@@ -263,12 +265,12 @@ const _createChildWindow = async (
       // `[Bug]: Wrong main window hidden state on macOS when using 'parent' option`
       // https://github.com/electron/electron/issues/29732
       parent: (
-        isMac ||
+        IS_MAC ||
         noParent
       )
         ? null
         : wins[WINDOW_NAMES.MAIN_WINDOW],
-      alwaysOnTop: isMac,
+      alwaysOnTop: IS_MAC,
 
       ...opts
     }
@@ -296,7 +298,7 @@ const createMainWindow = async ({
   pathToUserDocuments
 }) => {
   const createMenu = require('../create-menu')
-  const titleBarOverlayOpt = isMac
+  const titleBarOverlayOpt = IS_MAC
     ? { titleBarOverlay: { height: 26 } }
     : {
         titleBarOverlay: {
@@ -346,7 +348,7 @@ const createMainWindow = async ({
 
   if (
     !showNativeTitleBar &&
-    isMac
+    IS_MAC
   ) {
     win.on('enter-full-screen', () => {
       MenuIpcChannelHandlers

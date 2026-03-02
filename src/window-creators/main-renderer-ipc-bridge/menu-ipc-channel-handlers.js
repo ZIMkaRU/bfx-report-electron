@@ -3,12 +3,14 @@
 const { BaseWindow, webContents, Menu } = require('electron')
 
 const IpcChannelHandlers = require('./ipc.channel.handlers')
+const {
+  IS_MAC
+} = require('../../helpers/platform-identifiers')
 const parseEnvValToBool = require(
   '../../helpers/parse-env-val-to-bool'
 )
 
 const wins = require('../windows')
-const isMac = process.platform === 'darwin'
 const showNativeTitleBar = parseEnvValToBool(
   process.env.SHOW_NATIVE_TITLE_BAR
 )
@@ -18,7 +20,7 @@ class MenuIpcChannelHandlers extends IpcChannelHandlers {
 
   #serializeMenu (menu) {
     if (
-      isMac ||
+      IS_MAC ||
       !Array.isArray(menu?.items) ||
       menu.items.length === 0
     ) {
@@ -88,7 +90,7 @@ class MenuIpcChannelHandlers extends IpcChannelHandlers {
     const shouldMenuBeHidden = (
       showNativeTitleBar ||
       (
-        isMac &&
+        IS_MAC &&
         wins.mainWindow?.isFullScreen()
       )
     )
