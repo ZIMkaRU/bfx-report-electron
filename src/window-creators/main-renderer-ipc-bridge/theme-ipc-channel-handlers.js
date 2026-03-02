@@ -7,7 +7,9 @@ const IpcChannelHandlers = require('./ipc.channel.handlers')
 const { getConfigsKeeperByName } = require('../../configs-keeper')
 const wins = require('../windows')
 const isMainWinAvailable = require('../../helpers/is-main-win-available')
-const isMac = process.platform === 'darwin'
+const {
+  IS_MAC
+} = require('../../helpers/platform-identifiers')
 
 class ThemeIpcChannelHandlers extends IpcChannelHandlers {
   static channelName = 'theme'
@@ -112,7 +114,7 @@ class ThemeIpcChannelHandlers extends IpcChannelHandlers {
       win.setBackgroundColor(winBgColor)
     }
 
-    if (isMac) {
+    if (IS_MAC) {
       return
     }
 
