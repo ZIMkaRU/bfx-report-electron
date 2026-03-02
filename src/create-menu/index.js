@@ -4,7 +4,6 @@ const electron = require('electron')
 const i18next = require('i18next')
 
 const { app, Menu } = electron
-const isMac = process.platform === 'darwin'
 
 const exportDB = require('../export-db')
 const importDB = require('../import-db')
@@ -24,6 +23,9 @@ const showDocs = require('../show-docs')
 const { showChangelog } = require('../changelog-manager')
 const parseEnvValToBool = require('../helpers/parse-env-val-to-bool')
 const isMainWinAvailable = require('../helpers/is-main-win-available')
+const {
+  IS_MAC
+} = require('../helpers/platform-identifiers')
 const wins = require('../window-creators/windows')
 
 const MENU_ITEM_IDS = require('./menu.item.ids')
@@ -80,7 +82,7 @@ module.exports = (params) => {
   }
 
   const menuTemplate = [
-    ...(isMac
+    ...(IS_MAC
       ? [{
           role: 'appMenu',
           label: app.name,
@@ -131,7 +133,7 @@ module.exports = (params) => {
       role: 'fileMenu',
       label: i18next.t('menu.fileSubMenu.label'),
       submenu: [
-        isMac
+        IS_MAC
           ? {
               role: 'close',
               label: i18next.t('menu.fileSubMenu.closeLabel'),
@@ -181,7 +183,7 @@ module.exports = (params) => {
           id: MENU_ITEM_IDS.PASTE_MENU_ITEM,
           accelerator: MENU_ITEM_ACCELERATORS.PASTE_MENU_ITEM
         },
-        ...(isMac
+        ...(IS_MAC
           ? [
               {
                 role: 'pasteAndMatchStyle',
@@ -300,7 +302,7 @@ module.exports = (params) => {
           role: 'toggleDevTools',
           label: i18next.t('menu.viewSubMenu.toggleDevToolsLabel'),
           id: MENU_ITEM_IDS.TOGGLE_DEV_TOOLS_MENU_ITEM,
-          accelerator: isMac
+          accelerator: IS_MAC
             ? MENU_ITEM_ACCELERATORS.MAC_TOGGLE_DEV_TOOLS_MENU_ITEM
             : MENU_ITEM_ACCELERATORS.TOGGLE_DEV_TOOLS_MENU_ITEM
         },
@@ -328,7 +330,7 @@ module.exports = (params) => {
           role: 'togglefullscreen',
           label: i18next.t('menu.viewSubMenu.togglefullscreenLabel'),
           id: MENU_ITEM_IDS.TOGGLE_FULL_SCREEN_MENU_ITEM,
-          accelerator: isMac
+          accelerator: IS_MAC
             ? MENU_ITEM_ACCELERATORS.MAC_TOGGLE_FULL_SCREEN_MENU_ITEM
             : MENU_ITEM_ACCELERATORS.TOGGLE_FULL_SCREEN_MENU_ITEM
         }
@@ -349,7 +351,7 @@ module.exports = (params) => {
           label: i18next.t('menu.windowSubMenu.zoomLabel'),
           id: MENU_ITEM_IDS.ZOOM_MENU_ITEM
         },
-        ...(isMac
+        ...(IS_MAC
           ? [
               { type: 'separator' },
               {
@@ -471,7 +473,7 @@ module.exports = (params) => {
         {
           label: i18next.t('menu.helpSubMenu.userManualLabel'),
           id: MENU_ITEM_IDS.USER_MANUAL_MENU_ITEM,
-          accelerator: isMac
+          accelerator: IS_MAC
             ? MENU_ITEM_ACCELERATORS.MAC_USER_MANUAL_MENU_ITEM
             : MENU_ITEM_ACCELERATORS.USER_MANUAL_MENU_ITEM,
           click: () => showDocs()
@@ -485,7 +487,7 @@ module.exports = (params) => {
             { propName: 'enabled', defaultVal: true }
           ])
         },
-        ...(isMac
+        ...(IS_MAC
           ? []
           : [
               { type: 'separator' },
