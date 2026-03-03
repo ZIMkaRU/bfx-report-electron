@@ -126,7 +126,13 @@ module.exports = {
   generateUpdatesFilesForAllChannels: true,
   npmRebuild: false,
   extends: null,
-  asar: false,
+  asar: true,
+  asarUnpack: [
+    '**/bfx-reports-framework/node_modules/better-sqlite3/**/*',
+    'bfx-reports-framework/worker.js',
+    'server.js',
+    'src/helpers/root-path.js'
+  ],
   productName: 'Bitfinex Report',
   artifactName: 'BitfinexReport-${version}-' + arch + '-${os}.${ext}',
   appId: 'com.bitfinex.report',

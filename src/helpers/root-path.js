@@ -1,7 +1,16 @@
 'use strict'
 
-const { app } = require('electron')
 const path = require('node:path')
+let app
+
+try {
+  app = require('electron').app
+} catch (err) {}
+
+const _nonElectronRoot = path.join(__dirname, '../..')
+const nonElectronRoot = _nonElectronRoot.endsWith('.asar.unpacked')
+  ? _nonElectronRoot.replace('.asar.unpacked', '.asar')
+  : _nonElectronRoot
 
 /*
  * Examples (for no asar it will be without `.asar` at the end):
@@ -13,14 +22,19 @@ const path = require('node:path')
  */
 const rootPath = app?.getAppPath() ??
   // for non electron env
-  path.join(__dirname, '../..')
+  nonElectronRoot
 const isAsar = rootPath.endsWith('.asar')
 const unpackedPath = isAsar
   ? rootPath.replace('.asar', '.asar.unpacked')
+  : rootPath
+const serverCwd = isAsar
+  // needs to provide real path, asar is virtual
+  ? process.resourcesPath
   : rootPath
 
 module.exports = {
   rootPath,
   isAsar,
-  unpackedPath
+  unpackedPath,
+  serverCwd
 }
