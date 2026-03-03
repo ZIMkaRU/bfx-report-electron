@@ -21,6 +21,7 @@ const waitPort = require('./wait-port')
 const getUIFontsAsCSSString = require('./get-ui-fonts-as-css-string')
 const manageConfigs = require('./manage-configs')
 const platformIdentifiers = require('./platform-identifiers')
+const envIdentifiers = require('./env-identifiers')
 
 module.exports = {
   getFreePort,
@@ -37,5 +38,6 @@ module.exports = {
   waitPort,
   getUIFontsAsCSSString,
   manageConfigs,
-  platformIdentifiers
+  platformIdentifiers,
+  envIdentifiers
 }
