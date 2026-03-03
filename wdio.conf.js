@@ -1,4 +1,5 @@
-process.env.TEST = 'true'
+// https://webdriver.io/docs/desktop-testing/electron/api/
+process.env.E2E_TEST = 'true'
 
 const {
   IS_MAC,
