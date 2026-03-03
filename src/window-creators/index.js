@@ -4,8 +4,6 @@ const { BrowserWindow, screen } = require('electron')
 const path = require('path')
 const { URL } = require('url')
 
-const isDevEnv = process.env.NODE_ENV === 'development'
-
 const WINDOW_NAMES = require('./window.names')
 const wins = require('./windows')
 const ipcs = require('../ipcs')
@@ -28,6 +26,9 @@ const {
   waitPort,
   platformIdentifiers: {
     IS_MAC
+  },
+  envIdentifiers: {
+    IS_DEV
   }
 } = require('../helpers')
 const MenuIpcChannelHandlers = require(
@@ -85,7 +86,7 @@ const _loadUI = async (params) => {
 
   if (
     !pathname &&
-    isDevEnv &&
+    IS_DEV &&
     shouldLocalhostBeUsedForLoadingUIInDevMode
   ) {
     const uiHost = 'localhost'
@@ -316,7 +317,7 @@ const createMainWindow = async ({
         ...titleBarOverlayOpt
       }
   const winProps = await _createWindow(
-    { shouldDevToolsBeShown: isDevEnv },
+    { shouldDevToolsBeShown: IS_DEV },
     titleBarOpts
   )
   const {
