@@ -45,15 +45,6 @@ function installBackendDeps {
   npm i --development --no-audit --progress=false --force
   npm ls --depth=0 1<&-
 
-  export npm_config_target_platform="$targetPlatform"
-  export npm_config_platform="$targetPlatform"
-  export npm_config_target="$ELECTRON_VER"
-  export npm_config_runtime="electron"
-  export npm_config_target_arch="$ARCH"
-  export npm_config_arch="$ARCH"
-  export npm_config_dist_url="$DIST_URL"
-  export npm_config_disturl="$DIST_URL"
-
   echo -e "\n${COLOR_BLUE}Installing the main prod deps...${COLOR_NORMAL}"
   npm i --omit=dev --include=dev --no-audit --progress=false --force
   checkNodeModulesDir "$ROOT"
@@ -76,6 +67,16 @@ function installBackendDeps {
   npm i --omit=dev --no-audit --progress=false
   checkNodeModulesDir "$WORKER_FOLDER"
   npm ls --depth=0 --omit=dev 1<&-
+  # Starting from npm v11, npm_config_xxx is no longer supported and affects the installation of binaries such as better-sqlite3
+  # https://github.com/npm/cli/issues/8353
+  # https://github.com/npm/cli/issues/8153
+  # https://github.com/WiseLibs/better-sqlite3/blob/master/package.json#L41
+  # https://github.com/WiseLibs/better-sqlite3/blob/master/docs/troubleshooting.md#electron
+  sqliteModuleName="better-sqlite3"
+  npm explore "$sqliteModuleName" -- \
+    npx --yes prebuild-install@7.1.3 --platform="$targetPlatform" --arch="$ARCH" --runtime="electron" --target="$ELECTRON_VER" || \
+    npx --yes node-gyp@12.2.0 rebuild --release --directory="node_modules/$sqliteModuleName" && \
+    npx --yes @electron/rebuild@4.0.3 --force --which-module="$sqliteModuleName" --version="$ELECTRON_VER" --arch="$ARCH" --dist-url="$DIST_URL"
 
   cd "$INSTALL_BACKEND_CURRDIR"
 }
