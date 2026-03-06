@@ -4,8 +4,6 @@ const { app } = require('electron')
 const os = require('os')
 const i18next = require('i18next')
 
-const isDevEnv = process.env.NODE_ENV === 'development'
-
 const { isENetError } = require(
   '../../bfx-reports-framework/workers/loc.api/helpers/api-errors-testers'
 )
@@ -18,6 +16,9 @@ const renderMarkdownTemplate = require('./render-markdown-template')
 const openNewGithubIssue = require('./open-new-github-issue')
 const collectLogs = require('./collect-logs')
 const getDebugInfo = require('../helpers/get-debug-info')
+const {
+  IS_DEV
+} = require('../helpers/env-identifiers')
 
 const MENU_ITEM_IDS = require('../create-menu/menu.item.ids')
 const { changeMenuItemStatesById } = require('../create-menu/utils')
@@ -176,10 +177,10 @@ const manageNewGithubIssue = async (params) => {
 
 const initLogger = () => {
   log.transports.ipc.level = false
-  log.transports.console.level = isDevEnv
+  log.transports.console.level = IS_DEV
     ? 'debug'
     : 'warn'
-  log.transports.file.level = isDevEnv
+  log.transports.file.level = IS_DEV
     ? 'info'
     : 'warn'
 

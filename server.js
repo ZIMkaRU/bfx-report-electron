@@ -22,8 +22,11 @@ const PROCESS_MESSAGES = require(path.join(rootPath,
 const PROCESS_STATES = require(path.join(rootPath,
   'bfx-reports-framework/workers/loc.api/process.message.manager/process.states'
 ))
+const { ENVS } = require(path.join(rootPath,
+  'src/helpers/env-identifiers'
+))
 
-if (!process.env.NODE_ENV) process.env.NODE_ENV = 'production'
+if (!process.env.NODE_ENV) process.env.NODE_ENV = ENVS.PROD
 process.send = process.send || (() => {})
 process.env.NODE_CONFIG_DIR = pathToExpressConfDir
 

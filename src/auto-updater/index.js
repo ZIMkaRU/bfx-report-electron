@@ -13,8 +13,6 @@ const Alert = require('electron-alert')
 const yaml = require('js-yaml')
 const i18next = require('i18next')
 
-const isMac = process.platform === 'darwin'
-
 const log = require('../error-manager/log')
 const BfxMacUpdater = require('./bfx.mac.updater')
 const wins = require('../window-creators/windows')
@@ -28,6 +26,11 @@ const {
 } = require('../modal-dialog-src/utils')
 const { rootPath } = require('../helpers/root-path')
 const parseEnvValToBool = require('../helpers/parse-env-val-to-bool')
+const {
+  IS_MAC,
+  IS_LINUX,
+  IS_WIN
+} = require('../helpers/platform-identifiers')
 const {
   WINDOW_EVENT_NAMES,
   addOnceProcEventHandler
@@ -169,7 +172,7 @@ const _fireToast = async (
     const macOffset = wins.mainWindow?.isFullScreen()
       ? 0
       : 28
-    const heightOffset = isMac ? macOffset : 40
+    const heightOffset = IS_MAC ? macOffset : 40
     const { x, y, width } = mainWindow.getContentBounds()
     const { width: alWidth } = alert.browserWindow.getContentBounds()
 
@@ -326,10 +329,10 @@ const _autoUpdaterFactory = () => {
   if (autoUpdater instanceof AppUpdater) {
     return autoUpdater
   }
-  if (process.platform === 'win32') {
+  if (IS_WIN) {
     autoUpdater = new NsisUpdater()
   }
-  if (process.platform === 'darwin') {
+  if (IS_MAC) {
     autoUpdater = new BfxMacUpdater()
 
     if (process.env.IS_AUTO_UPDATE_BEING_TESTED) {
@@ -344,7 +347,7 @@ const _autoUpdaterFactory = () => {
       })
     })
   }
-  if (process.platform === 'linux') {
+  if (IS_LINUX) {
     autoUpdater = (
       process.env.APPIMAGE ||
       process.env.IS_AUTO_UPDATE_BEING_TESTED

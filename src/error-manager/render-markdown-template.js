@@ -3,6 +3,9 @@
 const fs = require('fs')
 const path = require('path')
 
+const {
+  IS_WIN
+} = require('../helpers/platform-identifiers')
 const truncateLog = require('./truncate-log')
 const getNewGithubIssueUrl = require('./get-new-github-issue-url')
 
@@ -22,7 +25,7 @@ const placeholderPattern = /\$\{[a-zA-Z0-9]+\}/g
 // But there is a restriction is max 2081 characters on windows
 // https://github.com/electron/electron/blob/main/docs/api/shell.md#shellopenexternalurl-options
 // https://github.com/electron/electron/issues/12416#issuecomment-376596073
-const maxIssueBytes = process.platform === 'win32'
+const maxIssueBytes = IS_WIN
   ? 2080
   : 8150
 

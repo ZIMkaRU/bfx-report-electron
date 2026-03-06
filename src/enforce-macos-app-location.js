@@ -5,6 +5,13 @@ const i18next = require('i18next')
 
 const productName = require('./helpers/product-name')
 const {
+  IS_MAC
+} = require('./helpers/platform-identifiers')
+const {
+  IS_DEV,
+  IS_TEST
+} = require('./helpers/env-identifiers')
+const {
   showLoadingWindow,
   hideLoadingWindow
 } = require('./window-creators/change-loading-win-visibility-state')
@@ -12,9 +19,9 @@ const WINDOW_NAMES = require('./window-creators/window.names')
 
 module.exports = async () => {
   if (
-    process.env.NODE_ENV === 'test' ||
-    process.env.NODE_ENV === 'development' ||
-    process.platform !== 'darwin'
+    IS_DEV ||
+    IS_TEST ||
+    !IS_MAC
   ) {
     return
   }

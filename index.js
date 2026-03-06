@@ -26,9 +26,10 @@ app.allowRendererProcessReuse = true
 require('./src/i18next')
   .initI18next()
 
-const isTestEnv = process.env.NODE_ENV === 'test'
-
 const productName = require('./src/helpers/product-name')
+const {
+  IS_E2E_TEST
+} = require('./src/helpers/env-identifiers')
 app.setName(productName)
 
 require('./src/error-manager')
@@ -44,7 +45,7 @@ if (shouldQuit) {
 } else {
   ;(async () => {
     try {
-      if (isTestEnv) {
+      if (IS_E2E_TEST) {
         require('wdio-electron-service/main')
       }
 

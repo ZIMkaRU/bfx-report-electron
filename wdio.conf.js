@@ -1,13 +1,20 @@
-process.env.TEST = 'true'
+// https://webdriver.io/docs/desktop-testing/electron/api/
+process.env.E2E_TEST = 'true'
+
+const {
+  IS_MAC,
+  IS_LINUX,
+  IS_WIN
+} = require('./src/helpers/platform-identifiers')
 
 const getAppBinaryPath = () => {
-  if (process.platform === 'win32') {
+  if (IS_WIN) {
     return './dist/win-unpacked/Bitfinex Report.exe'
   }
-  if (process.platform === 'darwin') {
+  if (IS_MAC) {
     return './dist/mac/Bitfinex Report.app/Contents/MacOS/Bitfinex Report'
   }
-  if (process.platform === 'linux') {
+  if (IS_LINUX) {
     return './dist/linux-unpacked/app'
   }
 }
