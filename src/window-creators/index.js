@@ -127,43 +127,26 @@ const _createWindow = async (
     didFinishLoadHook,
     shouldDevToolsBeShown
   } = params ?? {}
-
-  const point = screen.getCursorScreenPoint()
-  const {
-    bounds,
-    workAreaSize
-  } = screen.getDisplayNearestPoint(point)
-  const {
-    width: defaultWidth,
-    height: defaultHeight
-  } = workAreaSize
   const isMainWindow = winName === WINDOW_NAMES.MAIN_WINDOW
+
   const {
-    width = defaultWidth,
-    height = defaultHeight,
-    x,
-    y,
-    isMaximized,
-    isFullScreen,
-    manage
-  } = isMainWindow
-    ? windowStateKeeper({
-      defaultWidth,
-      defaultHeight
-    })
-    : {}
+    bounds: {
+      x: defaultX,
+      y: defaultY
+    },
+    workAreaSize: {
+      width: defaultWidth,
+      height: defaultHeight
+    }
+  } = screen.getPrimaryDisplay()
   const props = {
     autoHideMenuBar: true,
-    width,
-    height,
+    width: defaultWidth,
+    height: defaultHeight,
     minWidth: 1000,
     minHeight: 650,
-    x: !x
-      ? bounds.x
-      : x,
-    y: !y
-      ? bounds.y
-      : y,
+    x: defaultX,
+    y: defaultY,
     icon: path.join(__dirname, '../../build/icons/512x512.png'),
     backgroundColor: ThemeIpcChannelHandlers.getWindowBackgroundColor(),
     show: false,
@@ -176,6 +159,35 @@ const _createWindow = async (
   }
 
   wins[winName] = new BrowserWindow(props)
+
+  let manage = null
+  let isMaximized = false
+  let isFullScreen = false
+
+  if (isMainWindow) {
+    const windowState = windowStateKeeper({
+      defaultWidth,
+      defaultHeight
+    })
+    manage = windowState?.manage
+    isMaximized = windowState?.isMaximized
+    isFullScreen = windowState?.isFullScreen
+    const {
+      width,
+      height,
+      x,
+      y
+    } = windowState ?? {}
+
+    wins[winName].setBounds({ x, y, width, height })
+    wins[winName].setFullScreen(isFullScreen)
+
+    if (isMaximized) {
+      wins[winName].maximize()
+    } else {
+      wins[winName].unmaximize()
+    }
+  }
 
   wins[winName].on('closed', () => {
     wins[winName] = null
@@ -214,8 +226,8 @@ const _createWindow = async (
   }
 
   const res = {
-    isMaximized,
-    isFullScreen,
+    isMaximized: isMaximized ?? wins[winName].isMaximized(),
+    isFullScreen: isFullScreen ?? wins[winName].isFullScreen(),
     isMainWindow,
     manage,
     win: wins[winName]
