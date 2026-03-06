@@ -4,16 +4,12 @@ const { screen } = require('electron')
 
 const { getConfigsKeeperByName } = require('../configs-keeper')
 
-module.exports = (options) => {
+module.exports = () => {
   let state = null
   let winRef = null
   let stateChangeTimer = null
 
   const eventHandlingDelay = 100
-  const config = {
-    maximize: true,
-    ...options
-  }
 
   const isNormal = (win) => {
     return !win.isMaximized() &&
@@ -25,19 +21,34 @@ module.exports = (options) => {
     return state &&
       Number.isInteger(state.x) &&
       Number.isInteger(state.y) &&
-      Number.isInteger(state.width) && state.width > 0 &&
-      Number.isInteger(state.height) && state.height > 0
+      Number.isInteger(state.width) && state.width > 400 &&
+      Number.isInteger(state.height) && state.height > 400
   }
 
   const resetStateToDefault = () => {
+    /**
+     * screen.getCursorScreenPoint() segfaults under Wayland
+     * if called before a BrowserWindow is created
+     * https://github.com/electron/electron/issues/41559
+     */
     const point = screen.getCursorScreenPoint()
     const displayBounds = screen.getDisplayNearestPoint(point)
+    const {
+      bounds: {
+        x: defaultX,
+        y: defaultY
+      },
+      workAreaSize: {
+        width: defaultWidth,
+        height: defaultHeight
+      }
+    } = displayBounds ?? {}
 
     state = {
-      width: config.defaultWidth || 800,
-      height: config.defaultHeight || 600,
-      x: 0,
-      y: 0,
+      width: defaultWidth ?? 800,
+      height: defaultHeight ?? 600,
+      x: defaultX ?? 0,
+      y: defaultY ?? 0,
       displayBounds
     }
   }
@@ -73,7 +84,7 @@ module.exports = (options) => {
     )
 
     if (!isValid) {
-      state = null
+      resetStateToDefault()
 
       return
     }
@@ -91,6 +102,13 @@ module.exports = (options) => {
     }
 
     try {
+      /**
+       * On Wayland, `win.getBounds()` method returns
+       * `{ x: 0, y: 0, ... }` as introspecting or programmatically
+       * changing the global window coordinates is prohibited
+       * https://github.com/electron/electron/issues/40886
+       * https://github.com/electron/electron/pull/49632
+       */
       const winBounds = win.getBounds()
 
       if (isNormal(win)) {
@@ -153,12 +171,6 @@ module.exports = (options) => {
     .getConfigByName('windowState')
 
   validateState()
-
-  state = {
-    width: config.defaultWidth || 800,
-    height: config.defaultHeight || 600,
-    ...state
-  }
 
   return {
     get x () { return state.x },
