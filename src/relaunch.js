@@ -1,10 +1,14 @@
 'use strict'
 
-const electron = require('electron')
+const { app } = require('electron')
 
-module.exports = () => {
+module.exports = (args) => {
   const options = {
-    args: process.argv.slice(1).concat(['--relaunch'])
+    args: [
+      ...process.argv.slice(1),
+      ...args,
+      '--relaunch'
+    ]
   }
 
   if (process.env.APPIMAGE) {
@@ -12,6 +16,6 @@ module.exports = () => {
     options.args.unshift('--appimage-extract-and-run')
   }
 
-  electron.app.relaunch(options)
-  electron.app.exit(0)
+  app.relaunch(options)
+  app.exit(0)
 }

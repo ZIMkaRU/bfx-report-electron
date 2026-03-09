@@ -1,31 +1,29 @@
 'use strict'
 
-const { app } = require('electron')
-
 const isWaylandSession = require('./is-wayland-session')
-const wasX11Forced = process.env.ELECTRON_FORCE_X11
+const relaunch = require('../relaunch')
+
+const x11Flag = '--ozone-platform=x11'
 
 module.exports = () => {
+  const hasX11Flag = process.argv.slice(1).some((item) => {
+    return (
+      typeof item === 'string' &&
+      item.includes(x11Flag)
+    )
+  })
+
   if (
     !isWaylandSession() ||
-    wasX11Forced
+    hasX11Flag
   ) {
     return false
   }
 
-  app.relaunch({
-    args: [
-      ...process.argv.slice(1),
-      '--ozone-platform=x11',
-      '--disable-features=WaylandWindowDecorations'
-    ],
-    env: {
-      ...process.env,
-      ELECTRON_FORCE_X11: 1
-    }
-  })
-
-  app.exit(0)
+  relaunch([
+    x11Flag,
+    '--disable-features=WaylandWindowDecorations'
+  ])
 
   return true
 }
