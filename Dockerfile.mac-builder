@@ -1,4 +1,4 @@
-FROM electronuserland/builder:24
+FROM electronuserland/builder:base-03.25
 
 ARG NODE_VERSION="24.14.0"
 
