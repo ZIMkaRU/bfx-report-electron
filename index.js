@@ -20,8 +20,21 @@ process.traceDeprecation = true
 process.traceProcessWarnings = true
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true
 
+const { IS_LINUX } = require('./src/helpers/platform-identifiers')
+const isX11Forced = require('./src/helpers/force-x11-on-wayland')()
+
 const { app } = require('electron')
 app.allowRendererProcessReuse = true
+
+if (IS_LINUX) {
+  app.disableHardwareAcceleration()
+  app.commandLine.appendSwitch('disable-gpu-compositing')
+  app.commandLine.appendSwitch('in-process-gpu')
+  app.commandLine.appendSwitch(
+    'enable-features',
+    'UseOzonePlatform'
+  )
+}
 
 require('./src/i18next')
   .initI18next()
@@ -40,8 +53,11 @@ const makeSingleInstance = require('./src/make-single-instance')
 
 const shouldQuit = makeSingleInstance()
 
-if (shouldQuit) {
-  app.quit()
+if (
+  shouldQuit ||
+  isX11Forced
+) {
+  if (!isX11Forced) app.quit()
 } else {
   ;(async () => {
     try {
