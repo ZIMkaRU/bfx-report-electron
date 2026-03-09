@@ -29,7 +29,8 @@ const {
   },
   envIdentifiers: {
     IS_DEV
-  }
+  },
+  isWaylandSession
 } = require('../helpers')
 const MenuIpcChannelHandlers = require(
   './main-renderer-ipc-bridge/menu-ipc-channel-handlers'
@@ -61,22 +62,6 @@ const pathToAppInitErrorLayout = path
   .join(pathToLayouts, 'app-init-error.html')
 const pathToModalLayout = path
   .join(pathToLayouts, 'modal-window.html')
-
-/*
- * Returns true if the current session is running on Wayland
- * Checks both XDG_SESSION_TYPE and WAYLAND_DISPLAY to handle
- * cases where only one is set (e.g., some container environments)
- *
- * This should be used instead of `process.platform === 'linux'` when
- * gating Wayland-specific workarounds, so X11 users are not affected
- */
-const _isWaylandSession = () => (
-  process.platform === 'linux' &&
-  (
-    process.env.XDG_SESSION_TYPE === 'wayland' ||
-    !!process.env.WAYLAND_DISPLAY
-  )
-)
 
 const _getFileURL = (params) => {
   const {
@@ -205,7 +190,7 @@ const _createWindow = async (
    * The `ready-to-show` event doesn't always fire on wayland
    * https://github.com/electron/electron/issues/48859
    */
-  const isReadyToShowPromise = _isWaylandSession()
+  const isReadyToShowPromise = isWaylandSession()
     ? null
     : new Promise((resolve) => {
       wins[winName].once('ready-to-show', resolve)
