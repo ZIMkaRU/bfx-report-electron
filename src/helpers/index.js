@@ -23,6 +23,7 @@ const manageConfigs = require('./manage-configs')
 const platformIdentifiers = require('./platform-identifiers')
 const envIdentifiers = require('./env-identifiers')
 const isWaylandSession = require('./is-wayland-session')
+const forceX11OnWayland = require('./force-x11-on-wayland')
 
 module.exports = {
   getFreePort,
@@ -41,5 +42,6 @@ module.exports = {
   manageConfigs,
   platformIdentifiers,
   envIdentifiers,
-  isWaylandSession
+  isWaylandSession,
+  forceX11OnWayland
 }
