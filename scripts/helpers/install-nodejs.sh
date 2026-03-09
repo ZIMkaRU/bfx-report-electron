@@ -17,14 +17,19 @@ version="${1:-"24.14.0"}"
 
 echo -e "\n${COLOR_BLUE}Installing the NodeJS v$version...${COLOR_NORMAL}"
 
+rm -rf /usr/local/bin/node
+rm -rf /usr/local/bin/npm
+rm -rf /usr/local/bin/npx
+rm -rf /usr/local/lib/node_modules
+
 # This package is used for snapcraft and
 # we should not clear apt list - to avoid apt-get update during snap build
-curl -L https://nodejs.org/dist/v$version/node-v$version-linux-x64.tar.gz | tar xz -C /usr/local --strip-components=1
+curl -L https://nodejs.org/dist/v$version/node-v$version-linux-x64.tar.gz | \
+  tar xz -C /usr/local --strip-components=1
 
-unlink /usr/local/CHANGELOG.md
-unlink /usr/local/LICENSE
-unlink /usr/local/README.md
+rm -f /usr/local/{CHANGELOG.md,LICENSE,README.md}
 
-npm cache clear --force 2>/dev/null
+npm cache clean --force
+npm cache npx rm --force
 
 echo -e "\n${COLOR_GREEN}The NodeJS has been installed successful${COLOR_NORMAL}"
