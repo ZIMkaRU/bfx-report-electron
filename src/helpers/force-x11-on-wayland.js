@@ -1,5 +1,11 @@
 'use strict'
 
+const { app } = require('electron')
+
+const isPackagedAppImage = (
+  process.env.APPIMAGE &&
+  app.isPackaged
+)
 const isWaylandSession = require('./is-wayland-session')
 const relaunch = require('../relaunch')
 
@@ -14,6 +20,7 @@ module.exports = () => {
   })
 
   if (
+    !isPackagedAppImage ||
     !isWaylandSession() ||
     hasX11Flag
   ) {
