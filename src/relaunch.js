@@ -7,7 +7,7 @@ module.exports = (args) => {
   const options = {
     args: [
       ...process.argv.slice(1),
-      ...args,
+      ...(args ?? []),
       '--relaunch'
     ]
   }
