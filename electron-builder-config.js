@@ -159,6 +159,10 @@ module.exports = {
       'dir',
       'AppImage',
       'deb'
+    ],
+    executableArgs: [
+      '--ozone-platform=x11',
+      '--disable-features=WaylandWindowDecorations'
     ]
   },
   win: {
