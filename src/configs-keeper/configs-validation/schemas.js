@@ -67,16 +67,16 @@ const MAIN = {
         width: {
           type: 'integer',
           minimum: 400,
-          default: 800
+          default: 400
         },
         height: {
           type: 'integer',
           minimum: 400,
-          default: 600
+          default: 400
         },
         isMaximized: {
           type: 'boolean',
-          default: true
+          default: false
         },
         isFullScreen: {
           type: 'boolean',
@@ -100,12 +100,12 @@ const MAIN = {
             width: {
               type: 'integer',
               minimum: 400,
-              default: 800
+              default: 400
             },
             height: {
               type: 'integer',
               minimum: 400,
-              default: 600
+              default: 400
             }
           }
         }

@@ -22,6 +22,8 @@ const getUIFontsAsCSSString = require('./get-ui-fonts-as-css-string')
 const manageConfigs = require('./manage-configs')
 const platformIdentifiers = require('./platform-identifiers')
 const envIdentifiers = require('./env-identifiers')
+const isWaylandSession = require('./is-wayland-session')
+const forceX11OnWayland = require('./force-x11-on-wayland')
 
 module.exports = {
   getFreePort,
@@ -39,5 +41,7 @@ module.exports = {
   getUIFontsAsCSSString,
   manageConfigs,
   platformIdentifiers,
-  envIdentifiers
+  envIdentifiers,
+  isWaylandSession,
+  forceX11OnWayland
 }
