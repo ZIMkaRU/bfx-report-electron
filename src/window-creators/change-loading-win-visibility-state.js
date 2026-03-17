@@ -5,6 +5,9 @@ const { BrowserWindow } = require('electron')
 const wins = require('./windows')
 const appStates = require('../app-states')
 const {
+  IS_MAC
+} = require('../helpers/platform-identifiers')
+const {
   hideWindow,
   showWindow,
   centerWindow
@@ -36,7 +39,7 @@ const setParentToLoadingWindow = (opts) => {
   // TODO: The reason for it related to the electronjs issue:
   // `[Bug]: Wrong main window hidden state on macOS when using 'parent' option`
   // https://github.com/electron/electron/issues/29732
-  if (process.platform === 'darwin') {
+  if (IS_MAC) {
     return
   }
 

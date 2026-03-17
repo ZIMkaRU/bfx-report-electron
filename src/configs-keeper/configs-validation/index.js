@@ -7,8 +7,9 @@ const cronValidate = require('cron-validate')
 const cron = cronValidate.default ?? cronValidate
 const { validateStrict } = require('compare-versions')
 
-const isDevEnv = process.env.NODE_ENV === 'development'
-
+const {
+  IS_DEV
+} = require('../../helpers/env-identifiers')
 const SCHEMA_IDS = require('./schema.ids')
 const schemas = require('./schemas')
 const {
@@ -34,7 +35,7 @@ const ajv = new Ajv({
   allErrors: true,
   messages: true,
   formats: { reserved: true },
-  verbose: isDevEnv
+  verbose: IS_DEV
 })
 addFormats(ajv)
 ajv.addFormat('abs-path', {

@@ -41,7 +41,10 @@ const {
   deserializeError,
   getFreePort,
   initIpcChannelHandlers,
-  manageConfigs
+  manageConfigs,
+  platformIdentifiers: {
+    IS_WIN
+  }
 } = require('./helpers')
 const getUserDataPath = require('./helpers/get-user-data-path')
 const {
@@ -123,7 +126,7 @@ module.exports = async () => {
     await enforceMacOSAppLocation()
 
     // https://www.electronjs.org/docs/latest/tutorial/notifications#windows
-    if (process.platform === 'win32') {
+    if (IS_WIN) {
       app.setAppUserModelId(app.name)
     }
 

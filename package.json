@@ -1,12 +1,12 @@
 {
   "name": "bfx-report-electron",
-  "version": "4.41.1",
+  "version": "4.42.0",
   "repository": "https://github.com/bitfinexcom/bfx-report-electron",
   "description": "Reporting tool",
   "author": "bitfinex.com",
   "main": "index.js",
-  "engine": {
-    "node": ">=22.19.0"
+  "engines": {
+    "node": ">=24.14.0"
   },
   "license": "Apache-2.0",
   "dependencies": {
@@ -21,9 +21,9 @@
     "cron-validate": "1.5.3",
     "electron-alert": "0.1.20",
     "electron-log": "4.4.8",
-    "electron-updater": "6.7.0",
-    "extract-zip": "2.0.1",
+    "electron-updater": "6.8.3",
     "get-port": "7.0.0",
+    "get-stream": "9.0.1",
     "github-markdown-css": "5.8.1",
     "grenache-grape": "git+https://github.com/bitfinexcom/grenache-grape.git",
     "i18next": "23.15.1",
@@ -45,8 +45,8 @@
     "concurrently": "9.0.1",
     "cross-env": "7.0.3",
     "dotenv": "16.3.1",
-    "electron": "38.1.2",
-    "electron-builder": "26.7.0",
+    "electron": "40.8.0",
+    "electron-builder": "26.8.1",
     "eslint": "8.57.0",
     "eslint-config-standard": "17.1.0",
     "mocha": "11.1.0",
@@ -62,7 +62,7 @@
     ]
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=development DEBUG=* electron .",
+    "start": "cross-env NODE_ENV=development DEBUG=* electron . --ozone-platform=x11",
     "startWithUIOnPort": "concurrently -ki -c green,blue -n UI,ELECTRON \"npm run startUI\" \"cross-env NODE_ENV=development DEBUG=* SHOULD_LOCALHOST_BE_USED_FOR_LOADING_UI_IN_DEV_MODE=1 electron .\"",
     "test": "standard && npm run unit",
     "unit": "cross-env NODE_ENV=test mocha './src/**/__test__/*.spec.js' --config .mocharc.json",

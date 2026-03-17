@@ -4,6 +4,9 @@ const path = require('path')
 const os = require('os')
 const v8 = require('v8')
 
+const {
+  IS_LINUX
+} = require('../helpers/platform-identifiers')
 const { getAppUpdateConfigSync } = require('../auto-updater')
 
 const { rootPath } = require('./root-path')
@@ -94,7 +97,7 @@ module.exports = (eol = os.EOL) => {
   const osArch = os.arch()
   const osRelease = os.release()
   const _osVersion = os.version()
-  const osVersion = process.platform === 'linux'
+  const osVersion = IS_LINUX
     ? _osVersion.replace(/^#\w+[~-]/, '')
     : _osVersion
   const cpus = os.cpus()
@@ -123,7 +126,7 @@ module.exports = (eol = os.EOL) => {
   const isAppImageUsedStr = isAppImageUsed
     ? 'Yes'
     : 'No'
-  const linuxReleaseType = process.platform === 'linux'
+  const linuxReleaseType = IS_LINUX
     ? `${eol}Is AppImage used: ${isAppImageUsedStr}`
     : ''
 

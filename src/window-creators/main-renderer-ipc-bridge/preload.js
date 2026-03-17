@@ -1,7 +1,11 @@
 'use strict'
 
 const { contextBridge, ipcRenderer } = require('electron')
-const isTestEnv = process.env.NODE_ENV === 'test'
+
+const IS_E2E_TEST = (
+  process.env.E2E_TEST === 'true' ||
+  process.env.E2E_TEST === 1
+)
 
 const CHANNEL_NAMES = {
   GENERAL: 'general',
@@ -125,7 +129,7 @@ for (const [channelName, eventMethodNames] of EVENT_CHANNEL_MAP) {
   }
 }
 
-if (isTestEnv) {
+if (IS_E2E_TEST) {
   require('wdio-electron-service/preload')
 }
 

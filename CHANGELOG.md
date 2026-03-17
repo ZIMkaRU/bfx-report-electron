@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.42.0] - 2026-03-18
+
+### Changed
+
+- Updated the `config` dep up to `v4` to support nodejs `v24` for electronjs update to `v40`. PR: [bfx-report-express#57](https://github.com/bitfinexcom/bfx-report-express/pull/57)
+- Updated `better-sqlite3` dep up to `v12.4.1` to have the last prebuilt binaries and be able to launch the driver under electron `v40` with nodejs `v24`. PR: [bfx-facs-db-better-sqlite#15](https://github.com/bitfinexcom/bfx-facs-db-better-sqlite/pull/15)
+- Moved platform and env identifiers into a separate module for unification. PR: [bfx-report-electron#600](https://github.com/bitfinexcom/bfx-report-electron/pull/600)
+
+### Fixed
+
+- Updated `electronjs` version up to `v40.8.0` as support for `v38` was dropped on Mar 10th. Fixed some issues related to new Chromium updates and specific features of working in the Wayland env on Linux. PR: [bfx-report-electron#602](https://github.com/bitfinexcom/bfx-report-electron/pull/602)
+
+### Security
+
+- Updated dependencies and fixed vulnerabilities. PR: [bfx-report-ui#1044](https://github.com/bitfinexcom/bfx-report-ui/pull/1044)
+- Migrated the BFX deps to the new `@bitfinex` namespace and fixed dep vulnerabilities. PR: [bfx-report-express#58](https://github.com/bitfinexcom/bfx-report-express/pull/58)
+
 ## [4.41.1] - 2026-02-25
 
 ### Changed

@@ -6,33 +6,41 @@ const path = require('path')
 const EventEmitter = require('events')
 const { grapes: createGrapes } = require('bfx-svc-test-helper')
 
-const root = path.join(__dirname, 'bfx-reports-framework')
-const expressRoot = path.join(__dirname, 'bfx-report-ui/bfx-report-express')
+const { rootPath, unpackedPath } = require('./src/helpers/root-path')
+
+const root = path.join(rootPath, 'bfx-reports-framework')
+const expressRoot = path.join(rootPath, 'bfx-report-ui/bfx-report-express')
 const pathToExpressConfDir = path.join(expressRoot, 'config')
 const pathToConfDir = path.join(root, 'config')
 const pathToConfFacs = path.join(pathToConfDir, 'facs')
 const pathToConfFacsGrc = path.join(pathToConfFacs, 'grc.config.json')
 const confFacsGrc = require(pathToConfFacsGrc)
 
-const PROCESS_MESSAGES = require(
-  './bfx-reports-framework/workers/loc.api/process.message.manager/process.messages'
-)
-const PROCESS_STATES = require(
-  './bfx-reports-framework/workers/loc.api/process.message.manager/process.states'
-)
+const PROCESS_MESSAGES = require(path.join(rootPath,
+  'bfx-reports-framework/workers/loc.api/process.message.manager/process.messages'
+))
+const PROCESS_STATES = require(path.join(rootPath,
+  'bfx-reports-framework/workers/loc.api/process.message.manager/process.states'
+))
+const { ENVS } = require(path.join(rootPath,
+  'src/helpers/env-identifiers'
+))
 
-if (!process.env.NODE_ENV) process.env.NODE_ENV = 'production'
+if (!process.env.NODE_ENV) process.env.NODE_ENV = ENVS.PROD
 process.send = process.send || (() => {})
 process.env.NODE_CONFIG_DIR = pathToExpressConfDir
 
-const env = { ...process.env }
-const { serializeError } = require('./src/helpers/utils')
+const env = {
+  ...process.env,
+  NODE_PATH: path.join(root, 'node_modules')
+}
+const { serializeError } = require(path.join(rootPath, 'src/helpers/utils'))
 
 const {
   WrongPathToUserDataError,
   WrongPathToUserReportFilesError,
   WrongSecretKeyError
-} = require('./src/errors')
+} = require(path.join(rootPath, 'src/errors'))
 
 const emitter = new EventEmitter()
 
@@ -159,9 +167,12 @@ const allowedProcessStatesSet = _getAllowedStatesSet({
     })
     await grapes.start()
 
-    const modulePath = path.join(root, 'worker.js')
+    const modulePath = path.join(
+      unpackedPath,
+      'bfx-reports-framework/worker.js')
 
     const ipc = fork(modulePath, [
+      `--serviceRoot=${root}`,
       `--env=${process.env.NODE_ENV}`,
       '--wtype=wrk-report-framework-api',
       `--apiPort=${workerApiPort}`,

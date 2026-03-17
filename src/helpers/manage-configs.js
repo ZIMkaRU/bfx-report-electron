@@ -2,7 +2,9 @@
 
 const path = require('node:path')
 
-const isMac = process.platform === 'darwin'
+const {
+  IS_MAC
+} = require('./platform-identifiers')
 const { REPORT_FILES_PATH_VERSION } = require('../const')
 
 const {
@@ -38,7 +40,7 @@ module.exports = (params) => {
     pathToUserDownloads
   } = params ?? {}
 
-  const pathToUserReportFiles = isMac
+  const pathToUserReportFiles = IS_MAC
     ? pathToUserDownloads
     : path.join(
       pathToUserDocuments,

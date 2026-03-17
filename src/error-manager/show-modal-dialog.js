@@ -12,6 +12,9 @@ const spawn = require('../helpers/spawn')
 const isMainWinAvailable = require(
   '../helpers/is-main-win-available'
 )
+const {
+  IS_LINUX
+} = require('../helpers/platform-identifiers')
 
 const converter = new Converter({
   tables: true,
@@ -91,7 +94,7 @@ module.exports = async (params) => {
   // If called before the app ready event on Linux,
   // the message will be emitted to stderr,
   // and no GUI dialog will appear
-  if (process.platform !== 'linux') {
+  if (!IS_LINUX) {
     dialog.showErrorBox(
       errBoxTitle,
       errBoxDescription

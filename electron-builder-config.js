@@ -14,6 +14,9 @@ const exec = promisify(require('child_process').exec)
 const parseEnvValToBool = require(
   './src/helpers/parse-env-val-to-bool'
 )
+const {
+  IS_MAC
+} = require('./src/helpers/platform-identifiers')
 
 const electronEnvVars = {
   REPO_OWNER: 'bitfinexcom'
@@ -76,7 +79,7 @@ const isNotarize = parseEnvValToBool(process.env.NOTARIZE)
 const arch = process.env.ARCH ?? 'x64'
 
 // DMG can be built only on MacOS
-const macSpecificTargets = process.platform === 'darwin'
+const macSpecificTargets = IS_MAC
   ? ['dmg', 'zip']
   : []
 
@@ -126,7 +129,13 @@ module.exports = {
   generateUpdatesFilesForAllChannels: true,
   npmRebuild: false,
   extends: null,
-  asar: false,
+  asar: true,
+  asarUnpack: [
+    '**/bfx-reports-framework/node_modules/better-sqlite3/**/*',
+    'bfx-reports-framework/worker.js',
+    'server.js',
+    'src/helpers/root-path.js'
+  ],
   productName: 'Bitfinex Report',
   artifactName: 'BitfinexReport-${version}-' + arch + '-${os}.${ext}',
   appId: 'com.bitfinex.report',
@@ -150,6 +159,10 @@ module.exports = {
       'dir',
       'AppImage',
       'deb'
+    ],
+    executableArgs: [
+      '--ozone-platform=x11',
+      '--disable-features=WaylandWindowDecorations'
     ]
   },
   win: {
@@ -169,7 +182,7 @@ module.exports = {
     minimumSystemVersion: '11',
     darkModeSupport: true,
     notarize: !!(
-      process.platform === 'darwin' &&
+      IS_MAC &&
       isNotarize
     ),
     target: [
@@ -299,7 +312,7 @@ module.exports = {
 
         if (
           // Outside darwin zip release can't be built successfully
-          process.platform !== 'darwin' &&
+          !IS_MAC &&
           targetPlatform === 'mac' &&
           targetName === 'zip'
         ) {
