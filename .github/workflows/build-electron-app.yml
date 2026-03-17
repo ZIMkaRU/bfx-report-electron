@@ -241,7 +241,7 @@ jobs:
         id: changelog
         run: |
           VERSION=${{ steps.version.outputs.version }}
-          CONTENT=$(awk "/## \\[$VERSION\\]/ {flag=1; next} /## \\[/ {flag=0} flag" CHANGELOG.md)
+          CONTENT=$(sed -n "/## \\[$VERSION\\]/,/## \\[/p" CHANGELOG.md | sed '$d')
 
           if [ -z "$CONTENT" ]; then
             CONTENT="No changelog entry for version $VERSION"
