@@ -1,5 +1,4 @@
-// https://webdriver.io/docs/desktop-testing/electron/api/
-process.env.E2E_TEST = 'true'
+const path = require('node:path')
 
 const {
   IS_MAC,
@@ -9,13 +8,13 @@ const {
 
 const getAppBinaryPath = () => {
   if (IS_WIN) {
-    return './dist/win-unpacked/Bitfinex Report.exe'
+    return path.resolve('./dist/win-unpacked/Bitfinex Report.exe')
   }
   if (IS_MAC) {
-    return './dist/mac/Bitfinex Report.app/Contents/MacOS/Bitfinex Report'
+    return path.resolve('./dist/mac/Bitfinex Report.app/Contents/MacOS/Bitfinex Report')
   }
   if (IS_LINUX) {
-    return './dist/linux-unpacked/app'
+    return path.resolve('./dist/linux-unpacked/app')
   }
 }
 
@@ -65,7 +64,7 @@ exports.config = {
   // and 30 processes will get spawned. The property handles how many capabilities
   // from the same test should run tests.
   //
-  maxInstances: 10,
+  maxInstances: 1,
   //
   // If you have trouble getting all important capabilities together, check out the
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
@@ -79,7 +78,18 @@ exports.config = {
       appBinaryPath: getAppBinaryPath(),
 
       // custom application args
-      appArgs: []
+      appArgs: [
+        '--no-sandbox',
+        '--disable-gpu',
+        '--disable-dev-shm-usage',
+        '--remote-debugging-port=9222',
+        '--headless=new',
+        '--disable-features=VizDisplayCompositor',
+        ...(IS_LINUX ? ['--ozone-platform=x11'] : [])
+      ]
+    },
+    'wdio:chromedriverOptions': {
+      binary: path.resolve('./node_modules/electron-chromedriver/bin/chromedriver')
     }
   }],
 

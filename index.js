@@ -40,9 +40,6 @@ require('./src/i18next')
   .initI18next()
 
 const productName = require('./src/helpers/product-name')
-const {
-  IS_E2E_TEST
-} = require('./src/helpers/env-identifiers')
 app.setName(productName)
 
 require('./src/error-manager')
@@ -61,10 +58,6 @@ if (
 } else {
   ;(async () => {
     try {
-      if (IS_E2E_TEST) {
-        require('wdio-electron-service/main')
-      }
-
       await initializeApp()
     } catch (err) {
       console.error(err)

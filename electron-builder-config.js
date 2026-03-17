@@ -240,16 +240,6 @@ module.exports = {
       to: 'bfx-report-ui/bfx-report-express/node_modules',
       filter: nodeModulesFilter
     },
-    {
-      from: 'node_modules/wdio-electron-service',
-      to: 'node_modules/wdio-electron-service',
-      filter: nodeModulesFilter
-    },
-    {
-      from: 'node_modules/wdio-electron-service/node_modules',
-      to: 'node_modules/wdio-electron-service/node_modules',
-      filter: nodeModulesFilter
-    },
     ...getNodeModulesSubSources('bfx-reports-framework'),
     ...getNodeModulesSubSources('bfx-report-ui/bfx-report-express')
   ],
