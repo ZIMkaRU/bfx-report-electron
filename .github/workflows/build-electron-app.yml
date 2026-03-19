@@ -251,7 +251,7 @@ jobs:
           echo "$CONTENT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
       - name: Update matching draft release
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           VERSION: ${{ steps.version.outputs.version }}
           CONTENT: ${{ steps.changelog.outputs.content }}
