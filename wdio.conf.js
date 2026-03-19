@@ -127,11 +127,11 @@ exports.config = {
   baseUrl: '',
   //
   // Default timeout for all waitFor* commands.
-  waitforTimeout: 10000,
+  waitforTimeout: 20_000,
   //
   // Default timeout in milliseconds for request
   // if browser driver or grid doesn't send response
-  connectionRetryTimeout: 120000,
+  connectionRetryTimeout: 5 * 60_000,
   //
   // Default request retries count
   connectionRetryCount: 3,
