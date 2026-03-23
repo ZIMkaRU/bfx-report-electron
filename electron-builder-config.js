@@ -177,7 +177,7 @@ module.exports = {
     hardenedRuntime: true,
     gatekeeperAssess: false,
     entitlements: 'build/entitlements.mac.plist',
-    entitlementsInherit: 'build/entitlements.mas.inherit.plist',
+    entitlementsInherit: 'build/entitlements.mac.inherit.plist',
     category: 'public.app-category.finance',
     minimumSystemVersion: '11',
     darkModeSupport: true,
