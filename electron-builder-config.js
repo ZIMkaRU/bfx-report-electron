@@ -178,6 +178,9 @@ module.exports = {
     gatekeeperAssess: false,
     entitlements: 'build/entitlements.mac.plist',
     entitlementsInherit: 'build/entitlements.mac.inherit.plist',
+    extendInfo: {
+      NSDownloadsFolderUsageDescription: 'This app saves downloaded reports directly to your Downloads folder for your convenience'
+    },
     category: 'public.app-category.finance',
     minimumSystemVersion: '11',
     darkModeSupport: true,
