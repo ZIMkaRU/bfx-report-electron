@@ -180,7 +180,7 @@ module.exports = {
     entitlementsInherit: 'build/entitlements.mac.inherit.plist',
     extendInfo: {
       NSDownloadsFolderUsageDescription: 'This app saves downloaded reports directly to your Downloads folder for your convenience',
-      CFBundleLocalizations: ['en', 'es']
+      CFBundleLocalizations: ['en', 'es', 'pt_BR']
     },
     extraResources: [
       {
