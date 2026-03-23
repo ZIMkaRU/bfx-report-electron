@@ -179,8 +179,16 @@ module.exports = {
     entitlements: 'build/entitlements.mac.plist',
     entitlementsInherit: 'build/entitlements.mac.inherit.plist',
     extendInfo: {
-      NSDownloadsFolderUsageDescription: 'This app saves downloaded reports directly to your Downloads folder for your convenience'
+      NSDownloadsFolderUsageDescription: 'This app saves downloaded reports directly to your Downloads folder for your convenience',
+      CFBundleLocalizations: ['en']
     },
+    extraResources: [
+      {
+        from: 'build/locales',
+        to: 'Resources',
+        filter: ['*.lproj']
+      }
+    ],
     category: 'public.app-category.finance',
     minimumSystemVersion: '11',
     darkModeSupport: true,
