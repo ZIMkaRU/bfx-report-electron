@@ -44,7 +44,8 @@ const {
   manageConfigs,
   platformIdentifiers: {
     IS_WIN
-  }
+  },
+  migrateDbFilesToSandboxOnMacOS
 } = require('./helpers')
 const getUserDataPath = require('./helpers/get-user-data-path')
 const {
@@ -124,6 +125,7 @@ module.exports = async () => {
 
     await app.whenReady()
     await enforceMacOSAppLocation()
+    migrateDbFilesToSandboxOnMacOS()
 
     // https://www.electronjs.org/docs/latest/tutorial/notifications#windows
     if (IS_WIN) {
