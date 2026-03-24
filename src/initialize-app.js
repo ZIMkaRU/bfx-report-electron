@@ -155,7 +155,8 @@ module.exports = async () => {
 
     await createMainWindow({
       pathToUserData,
-      pathToUserDocuments
+      pathToUserDocuments,
+      pathToUserDownloads
     })
     const portsMap = await getFreePort()
     const ipc = runServer({
