@@ -316,7 +316,8 @@ const _createChildWindow = async (
 
 const createMainWindow = async ({
   pathToUserData,
-  pathToUserDocuments
+  pathToUserDocuments,
+  pathToUserDownloads
 }) => {
   const createMenu = require('../create-menu')
   const titleBarOverlayOpt = IS_MAC
@@ -388,7 +389,12 @@ const createMainWindow = async ({
       .setTitle(`${title} - BFX API STAGING USED`)
   }
 
-  createMenu({ pathToUserData, pathToUserDocuments })
+  createMenu({
+    pathToUserData,
+    pathToUserDocuments: IS_MAC
+      ? pathToUserDownloads
+      : pathToUserDocuments
+  })
 
   appStates.isMainWinMaximized = isMaximized
   appStates.isMainWinFullScreen = isFullScreen

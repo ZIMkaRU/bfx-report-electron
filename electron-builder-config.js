@@ -177,7 +177,18 @@ module.exports = {
     hardenedRuntime: true,
     gatekeeperAssess: false,
     entitlements: 'build/entitlements.mac.plist',
-    entitlementsInherit: 'build/entitlements.mas.inherit.plist',
+    entitlementsInherit: 'build/entitlements.mac.plist',
+    extendInfo: {
+      NSDownloadsFolderUsageDescription: 'This app saves downloaded reports directly to your Downloads folder for your convenience',
+      CFBundleLocalizations: ['en', 'es', 'pt_BR', 'ru', 'vi', 'zh_CN', 'zh_TW']
+    },
+    extraResources: [
+      {
+        from: 'build/locales',
+        to: 'Resources',
+        filter: ['*.lproj']
+      }
+    ],
     category: 'public.app-category.finance',
     minimumSystemVersion: '11',
     darkModeSupport: true,
