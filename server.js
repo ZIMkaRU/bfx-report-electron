@@ -1,10 +1,10 @@
 'use strict'
 
-const { pick } = require('lib-js-util-base')
+const { pick } = require('@bitfinex/lib-js-util-base')
 const { fork } = require('child_process')
 const path = require('path')
 const EventEmitter = require('events')
-const { grapes: createGrapes } = require('bfx-svc-test-helper')
+const { grapes: createGrapes } = require('@bitfinex/bfx-svc-test-helper')
 
 const { rootPath, unpackedPath } = require('./src/helpers/root-path')
 

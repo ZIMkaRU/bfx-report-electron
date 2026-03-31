@@ -15,7 +15,7 @@ const {
   access,
   chmod
 } = require('node:fs/promises')
-const { cloneDeep, merge, get } = require('lib-js-util-base')
+const { cloneDeep, merge, get } = require('@bitfinex/lib-js-util-base')
 
 const CONFIGS_KEEPER_NAMES = require('./configs.keeper.names')
 const CONFIGS_KEEPER_FILE_NAME_MAP = require(
