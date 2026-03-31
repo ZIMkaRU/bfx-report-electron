@@ -18,7 +18,6 @@ const getAlertCustomClassObj = require('./get-alert-custom-class-obj')
 const parseEnvValToBool = require('./parse-env-val-to-bool')
 const isBfxApiStaging = require('./is-bfx-api-staging')
 const waitPort = require('./wait-port')
-const getUIFontsAsCSSString = require('./get-ui-fonts-as-css-string')
 const manageConfigs = require('./manage-configs')
 const platformIdentifiers = require('./platform-identifiers')
 const envIdentifiers = require('./env-identifiers')
@@ -39,7 +38,6 @@ module.exports = {
   parseEnvValToBool,
   isBfxApiStaging,
   waitPort,
-  getUIFontsAsCSSString,
   manageConfigs,
   platformIdentifiers,
   envIdentifiers,
