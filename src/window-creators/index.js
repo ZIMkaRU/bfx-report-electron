@@ -102,6 +102,40 @@ const _loadUI = async (params) => {
   return loadURL(wins[winName])
 }
 
+const _setWinFullScreenAndMaximize = (win, opts) => {
+  const {
+    show,
+    isFullScreen,
+    isMaximized
+  } = opts ?? {}
+
+  if (show) {
+    win.setFullScreen(isFullScreen)
+
+    if (isMaximized) {
+      win.maximize()
+
+      return
+    }
+
+    win.unmaximize()
+
+    return
+  }
+
+  win.once('show', () => {
+    win.setFullScreen(isFullScreen)
+
+    if (isMaximized) {
+      win.maximize()
+
+      return
+    }
+
+    win.unmaximize()
+  })
+}
+
 const _createWindow = async (
   params,
   winProps
@@ -165,13 +199,11 @@ const _createWindow = async (
     } = windowState ?? {}
 
     wins[winName].setBounds({ x, y, width, height })
-    wins[winName].setFullScreen(isFullScreen)
-
-    if (isMaximized) {
-      wins[winName].maximize()
-    } else {
-      wins[winName].unmaximize()
-    }
+    _setWinFullScreenAndMaximize(wins[winName], {
+      show: props.show,
+      isFullScreen,
+      isMaximized
+    })
   }
 
   wins[winName].on('closed', () => {
@@ -316,7 +348,8 @@ const _createChildWindow = async (
 
 const createMainWindow = async ({
   pathToUserData,
-  pathToUserDocuments
+  pathToUserDocuments,
+  pathToUserDownloads
 }) => {
   const createMenu = require('../create-menu')
   const titleBarOverlayOpt = IS_MAC
@@ -388,7 +421,12 @@ const createMainWindow = async ({
       .setTitle(`${title} - BFX API STAGING USED`)
   }
 
-  createMenu({ pathToUserData, pathToUserDocuments })
+  createMenu({
+    pathToUserData,
+    pathToUserDocuments: IS_MAC
+      ? pathToUserDownloads
+      : pathToUserDocuments
+  })
 
   appStates.isMainWinMaximized = isMaximized
   appStates.isMainWinFullScreen = isFullScreen

@@ -1,15 +1,14 @@
 'use strict'
 
-const { app, ipcMain } = require('electron')
-const fs = require('fs')
-const path = require('path')
+const { app } = require('electron')
+const fs = require('node:fs')
+const path = require('node:path')
 const {
   DebUpdater,
   AppImageUpdater,
   NsisUpdater,
   AppUpdater
 } = require('electron-updater')
-const Alert = require('electron-alert')
 const yaml = require('js-yaml')
 const i18next = require('i18next')
 
@@ -21,9 +20,6 @@ const {
   showLoadingWindow,
   hideLoadingWindow
 } = require('../window-creators/change-loading-win-visibility-state')
-const {
-  closeAlert
-} = require('../modal-dialog-src/utils')
 const { rootPath } = require('../helpers/root-path')
 const parseEnvValToBool = require('../helpers/parse-env-val-to-bool')
 const {
@@ -31,16 +27,6 @@ const {
   IS_LINUX,
   IS_WIN
 } = require('../helpers/platform-identifiers')
-const {
-  WINDOW_EVENT_NAMES,
-  addOnceProcEventHandler
-} = require('../window-creators/window-event-manager')
-const getUIFontsAsCSSString = require(
-  '../helpers/get-ui-fonts-as-css-string'
-)
-const ThemeIpcChannelHandlers = require(
-  '../window-creators/main-renderer-ipc-bridge/theme-ipc-channel-handlers'
-)
 const AutoUpdateIpcChannelHandlers = require(
   '../window-creators/main-renderer-ipc-bridge/auto-update-ipc-channel-handlers'
 )
@@ -51,27 +37,7 @@ const { changeMenuItemStatesById } = require('../create-menu/utils')
 const isAutoUpdateDisabled = parseEnvValToBool(
   process.env.IS_AUTO_UPDATE_DISABLED
 )
-/*
- * TODO: This is a temporary flag for dev to avoid breaking
- * the workflow and should be removed after the implementation
- * of UI along with the old toast implementation
- */
-const shouldMainUIAutoUpdateToastBeUsed = parseEnvValToBool(
-  process.env.SHOULD_MAIN_UI_AUTO_UPDATE_TOAST_BE_USED
-)
 
-const fontsStyle = getUIFontsAsCSSString()
-const themesStyle = fs.readFileSync(path.join(
-  __dirname, '../window-creators/layouts/themes.css'
-))
-const toastStyle = fs.readFileSync(path.join(
-  __dirname, 'toast-src/toast.css'
-))
-const toastScript = fs.readFileSync(path.join(
-  __dirname, 'toast-src/toast.js'
-))
-
-let toast
 let autoUpdater
 let uCheckInterval
 let isIntervalUpdate = false
@@ -82,47 +48,22 @@ try {
   electronBuilderConfig = require(path.join(rootPath, 'electron-builder-config'))
 } catch (err) {}
 
-const fonts = `<style>${fontsStyle}</style>`
-const themes = `<style>${themesStyle}</style>`
-const style = `<style>${toastStyle}</style>`
-const script = `<script type="text/javascript">${toastScript}</script>`
-const sound = { freq: 'F2', type: 'triange', duration: 1.5 }
-
 const _sendProgress = (progress) => {
   if (!Number.isFinite(progress)) {
     return
   }
-  if (shouldMainUIAutoUpdateToastBeUsed) {
-    const mainWindow = wins?.[WINDOW_NAMES.MAIN_WINDOW]
-    AutoUpdateIpcChannelHandlers.sendProgressToastEvent(mainWindow, {
-      progress
-    })
 
-    return
-  }
+  const mainWindow = wins?.[WINDOW_NAMES.MAIN_WINDOW]
 
-  toast?.browserWindow?.webContents.send(
-    'progress',
+  AutoUpdateIpcChannelHandlers.sendProgressToastEvent(mainWindow, {
     progress
-  )
-}
-const _sendUid = (alert) => {
-  if (!alert?.uid) {
-    return
-  }
-
-  alert?.browserWindow?.webContents.send(
-    'auto-update-toast:uid',
-    alert.uid
-  )
+  })
 }
 
 const _fireToast = async (
   opts = {},
   hooks = {}
 ) => {
-  closeAlert(toast)
-
   const mainWindow = wins?.[WINDOW_NAMES.MAIN_WINDOW]
 
   if (
@@ -131,162 +72,23 @@ const _fireToast = async (
   ) {
     return { dismiss: 'close' }
   }
-  if (shouldMainUIAutoUpdateToastBeUsed) {
-    return await AutoUpdateIpcChannelHandlers.sendFireToastEvent(
-      mainWindow,
-      {
-        icon: 'info',
-        title: i18next.t('autoUpdater.title'),
-        text: null,
-        showConfirmButton: true,
-        showCancelButton: false,
-        confirmButtonText: i18next.t('common.confirmButtonText'),
-        cancelButtonText: i18next.t('common.cancelButtonText'),
-        timer: null,
-        progress: null,
 
-        ...opts
-      }
-    )
-  }
+  return await AutoUpdateIpcChannelHandlers.sendFireToastEvent(
+    mainWindow,
+    {
+      icon: 'info',
+      title: i18next.t('autoUpdater.title'),
+      text: null,
+      showConfirmButton: true,
+      showCancelButton: false,
+      confirmButtonText: i18next.t('common.confirmButtonText'),
+      cancelButtonText: i18next.t('common.cancelButtonText'),
+      timer: null,
+      progress: null,
 
-  const {
-    didOpen = () => {},
-    didClose = () => {}
-  } = hooks ?? {}
-  const height = 44
-
-  const alert = new Alert([fonts, themes, style, script])
-  toast = alert
-
-  const eventHandlerCtx = addOnceProcEventHandler(
-    WINDOW_EVENT_NAMES.CLOSED,
-    () => closeAlert(alert)
+      ...opts
+    }
   )
-  const autoUpdateToastWidthHandler = (event, data) => {
-    alert.browserWindow?.setBounds({
-      width: Math.round(data?.width ?? 0)
-    })
-  }
-  const autoUpdateToastRepositionHandler = () => {
-    const macOffset = wins.mainWindow?.isFullScreen()
-      ? 0
-      : 28
-    const heightOffset = IS_MAC ? macOffset : 40
-    const { x, y, width } = mainWindow.getContentBounds()
-    const { width: alWidth } = alert.browserWindow.getContentBounds()
-
-    const boundsOpts = {
-      x: (x + width) - alWidth,
-      y: y + heightOffset,
-      height
-    }
-
-    alert.browserWindow.setBounds(boundsOpts)
-  }
-
-  const bwOptions = {
-    frame: false,
-    transparent: true,
-    thickFrame: false,
-    closable: false,
-    hasShadow: false,
-    backgroundColor: ThemeIpcChannelHandlers.getWindowTitleBackgroundColor(),
-    darkTheme: false,
-    height,
-    width: opts?.width ?? 1000,
-    parent: mainWindow,
-    modal: false,
-    webPreferences: {
-      contextIsolation: false
-    }
-  }
-  const swalOptions = {
-    toast: true,
-    position: 'top-end',
-    allowOutsideClick: false,
-
-    title: i18next.t('autoUpdater.title'),
-    showConfirmButton: true,
-    showCancelButton: false,
-    confirmButtonText: i18next.t('common.confirmButtonText'),
-    cancelButtonText: i18next.t('common.cancelButtonText'),
-    timerProgressBar: false,
-
-    ...opts,
-
-    // This is for the transition to a new implementation
-    // since the library does not support loading icon
-    icon: (
-      !opts?.icon ||
-      opts.icon === 'loading'
-    )
-      ? 'info'
-      : opts.icon,
-
-    willOpen: () => {
-      if (
-        !alert ||
-        !alert.browserWindow
-      ) return
-
-      alert.browserWindow.hide()
-    },
-    didOpen: () => {
-      didOpen(alert)
-
-      if (opts?.icon === 'loading') {
-        alert?.showLoading()
-      }
-      if (
-        !alert ||
-        !alert.browserWindow
-      ) return
-
-      alert.browserWindow.show()
-    },
-    willClose: () => {
-      if (
-        !alert ||
-        !alert.browserWindow
-      ) return
-
-      alert.browserWindow.hide()
-    },
-    didClose: () => {
-      eventHandlerCtx.removeListener()
-      ipcMain.removeListener(
-        `${alert.uid}auto-update-toast:width`,
-        autoUpdateToastWidthHandler
-      )
-      ipcMain.removeListener(
-        `${alert.uid}reposition`,
-        autoUpdateToastRepositionHandler
-      )
-
-      didClose(alert)
-    }
-  }
-
-  const promise = alert.fire(
-    swalOptions,
-    bwOptions,
-    null,
-    true,
-    false,
-    sound
-  )
-
-  _sendUid(alert)
-  ipcMain.on(`${alert.uid}auto-update-toast:width`, autoUpdateToastWidthHandler)
-  ipcMain.on(`${alert.uid}reposition`, autoUpdateToastRepositionHandler)
-
-  const res = await promise
-  const dismiss = res?.value
-    ? 'confirm'
-    : res?.dismiss
-
-  return { dismiss }
 }
 
 const _switchMenuItem = (opts) => {

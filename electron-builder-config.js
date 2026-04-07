@@ -177,7 +177,18 @@ module.exports = {
     hardenedRuntime: true,
     gatekeeperAssess: false,
     entitlements: 'build/entitlements.mac.plist',
-    entitlementsInherit: 'build/entitlements.mas.inherit.plist',
+    entitlementsInherit: 'build/entitlements.mac.plist',
+    extendInfo: {
+      NSDownloadsFolderUsageDescription: 'This app saves downloaded reports directly to your Downloads folder for your convenience',
+      CFBundleLocalizations: ['en', 'es', 'pt_BR', 'ru', 'vi', 'zh_CN', 'zh_TW']
+    },
+    extraResources: [
+      {
+        from: 'build/locales',
+        to: 'Resources',
+        filter: ['*.lproj']
+      }
+    ],
     category: 'public.app-category.finance',
     minimumSystemVersion: '11',
     darkModeSupport: true,
@@ -238,16 +249,6 @@ module.exports = {
     {
       from: 'bfx-report-ui/bfx-report-express/node_modules',
       to: 'bfx-report-ui/bfx-report-express/node_modules',
-      filter: nodeModulesFilter
-    },
-    {
-      from: 'node_modules/wdio-electron-service',
-      to: 'node_modules/wdio-electron-service',
-      filter: nodeModulesFilter
-    },
-    {
-      from: 'node_modules/wdio-electron-service/node_modules',
-      to: 'node_modules/wdio-electron-service/node_modules',
       filter: nodeModulesFilter
     },
     ...getNodeModulesSubSources('bfx-reports-framework'),

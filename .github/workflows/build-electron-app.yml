@@ -224,6 +224,69 @@ jobs:
           dist/*-mac.dmg.blockmap
           dist/latest-mac.yml
 
+  put-changelog-to-release-page:
+    name: Put Changelog to Release Page
+    timeout-minutes: 10
+    runs-on: ubuntu-22.04
+    needs: [linux-win-docker-builder, mac-builder]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get release version
+        id: version
+        run: |
+          VERSION=$(jq -r .version package.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Extract changelog
+        id: changelog
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          CONTENT=$(sed -n "/## \\[$VERSION\\]/,/## \\[/p" CHANGELOG.md | sed '$d')
+
+          if [ -z "$CONTENT" ]; then
+            CONTENT="No changelog entry for version $VERSION"
+          fi
+
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          echo "$CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Update matching draft release
+        uses: actions/github-script@v8
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          CONTENT: ${{ steps.changelog.outputs.content }}
+        with:
+          script: |
+            const version = process.env.VERSION
+            const content = process.env.CONTENT
+
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
+            const draft = releases.find((r) => (
+              r.draft &&
+              (
+                r.name === version || 
+                r.tag_name === `v${version}` ||
+                (r.name && r.name.includes(version))
+              )
+            ))
+
+            if (!draft) {
+              core.info(`No matching draft release for version ${version}`)
+
+              return
+            }
+
+            core.info(`Updating draft release: ${draft.name}`)
+
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: draft.id,
+              body: content,
+            })
   linux-e2e-test-runner:
     name: Linux E2E Test Runner
     timeout-minutes: 30

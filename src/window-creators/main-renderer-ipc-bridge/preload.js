@@ -2,11 +2,6 @@
 
 const { contextBridge, ipcRenderer } = require('electron')
 
-const IS_E2E_TEST = (
-  process.env.E2E_TEST === 'true' ||
-  process.env.E2E_TEST === 1
-)
-
 const CHANNEL_NAMES = {
   GENERAL: 'general',
   TRANSLATIONS: 'translations',
@@ -127,10 +122,6 @@ for (const [channelName, eventMethodNames] of EVENT_CHANNEL_MAP) {
       }
     }
   }
-}
-
-if (IS_E2E_TEST) {
-  require('wdio-electron-service/preload')
 }
 
 contextBridge.exposeInMainWorld(
