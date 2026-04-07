@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.43.0] - 2026-04-08
+
+### Added
+
+- Created GH Actions job to put the changelog to the release page into draft before pushing. PR: [bfx-report-electron#607](https://github.com/bitfinexcom/bfx-report-electron/pull/607)
+- Migrated auto-update toasts to new UI implementation. PR: [bfx-report-electron#611](https://github.com/bitfinexcom/bfx-report-electron/pull/611)
+- Implemented the Reports app auto-update notifications. PR: [bfx-report-ui#1055](https://github.com/bitfinexcom/bfx-report-ui/pull/1055)
+
+### Changed
+
+- Resolved folder request access on mac when exporting. PR: [bfx-report-electron#608](https://github.com/bitfinexcom/bfx-report-electron/pull/608)
+- Reduced navigation panel width (by ~20%) and adjusted related elements sizing to have more useful space for the opened report itself. PR: [bfx-report-ui#1049](https://github.com/bitfinexcom/bfx-report-ui/pull/1049)
+- Migrated from `connected-react-router` to `redux-first-history` due to the incompatibilities with the `React 18+` new rendering behavior noted in some scenarios. PR: [bfx-report-ui#1051](https://github.com/bitfinexcom/bfx-report-ui/pull/1051)
+
+### Fixed
+
+- Fixed GH Action for Mac E2E test runner due to electron update. PR: [bfx-report-electron#606](http://github.com/bitfinexcom/bfx-report-electron/pull/606)
+- Fixed the initial window state on all OSs when maximized or in full-screen mode. PR: [bfx-report-electron#612](https://github.com/bitfinexcom/bfx-report-electron/pull/612)
+- Fixed routes redirection issues (legacy `/withdrawals` and `/deposits` --> `/movements`) noted after the recent router migration, fixed notification duplication possibility noted in some scenarios. PR: [bfx-report-ui#1053](https://github.com/bitfinexcom/bfx-report-ui/pull/1053)
+
+### Security
+
+- Migrated the BFX deps to the new `@bitfinex` namespace, fixed dep vulnerabilities, removed deprecated `better-npm-run`, used `cross-env` with `concurrently` instead, and as a result improves `npm scripts`. PRs: [bfx-report#468](https://github.com/bitfinexcom/bfx-report/pull/468), [bfx-reports-framework#502](https://github.com/bitfinexcom/bfx-reports-framework/pull/502), [bfx-report-electron#609](https://github.com/bitfinexcom/bfx-report-electron/pull/609)
+- Updated UI dependencies to fix high vulnerabilities. PR: [bfx-report-ui#1048](https://github.com/bitfinexcom/bfx-report-ui/pull/1048)
+
 ## [4.42.0] - 2026-03-18
 
 ### Changed
