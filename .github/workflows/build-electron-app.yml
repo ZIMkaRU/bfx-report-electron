@@ -285,6 +285,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: draft.id,
+              tag_name: draft.tag_name || `v${version}`,
               body: content,
             })
   linux-e2e-test-runner:
