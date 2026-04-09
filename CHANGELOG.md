@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.43.1] - 2026-04-09
+
+### Fixed
+
+- Temporarily reverted from `createRoot` to `ReactDOM.render` (legacy rendering mode) as a hot-fix for the noted issues with the cell/column selection. PR: [bfx-report-ui#1060](https://github.com/bitfinexcom/bfx-report-ui/pull/1060)
+
+### Security
+
+- Updated UI dependencies to fix high vulnerabilities. PR: [bfx-report-ui#1059](https://github.com/bitfinexcom/bfx-report-ui/pull/1059)
+
 ## [4.43.0] - 2026-04-08
 
 ### Added
