@@ -19,6 +19,11 @@ const getAppBinaryPath = () => {
 }
 
 exports.config = {
+  // Use Xvfb when needed
+  // https://webdriver.io/docs/headless-and-xvfb/
+  autoXvfb: true,
+  // Auto-install Xvfb packages
+  xvfbAutoInstall: true,
   //
   // ====================
   // Runner Configuration

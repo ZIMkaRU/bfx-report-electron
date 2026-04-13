@@ -308,10 +308,8 @@ jobs:
         path: dist
     - name: Unzip Linux Unpacked build
       run: unzip dist/linux-unpacked.zip
-    - name: Run tests # TODO: https://webdriver.io/docs/headless-and-xvfb/
-      uses: coactions/setup-xvfb@6b00cf1889f4e1d5a48635647013c0508128ee1a
-      with:
-        run: npm run e2e
+    - name: Run tests
+      run: npm run e2e
     - name: Normalize E2E test report
       run: node ./scripts/node/normalize-e2e-test-report e2e-test-report.xml
     - name: Upload Linux E2E test results
@@ -340,10 +338,8 @@ jobs:
         path: dist
     - name: Unzip Win Unpacked build
       run: 7z -y x dist/win-unpacked.zip
-    - name: Run tests # TODO: https://webdriver.io/docs/headless-and-xvfb/
-      uses: coactions/setup-xvfb@6b00cf1889f4e1d5a48635647013c0508128ee1a
-      with:
-        run: npm run e2e
+    - name: Run tests
+      run: npm run e2e
     - name: Normalize E2E test report
       run: node ./scripts/node/normalize-e2e-test-report e2e-test-report.xml
     - name: Upload Win E2E test results
@@ -374,10 +370,8 @@ jobs:
         path: dist
     - name: Unzip Mac Unpacked build
       run: unzip dist/mac.zip
-    - name: Run tests # TODO: https://webdriver.io/docs/headless-and-xvfb/
-      uses: coactions/setup-xvfb@6b00cf1889f4e1d5a48635647013c0508128ee1a
-      with:
-        run: npm run e2e
+    - name: Run tests
+      run: npm run e2e
     - name: Normalize E2E test report
       run: node ./scripts/node/normalize-e2e-test-report e2e-test-report.xml
     - name: Upload Mac E2E test results
