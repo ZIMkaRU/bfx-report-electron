@@ -379,3 +379,13 @@ jobs:
       with:
         name: mac-e2e-test-results
         path: e2e-test-report.xml
+  web-page-report:
+    needs:
+      - linux-e2e-test-runner
+      - win-e2e-test-runner
+      - mac-e2e-test-runner
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+    uses: ./.github/workflows/e2e-test-report.yml
