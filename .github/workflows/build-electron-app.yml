@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6.0.2
       with:
         submodules: recursive
     - if: github.event.inputs.version != ''
@@ -63,7 +63,7 @@ jobs:
         fi
     - name: Cache Electron binaries
       id: electron-cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5.0.4
       env:
         cache-name: electron-cache-v1
       with:
@@ -75,7 +75,7 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
     - name: Build release
       id: release-builder
-      uses: nick-fields/retry@v3
+      uses: nick-fields/retry@v4.0.0
       continue-on-error: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,20 +93,20 @@ jobs:
     - name: Zip Linux Unpacked build
       run: zip -r dist/linux-unpacked.zip dist/linux-unpacked
     - name: Upload Linux Unpacked build
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: linux-unpacked
         path: dist/linux-unpacked.zip
     - name: Zip Win Unpacked build
       run: zip -r dist/win-unpacked.zip dist/win-unpacked
     - name: Upload Win Unpacked build
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: win-unpacked
         path: dist/win-unpacked.zip
     - if: env.REPO_OWNER != github.repository_owner
       name: Upload Linux Dist Release
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: linux-dist-release
         path: |
@@ -115,7 +115,7 @@ jobs:
           dist/latest-linux.yml
     - if: env.REPO_OWNER != github.repository_owner
       name: Upload Win Dist Release
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: win-dist-release
         path: |
@@ -132,7 +132,7 @@ jobs:
     runs-on: macos-15-intel
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6.0.2
       with:
         submodules: recursive
     - if: github.event.inputs.version != ''
@@ -160,12 +160,12 @@ jobs:
         else
           echo "REPO_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
         fi
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v6.3.0
       with:
         node-version: 24.14.0
     - name: Cache Electron binaries
       id: electron-cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5.0.4
       env:
         cache-name: electron-cache-v1
       with:
@@ -176,7 +176,7 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
     - name: Build release
       id: release-builder
-      uses: nick-fields/retry@v3
+      uses: nick-fields/retry@v4.0.0
       continue-on-error: false
       env:
         APPLE_TEAM_ID: ${{ secrets.BFX_APPLE_TEAM_ID }}
@@ -208,13 +208,13 @@ jobs:
     - name: Zip Mac Unpacked build
       run: zip -r dist/mac.zip dist/mac
     - name: Upload Mac Unpacked build
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: mac-unpacked
         path: dist/mac.zip
     - if: env.REPO_OWNER != github.repository_owner
       name: Upload Mac Dist Release
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: mac-dist-release
         path: |
@@ -231,7 +231,7 @@ jobs:
     needs: [linux-win-docker-builder, mac-builder]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
       - name: Get release version
         id: version
         run: |
@@ -251,7 +251,7 @@ jobs:
           echo "$CONTENT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
       - name: Update matching draft release
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9.0.0
         env:
           VERSION: ${{ steps.version.outputs.version }}
           CONTENT: ${{ steps.changelog.outputs.content }}
@@ -295,27 +295,25 @@ jobs:
     needs: [linux-win-docker-builder]
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+      uses: actions/checkout@v6.0.2
+    - uses: actions/setup-node@v6.3.0
       with:
         node-version: 24.14.0
     - name: Install main dev deps
-      run: npm i --development --no-audit --progress=false --force
+      run: npm ci --no-audit --force
     - name: Download Linux Unpacked build
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8.0.0
       with:
         name: linux-unpacked
         path: dist
     - name: Unzip Linux Unpacked build
       run: unzip dist/linux-unpacked.zip
     - name: Run tests
-      uses: coactions/setup-xvfb@6b00cf1889f4e1d5a48635647013c0508128ee1a
-      with:
-        run: npm run e2e
+      run: npm run e2e
     - name: Normalize E2E test report
       run: node ./scripts/node/normalize-e2e-test-report e2e-test-report.xml
     - name: Upload Linux E2E test results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: linux-e2e-test-results
         path: e2e-test-report.xml
@@ -327,27 +325,25 @@ jobs:
     needs: [linux-win-docker-builder]
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+      uses: actions/checkout@v6.0.2
+    - uses: actions/setup-node@v6.3.0
       with:
         node-version: 24.14.0
     - name: Install main dev deps
-      run: npm i --development --no-audit --progress=false --force
+      run: npm ci --no-audit --force
     - name: Download Linux Unpacked build
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8.0.0
       with:
         name: win-unpacked
         path: dist
     - name: Unzip Win Unpacked build
       run: 7z -y x dist/win-unpacked.zip
     - name: Run tests
-      uses: coactions/setup-xvfb@6b00cf1889f4e1d5a48635647013c0508128ee1a
-      with:
-        run: npm run e2e
+      run: npm run e2e
     - name: Normalize E2E test report
       run: node ./scripts/node/normalize-e2e-test-report e2e-test-report.xml
     - name: Upload Win E2E test results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: win-e2e-test-results
         path: e2e-test-report.xml
@@ -359,29 +355,37 @@ jobs:
     needs: [mac-builder]
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6.0.2
     - name: Prepare Mac runner
       uses: ./.github/actions/prepare-mac-runner
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v6.3.0
       with:
         node-version: 24.14.0
     - name: Install main dev deps
-      run: npm i --development --no-audit --progress=false --force
+      run: npm ci --no-audit --force
     - name: Download Mac Unpacked build
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8.0.0
       with:
         name: mac-unpacked
         path: dist
     - name: Unzip Mac Unpacked build
       run: unzip dist/mac.zip
     - name: Run tests
-      uses: coactions/setup-xvfb@6b00cf1889f4e1d5a48635647013c0508128ee1a
-      with:
-        run: npm run e2e
+      run: npm run e2e
     - name: Normalize E2E test report
       run: node ./scripts/node/normalize-e2e-test-report e2e-test-report.xml
     - name: Upload Mac E2E test results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: mac-e2e-test-results
         path: e2e-test-report.xml
+  web-page-report:
+    needs:
+      - linux-e2e-test-runner
+      - win-e2e-test-runner
+      - mac-e2e-test-runner
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+    uses: ./.github/workflows/e2e-test-report.yml
