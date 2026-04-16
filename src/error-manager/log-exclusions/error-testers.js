@@ -44,6 +44,32 @@ const isNetworkTimeoutError = (err) => (
   _testRegExp(err, /network timeout/i)
 )
 
+const isDiffUpdateDownloadError = (err) => (
+  _testRegExp(err, /Cannot download differentially/i)
+)
+
+const isGHUpdateDownloadError = (err) => (
+  _testRegExp(err, /objects\.githubusercontent\.com/i)
+)
+
+const isHtmlLoadingForPdfError = (err) => (
+  _testRegExp(err, /Error: ERR_FAILED \(-2\) loading 'file:.*\.html'/i)
+)
+
+const isPdfGenerationError = (err) => (
+  _testRegExp(err, /Failed to generate PDF/i)
+)
+
+// https://github.com/electron/electron/issues/47390
+const isDeprecationWarningFsStatsError = (err) => (
+  _testRegExp(err, /DeprecationWarning: fs\.Stats/i)
+)
+
+// https://github.com/electron/electron/issues/47390
+const isDeprecationWarningUrlParseError = (err) => (
+  _testRegExp(err, /DeprecationWarning: `url\.parse\(\)`/i)
+)
+
 module.exports = {
   isDocumentsPathGettingError,
   isContextIsolationError,
@@ -51,5 +77,11 @@ module.exports = {
   isCodeSignatureError,
   isBfxApiServerAvailabilityError,
   isDatabaseLockError,
-  isNetworkTimeoutError
+  isNetworkTimeoutError,
+  isDiffUpdateDownloadError,
+  isGHUpdateDownloadError,
+  isHtmlLoadingForPdfError,
+  isPdfGenerationError,
+  isDeprecationWarningFsStatsError,
+  isDeprecationWarningUrlParseError
 }
