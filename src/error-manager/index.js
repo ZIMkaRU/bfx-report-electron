@@ -8,6 +8,9 @@ const { isENetError } = require(
   '../../bfx-reports-framework/workers/loc.api/helpers/api-errors-testers'
 )
 
+const {
+  isDocumentsPathGettingError
+} = require('./log-exclusions/error-testers')
 const cleanStack = require('./clean-stack')
 const log = require('./log')
 const getErrorDescription = require('./get-error-description')
@@ -215,7 +218,7 @@ const initLogger = () => {
     if (message.level === 'error') {
       const error = message.data.join(os.EOL)
 
-      if (/Failed to get 'documents' path/gi.test(error)) {
+      if (isDocumentsPathGettingError(error)) {
         const title = i18next.t('errorManager.failedToGetDocsPath.title')
         const msg = i18next.t('errorManager.failedToGetDocsPath.message')
 
