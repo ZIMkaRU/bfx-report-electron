@@ -4,13 +4,10 @@ const { app } = require('electron')
 const os = require('os')
 const i18next = require('i18next')
 
-const { isENetError } = require(
-  '../../bfx-reports-framework/workers/loc.api/helpers/api-errors-testers'
-)
-
 const {
+  errorTesters: { isDocumentsPathGettingError },
   shouldLogBeSkipped,
-  errorTesters: { isDocumentsPathGettingError }
+  shouldErrorModalWinBeSuppressed
 } = require('./log-exclusions')
 const cleanStack = require('./clean-stack')
 const log = require('./log')
@@ -209,22 +206,7 @@ const initLogger = () => {
 
         return
       }
-
-      /*
-       * Don't open a new issue when:
-       *   - It can't download differentially it would fallback to full download
-       *   - GitHub server can't respond to the auto-update requests
-       */
-      if (
-        isENetError(error) ||
-        /Cannot download differentially/gi.test(error) ||
-        /objects\.githubusercontent\.com/gi.test(error) ||
-        /Error: ERR_FAILED \(-2\) loading 'file:.*\.html'/gi.test(error) ||
-        /Failed to generate PDF/gi.test(error) ||
-        // https://github.com/electron/electron/issues/47390
-        /DeprecationWarning: fs\.Stats/gi.test(error) ||
-        /DeprecationWarning: `url\.parse\(\)`/gi.test(error)
-      ) {
+      if (shouldErrorModalWinBeSuppressed(error)) {
         return message
       }
 
