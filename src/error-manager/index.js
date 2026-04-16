@@ -9,8 +9,9 @@ const { isENetError } = require(
 )
 
 const {
-  isDocumentsPathGettingError
-} = require('./log-exclusions/error-testers')
+  shouldLogBeSkipped,
+  errorTesters: { isDocumentsPathGettingError }
+} = require('./log-exclusions')
 const cleanStack = require('./clean-stack')
 const log = require('./log')
 const getErrorDescription = require('./get-error-description')
@@ -70,36 +71,6 @@ const _manageErrorLogLevel = async (error) => {
 
     console.error(err)
   }
-}
-
-const _getErrorStr = (val) => {
-  if (!(val instanceof Error)) {
-    return val
-  }
-
-  const str = typeof val.stack === 'string'
-    ? val.stack
-    : val.toString()
-
-  return str
-}
-
-const _isLogSkipped = (log) => {
-  const str = _getErrorStr(log)
-
-  return (
-    str &&
-    typeof str === 'string' &&
-    (
-      str.includes('contextIsolation is deprecated') ||
-      str.includes('ERR_INTERNET_DISCONNECTED') ||
-      // Skip error when can't get code signature on mac
-      str.includes('Could not get code signature') ||
-      str.includes('ERR_BFX_API_SERVER_IS_NOT_AVAILABLE') ||
-      str.includes('database is locked') ||
-      str.includes('network timeout')
-    )
-  )
 }
 
 const _lockIssueManager = () => {
@@ -196,7 +167,7 @@ const initLogger = () => {
     ) {
       return message
     }
-    if (message.data.some((val) => _isLogSkipped(val))) {
+    if (message.data.some((val) => shouldLogBeSkipped(val))) {
       return false
     }
 
