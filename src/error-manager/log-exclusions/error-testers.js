@@ -12,7 +12,7 @@ const _getErrorString = (err) => {
   return errStr
 }
 
-const _testRegExp = (regExp, err) => (
+const _testRegExp = (err, regExp) => (
   regExp.test(_getErrorString(err))
 )
 
