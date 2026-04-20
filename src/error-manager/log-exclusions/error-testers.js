@@ -1,15 +1,14 @@
 'use strict'
 
 const _getErrorString = (err) => {
-  const errStr = err instanceof Error
-    ? err.stack ?? err.toString()
-    : err
-
-  if (typeof errStr !== 'string') {
-    return ''
+  if (typeof err === 'string') {
+    return err
+  }
+  if (err instanceof Error) {
+    return err.stack ?? err.toString()
   }
 
-  return errStr
+  return ''
 }
 
 const _testRegExp = (err, regExp) => (
