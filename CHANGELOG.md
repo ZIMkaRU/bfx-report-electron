@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.44.0] - 2026-04-29
+
+### Added
+
+- Implemented the possibility to download the `DEB` app releases instead of `AppImage` for better UX. PR: [bfx-report-ui#1062](https://github.com/bitfinexcom/bfx-report-ui/pull/1062)
+- Added independent integration tests with GH Actions to ensure changes to the express layer will work with the `bfx-report` worker. PR: [bfx-report-express#60](https://github.com/bitfinexcom/bfx-report-express/pull/60)
+
+### Changed
+
+- Refactored the `Average Win/Loss` report as a functional and implemented a unified `useFetchLifecycle` hook that will replace legacy (tightly coupled to class components) helpers and will be widely reused in further step-by-step reports refactoring. PR: [bfx-report-ui#1067](https://github.com/bitfinexcom/bfx-report-ui/pull/1067)
+- Removed unused report PGP signature since the ability to create a signature for reports was implemented 7 years ago and has still not been merged into the repository [bfx-ext-gpg-js#1](https://github.com/bitfinexcom/bfx-ext-gpg-js/pull/1). PRs: [bfx-report#472](https://github.com/bitfinexcom/bfx-report/pull/472), [bfx-reports-framework#507](https://github.com/bitfinexcom/bfx-reports-framework/pull/507)
+- Updated GH Actions to resolve: `nodejs v20 actions are deprecated`. PRs: [bfx-report#470](https://github.com/bitfinexcom/bfx-report/pull/470), [bfx-reports-framework#505](https://github.com/bitfinexcom/bfx-reports-framework/pull/505), [bfx-report-electron#618](https://github.com/bitfinexcom/bfx-report-electron/pull/618), [bfx-facs-db-better-sqlite#16](https://github.com/bitfinexcom/bfx-facs-db-better-sqlite/pull/16)
+- Reworked error logging exceptions to simplify support and bring clarity of understanding. PR: [bfx-report-electron#619](https://github.com/bitfinexcom/bfx-report-electron/pull/619)
+
+### Fixed
+
+- Fixed GH Actions workflow permissions. The workflow is requesting 'actions: read, checks: write', but is only allowed 'actions: none, checks: none'. PRs: [bfx-report#473](https://github.com/bitfinexcom/bfx-report/pull/473), [bfx-reports-framework#509](https://github.com/bitfinexcom/bfx-reports-framework/pull/509), [bfx-report-express#63](https://github.com/bitfinexcom/bfx-report-express/pull/63), [bfx-report-electron#620](https://github.com/bitfinexcom/bfx-report-electron/pull/620), [bfx-facs-db-better-sqlite#17](https://github.com/bitfinexcom/bfx-facs-db-better-sqlite/pull/17)
+- Bumped `redux-saga` from `0.16.2` to `1.4.2`, actualized effects/utils usage and fixed a couple of legacy bugs. PR: [bfx-report-ui#1066](https://github.com/bitfinexcom/bfx-report-ui/pull/1066)
+- Fixed selected type representation in the `Average Win/Loss` report. PR: [bfx-report-ui#1064](https://github.com/bitfinexcom/bfx-report-ui/pull/1064)
+- Fixed `node-fetch` timeout handling. PR: [bfx-report#471](https://github.com/bitfinexcom/bfx-report/pull/471)
+- Fixed the issue with pushing untagged drafts of the electron app release, passes the tag explicitly so that it is not replaced with a hash. PR: [bfx-report-electron#617](https://github.com/bitfinexcom/bfx-report-electron/pull/617)
+
+### Security
+
+- Updated UI dependencies to fix high vulnerabilities. PR: [bfx-report-ui#1068](https://github.com/bitfinexcom/bfx-report-ui/pull/1068)
+
 ## [4.43.1] - 2026-04-09
 
 ### Fixed
