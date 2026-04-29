@@ -4,10 +4,11 @@ const { app } = require('electron')
 const os = require('os')
 const i18next = require('i18next')
 
-const { isENetError } = require(
-  '../../bfx-reports-framework/workers/loc.api/helpers/api-errors-testers'
-)
-
+const {
+  errorTesters: { isDocumentsPathGettingError },
+  shouldLogBeSkipped,
+  shouldErrorModalWinBeSuppressed
+} = require('./log-exclusions')
 const cleanStack = require('./clean-stack')
 const log = require('./log')
 const getErrorDescription = require('./get-error-description')
@@ -67,36 +68,6 @@ const _manageErrorLogLevel = async (error) => {
 
     console.error(err)
   }
-}
-
-const _getErrorStr = (val) => {
-  if (!(val instanceof Error)) {
-    return val
-  }
-
-  const str = typeof val.stack === 'string'
-    ? val.stack
-    : val.toString()
-
-  return str
-}
-
-const _isLogSkipped = (log) => {
-  const str = _getErrorStr(log)
-
-  return (
-    str &&
-    typeof str === 'string' &&
-    (
-      str.includes('contextIsolation is deprecated') ||
-      str.includes('ERR_INTERNET_DISCONNECTED') ||
-      // Skip error when can't get code signature on mac
-      str.includes('Could not get code signature') ||
-      str.includes('ERR_BFX_API_SERVER_IS_NOT_AVAILABLE') ||
-      str.includes('database is locked') ||
-      str.includes('network timeout')
-    )
-  )
 }
 
 const _lockIssueManager = () => {
@@ -193,7 +164,7 @@ const initLogger = () => {
     ) {
       return message
     }
-    if (message.data.some((val) => _isLogSkipped(val))) {
+    if (message.data.some((val) => shouldLogBeSkipped(val))) {
       return false
     }
 
@@ -215,7 +186,7 @@ const initLogger = () => {
     if (message.level === 'error') {
       const error = message.data.join(os.EOL)
 
-      if (/Failed to get 'documents' path/gi.test(error)) {
+      if (isDocumentsPathGettingError(error)) {
         const title = i18next.t('errorManager.failedToGetDocsPath.title')
         const msg = i18next.t('errorManager.failedToGetDocsPath.message')
 
@@ -235,22 +206,7 @@ const initLogger = () => {
 
         return
       }
-
-      /*
-       * Don't open a new issue when:
-       *   - It can't download differentially it would fallback to full download
-       *   - GitHub server can't respond to the auto-update requests
-       */
-      if (
-        isENetError(error) ||
-        /Cannot download differentially/gi.test(error) ||
-        /objects\.githubusercontent\.com/gi.test(error) ||
-        /Error: ERR_FAILED \(-2\) loading 'file:.*\.html'/gi.test(error) ||
-        /Failed to generate PDF/gi.test(error) ||
-        // https://github.com/electron/electron/issues/47390
-        /DeprecationWarning: fs\.Stats/gi.test(error) ||
-        /DeprecationWarning: `url\.parse\(\)`/gi.test(error)
-      ) {
+      if (shouldErrorModalWinBeSuppressed(error)) {
         return message
       }
 
