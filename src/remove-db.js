@@ -5,8 +5,9 @@ const i18next = require('i18next')
 
 const ipcs = require('./ipcs')
 const showErrorModalDialog = require('./show-error-modal-dialog')
-const showMessageModalDialog = require('./show-message-modal-dialog')
 const wins = require('./window-creators/windows')
+const WINDOW_NAMES = require('./window-creators/window.names')
+const { createModalWindow } = require('./window-creators')
 const isMainWinAvailable = require('./helpers/is-main-win-available')
 const pauseApp = require('./pause-app')
 const relaunch = require('./relaunch')
@@ -89,8 +90,8 @@ module.exports = ({
   shouldAllTablesBeCleared
 }) => {
   return async () => {
-    const win = isMainWinAvailable(wins.mainWindow)
-      ? wins.mainWindow
+    const win = isMainWinAvailable(wins[WINDOW_NAMES.MAIN_WINDOW])
+      ? wins[WINDOW_NAMES.MAIN_WINDOW]
       : BrowserWindow.getFocusedWindow()
     const title = shouldAllTablesBeCleared
       ? i18next.t('removeDB.modalDialog.clearDataTitle')
@@ -100,16 +101,25 @@ module.exports = ({
       : i18next.t('removeDB.modalDialog.removeDBMessage')
 
     try {
-      const {
-        btnId
-      } = await showMessageModalDialog(win, {
-        type: 'question',
-        title,
-        message
-      })
-      const isOkBtnPushed = btnId === 1
+      const res = await createModalWindow(
+        {
+          icon: 'question',
+          title,
+          text: message,
+          showConfirmButton: true,
+          confirmButtonText: i18next.t('common.confirmButtonText'),
+          showCancelButton: true,
+          cancelButtonText: i18next.t('common.cancelButtonText'),
+          focusCancel: true
+        },
+        {
+          width: 600,
+          height: 600,
+          shouldWinBeClosedIfClickingOutside: true
+        }
+      )
 
-      if (!isOkBtnPushed) {
+      if (res?.modalRes?.dismiss !== 'confirm') {
         return
       }
 
@@ -135,8 +145,8 @@ module.exports = ({
       relaunch()
     } catch (err) {
       try {
-        const _win = isMainWinAvailable(wins.loadingWindow)
-          ? wins.loadingWindow
+        const _win = isMainWinAvailable(wins[WINDOW_NAMES.LOADING_WINDOW])
+          ? wins[WINDOW_NAMES.LOADING_WINDOW]
           : win
         await showErrorModalDialog(_win, title, err)
       } catch (err) {
