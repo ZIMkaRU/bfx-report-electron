@@ -7,7 +7,6 @@ const i18next = require('i18next')
 const { InvalidFilePathError } = require('./errors')
 const { zip } = require('./archiver')
 const showErrorModalDialog = require('./show-error-modal-dialog')
-const showMessageModalDialog = require('./show-message-modal-dialog')
 const {
   showLoadingWindow,
   hideLoadingWindow,
@@ -15,6 +14,7 @@ const {
 } = require('./window-creators/change-loading-win-visibility-state')
 const wins = require('./window-creators/windows')
 const WINDOW_NAMES = require('./window-creators/window.names')
+const { createModalWindow } = require('./window-creators')
 const isMainWinAvailable = require('./helpers/is-main-win-available')
 const {
   DEFAULT_ARCHIVE_DB_FILE_NAME,
@@ -109,14 +109,21 @@ module.exports = ({
         windowName: WINDOW_NAMES.LOADING_WINDOW
       })
 
-      await showMessageModalDialog(win, {
-        buttons: [
-          i18next.t('common.confirmButtonText')
-        ],
-        defaultId: 0,
-        title: i18next.t('exportDB.modalDialog.title'),
-        message: i18next.t('exportDB.modalDialog.message')
-      })
+      await createModalWindow(
+        {
+          icon: 'success',
+          title: i18next.t('exportDB.modalDialog.title'),
+          text: i18next.t('exportDB.modalDialog.message'),
+          showConfirmButton: true,
+          confirmButtonText: i18next.t('common.confirmButtonText'),
+          focusConfirm: true
+        },
+        {
+          width: 600,
+          height: 600,
+          shouldWinBeClosedIfClickingOutside: true
+        }
+      )
     } catch (err) {
       try {
         await hideLoadingWindow({
