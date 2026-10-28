@@ -5,7 +5,6 @@ const i18next = require('i18next')
 const escapeHtml = require('escape-html')
 
 const ipcs = require('../ipcs')
-const wins = require('../window-creators/windows')
 const {
   createModalWindow
 } = require('../window-creators')
@@ -14,9 +13,6 @@ const {
 } = require('../helpers/utils')
 const isMainWinAvailable = require(
   '../helpers/is-main-win-available'
-)
-const showMessageModalDialog = require(
-  '../show-message-modal-dialog'
 )
 const {
   DbRestoringError
@@ -120,14 +116,21 @@ module.exports = () => {
         !Array.isArray(backupFilesMetadata) ||
         backupFilesMetadata.length === 0
       ) {
-        await showMessageModalDialog(wins.mainWindow, {
-          type: 'warning',
-          title: i18next.t('restoreDB.messageModalDialog.title'),
-          message: i18next.t('restoreDB.messageModalDialog.message'),
-          buttons: [i18next.t('common.confirmButtonText')],
-          defaultId: 0,
-          cancelId: 0
-        })
+        await createModalWindow(
+          {
+            icon: 'warning',
+            title: i18next.t('restoreDB.messageModalDialog.title'),
+            text: i18next.t('restoreDB.messageModalDialog.message'),
+            showConfirmButton: true,
+            confirmButtonText: i18next.t('common.confirmButtonText'),
+            focusConfirm: true
+          },
+          {
+            width: 600,
+            height: 600,
+            shouldWinBeClosedIfClickingOutside: true
+          }
+        )
 
         return
       }
