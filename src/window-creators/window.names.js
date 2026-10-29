@@ -5,5 +5,6 @@ module.exports = {
   STARTUP_LOADING_WINDOW: 'startupLoadingWindow',
   LOADING_WINDOW: 'loadingWindow',
   ERROR_WINDOW: 'errorWindow',
-  MODAL_WINDOW: 'modalWindow'
+  MODAL_WINDOW: 'modalWindow',
+  ERROR_MODAL_WINDOW: 'errorModalWindow'
 }
