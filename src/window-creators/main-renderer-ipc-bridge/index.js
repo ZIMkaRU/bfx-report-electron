@@ -18,6 +18,9 @@ const AutoUpdateIpcChannelHandlers = require(
 const ModalIpcChannelHandlers = require(
   './modal-ipc-channel-handlers'
 )
+const ErrorModalIpcChannelHandlers = require(
+  './error-modal-ipc-channel-handlers'
+)
 const ReportExportIpcChannelHandlers = require(
   './report-export-ipc-channel-handlers'
 )
@@ -29,5 +32,6 @@ module.exports = {
   ThemeIpcChannelHandlers,
   AutoUpdateIpcChannelHandlers,
   ModalIpcChannelHandlers,
+  ErrorModalIpcChannelHandlers,
   ReportExportIpcChannelHandlers
 }
