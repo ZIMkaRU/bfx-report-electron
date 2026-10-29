@@ -5,12 +5,10 @@ const { screen } = require('electron')
 const IpcChannelHandlers = require('./ipc.channel.handlers')
 const { initClosedEventListener } = require('./helpers')
 
-const wins = require('../windows')
-const WINDOW_NAMES = require('../window.names')
-
 class ModalIpcChannelHandlers extends IpcChannelHandlers {
   static channelName = 'modal'
 
+  static win = null
   static isModalClosedEventListenerInited = false
   static modalClosedEventHandlerSet = new Set()
   static isModalReadyToBeShownControlObj = {
@@ -27,6 +25,8 @@ class ModalIpcChannelHandlers extends IpcChannelHandlers {
   }
 
   static async sendFireModalEvent (win, args) {
+    this.win = win
+
     if (!args?.preventSettingHeightToContent) {
       this.isModalReadyToBeShownControlObj
         .promise = new Promise((resolve) => {
@@ -60,7 +60,7 @@ class ModalIpcChannelHandlers extends IpcChannelHandlers {
   }
 
   setWindowHeightHandler (event, args) {
-    const win = wins[WINDOW_NAMES.MODAL_WINDOW]
+    const win = this.constructor.win
     const height = args?.height
 
     if (
