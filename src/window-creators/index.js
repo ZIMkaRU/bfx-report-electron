@@ -39,15 +39,12 @@ const {
   shouldUrlBeOpened,
   setWinFullScreenAndMaximize
 } = require('./helpers')
-const MenuIpcChannelHandlers = require(
-  './main-renderer-ipc-bridge/menu-ipc-channel-handlers'
-)
-const ThemeIpcChannelHandlers = require(
-  './main-renderer-ipc-bridge/theme-ipc-channel-handlers'
-)
-const ModalIpcChannelHandlers = require(
-  './main-renderer-ipc-bridge/modal-ipc-channel-handlers'
-)
+const {
+  MenuIpcChannelHandlers,
+  ThemeIpcChannelHandlers,
+  ModalIpcChannelHandlers,
+  ErrorModalIpcChannelHandlers
+} = require('./main-renderer-ipc-bridge')
 
 const showNativeTitleBar = parseEnvValToBool(
   process.env.SHOW_NATIVE_TITLE_BAR
@@ -420,6 +417,10 @@ const createStartupLoadingWindow = async () => {
 }
 
 const createModalWindow = async (args, opts) => {
+  const IpcChannelHandlers = opts?.IpcChannelHandlers instanceof ModalIpcChannelHandlers
+    ? opts.IpcChannelHandlers
+    : ModalIpcChannelHandlers
+  const winName = opts?.winName ?? WINDOW_NAMES.MODAL_WINDOW
   const shouldDevToolsBeShown = opts?.shouldDevToolsBeShown
   const parentWin = (
     opts?.hasNoParentWin ||
@@ -445,17 +446,17 @@ const createModalWindow = async (args, opts) => {
     {
       shouldDevToolsBeShown,
       layout: WIN_LAYOUT_REGISTER.MODAL_WINDOW,
-      winName: WINDOW_NAMES.MODAL_WINDOW,
+      winName,
       didFinishLoadHook: async (win) => {
         if (shouldWinBeClosedIfClickingOutside) {
           win.once('blur', () => {
-            ModalIpcChannelHandlers.sendCloseModalEvent(win)
+            IpcChannelHandlers.sendCloseModalEvent(win)
           })
         }
 
-        closedEventPromise = ModalIpcChannelHandlers
+        closedEventPromise = IpcChannelHandlers
           .sendFireModalEvent(win, args)
-        await ModalIpcChannelHandlers
+        await IpcChannelHandlers
           .isModalReadyToBeShownControlObj.promise
       }
     },
@@ -491,6 +492,14 @@ const createModalWindow = async (args, opts) => {
   }
 }
 
+const createErrorModalWindow = async (args, opts) => {
+  return await createModalWindow(args, {
+    ...opts,
+    IpcChannelHandlers: ErrorModalIpcChannelHandlers,
+    winName: WINDOW_NAMES.ERROR_MODAL_WINDOW
+  })
+}
+
 const createErrorWindow = async () => {
   const winProps = await _createChildWindow(
     {
@@ -516,5 +525,6 @@ module.exports = {
   createErrorWindow,
   createLoadingWindow,
   createStartupLoadingWindow,
-  createModalWindow
+  createModalWindow,
+  createErrorModalWindow
 }
