@@ -3,6 +3,7 @@
 const { screen } = require('electron')
 
 const IpcChannelHandlers = require('./ipc.channel.handlers')
+const GeneralIpcChannelHandlers = require('./general-ipc-channel-handlers')
 const { initClosedEventListener } = require('./helpers')
 
 class ModalIpcChannelHandlers extends IpcChannelHandlers {
@@ -25,6 +26,7 @@ class ModalIpcChannelHandlers extends IpcChannelHandlers {
   }
 
   static async sendFireModalEvent (win, args) {
+    GeneralIpcChannelHandlers.sendNS(win, { ns: this.channelName })
     this.win = win
 
     if (!args?.preventSettingHeightToContent) {
