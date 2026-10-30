@@ -28,7 +28,8 @@ const GENERAL_EVENT_METHOD_NAMES = {
   SEND_LOADING_DESCRIPTION_READY: 'sendLoadingDescriptionReady',
   ON_STARTUP_LOADING_DESCRIPTION: 'onStartupLoadingDescription',
   ON_STARTUP_LOADING_BTN_STATES: 'onStartupLoadingBtnStates',
-  SEND_STARTUP_LOADING_DESCRIPTION_READY: 'sendStartupLoadingDescriptionReady'
+  SEND_STARTUP_LOADING_DESCRIPTION_READY: 'sendStartupLoadingDescriptionReady',
+  ON_NS: 'onNS'
 }
 const TRANSLATIONS_INVOKE_METHOD_NAMES = {
   SET_LANGUAGE: 'setLanguage',
@@ -71,16 +72,20 @@ const INVOKE_CHANNEL_MAP = new Map([
   [CHANNEL_NAMES.TRANSLATIONS, TRANSLATIONS_INVOKE_METHOD_NAMES],
   [CHANNEL_NAMES.MENU, MENU_INVOKE_METHOD_NAMES],
   [CHANNEL_NAMES.THEME, THEME_INVOKE_METHOD_NAMES],
-  [CHANNEL_NAMES.MODAL, MODAL_INVOKE_METHOD_NAMES],
-  [CHANNEL_NAMES.ERROR_MODAL, MODAL_INVOKE_METHOD_NAMES],
+  [[
+    CHANNEL_NAMES.MODAL,
+    CHANNEL_NAMES.ERROR_MODAL
+  ], MODAL_INVOKE_METHOD_NAMES],
   [CHANNEL_NAMES.REPORT_EXPORT, REPORT_EXPORT_INVOKE_METHOD_NAMES]
 ])
 const EVENT_CHANNEL_MAP = new Map([
   [CHANNEL_NAMES.GENERAL, GENERAL_EVENT_METHOD_NAMES],
   [CHANNEL_NAMES.MENU, MENU_EVENT_METHOD_NAMES],
   [CHANNEL_NAMES.AUTO_UPDATE, AUTO_UPDATE_EVENT_METHOD_NAMES],
-  [CHANNEL_NAMES.MODAL, MODAL_EVENT_METHOD_NAMES],
-  [CHANNEL_NAMES.ERROR_MODAL, MODAL_EVENT_METHOD_NAMES]
+  [[
+    CHANNEL_NAMES.MODAL,
+    CHANNEL_NAMES.ERROR_MODAL
+  ], MODAL_EVENT_METHOD_NAMES]
 ])
 
 const getEventName = (channel, method) => {
@@ -113,23 +118,41 @@ const send = (channel, method, args) => {
 
 const bfxReportElectronApi = {}
 
+const addNSIfChannelArr = (channelName, methodName, getMethod) => {
+  if (!Array.isArray(channelName)) {
+    bfxReportElectronApi[methodName] = getMethod(channelName)
+
+    return
+  }
+
+  for (const ns of channelName) {
+    bfxReportElectronApi[ns] = bfxReportElectronApi[ns] ?? {}
+
+    bfxReportElectronApi[ns][methodName] = getMethod(ns)
+  }
+}
+
 for (const [channelName, invokeMethodNames] of INVOKE_CHANNEL_MAP) {
   for (const methodName of Object.values(invokeMethodNames)) {
-    bfxReportElectronApi[methodName] = (args) => {
-      return invoke(channelName, methodName, args)
+    const getMethod = (ch) => (args) => {
+      return invoke(ch, methodName, args)
     }
+
+    addNSIfChannelArr(channelName, methodName, getMethod)
   }
 }
 for (const [channelName, eventMethodNames] of EVENT_CHANNEL_MAP) {
   for (const methodName of Object.values(eventMethodNames)) {
-    bfxReportElectronApi[methodName] = (args) => {
+    const getMethod = (ch) => (args) => {
       if (methodName.startsWith('on')) {
-        return on(channelName, methodName, args)
+        return on(ch, methodName, args)
       }
       if (methodName.startsWith('send')) {
-        return send(channelName, methodName, args)
+        return send(ch, methodName, args)
       }
     }
+
+    addNSIfChannelArr(channelName, methodName, getMethod)
   }
 }
 
