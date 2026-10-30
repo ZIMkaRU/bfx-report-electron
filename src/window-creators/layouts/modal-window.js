@@ -65,8 +65,18 @@ window.addEventListener('load', async () => {
   try {
     const modalElem = document.getElementById('modal')
     const closeBtnElem = document.getElementById('closeBtn')
+    let ns = null
     let commonArgs = null
     let timeout = null
+
+    await new Promise((resolve) => {
+      window.bfxReportElectronApi?.onNS((args) => {
+        const shouldBeResolvedFirstTime = !ns
+        ns = args?.ns
+
+        if (shouldBeResolvedFirstTime) resolve()
+      })
+    })
 
     const getInputRadioValue = (args) => {
       const radioElems = document.getElementsByName('input-radio')
@@ -118,7 +128,7 @@ window.addEventListener('load', async () => {
     }
 
     const sendModalClosedEvent = (args) => {
-      window.bfxReportElectronApi?.sendModalClosedEvent({
+      window.bfxReportElectronApi?.[ns]?.sendModalClosedEvent({
         dismiss: args?.dismiss ?? DISMISS_REASONS.CANCEL,
         toastId: args?.toastId,
         inputRadioValue: getInputRadioValue(args),
@@ -423,7 +433,7 @@ ${inputRangeElems.join('\n')}</div>`)
       })
     }
 
-    window.bfxReportElectronApi?.onCloseModalEvent(() => {
+    window.bfxReportElectronApi?.[ns]?.onCloseModalEvent(() => {
       if (!commonArgs?.toastId) {
         return
       }
@@ -433,7 +443,7 @@ ${inputRangeElems.join('\n')}</div>`)
         dismiss: DISMISS_REASONS.CLOSE
       })
     })
-    window.bfxReportElectronApi?.onFireModalEvent((args) => {
+    window.bfxReportElectronApi?.[ns]?.onFireModalEvent((args) => {
       if (commonArgs?.toastId) {
         sendModalClosedEvent({
           ...commonArgs,
@@ -450,12 +460,12 @@ ${inputRangeElems.join('\n')}</div>`)
           modalElem.lastElementChild.style.flex = '1 1 auto'
         }
 
-        window.bfxReportElectronApi?.setWindowHeight({
+        window.bfxReportElectronApi?.[ns]?.setWindowHeight({
           height: args?.preventSettingHeightToContent
             ? null
             : modalElem.scrollHeight
         })
-      }, 100)
+      }, 200)
 
       if (!Number.isInteger(args?.timer)) {
         return
