@@ -26,10 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed the redundant initial request for the `Account Balance` report. PR: [bfx-report-ui#1120](https://github.com/bitfinexcom/bfx-report-ui/pull/1120)
+- Fixed Electron app sub-menu positioning for better representation and a more consistent look. PR: [bfx-report-ui#1142](https://github.com/bitfinexcom/bfx-report-ui/pull/1142)
 
 ### Security
 
 - Updated dependencies and fix vulnerabilities in the UI. PR: [bfx-report-ui#1132](https://github.com/bitfinexcom/bfx-report-ui/pull/1132)
+- Reworked copyFiles helper more securely without the vulnerable shelljs package, which doesn't have a proper patched version at the moment, to reduce production dependency vulnerabilities and applied npm audit fixes. PR: [bfx-report-ui#1141](https://github.com/bitfinexcom/bfx-report-ui/pull/1141)
 
 ## [4.48.0] - 2026-10-14
 
