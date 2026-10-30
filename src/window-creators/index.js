@@ -33,7 +33,8 @@ const {
     IS_DEV
   },
   isWaylandSession,
-  openExternalUrl
+  openExternalUrl,
+  isMainWinAvailable
 } = require('../helpers')
 const {
   shouldUrlBeOpened,
@@ -428,13 +429,18 @@ const createModalWindow = async (args, opts) => {
     : ModalIpcChannelHandlers
   const winName = opts?.winName ?? WINDOW_NAMES.MODAL_WINDOW
   const shouldDevToolsBeShown = opts?.shouldDevToolsBeShown
+  const _parentWin = (
+    winName !== WINDOW_NAMES.MODAL_WINDOW &&
+    isMainWinAvailable(wins[WINDOW_NAMES.MODAL_WINDOW])
+  )
+    ? wins[WINDOW_NAMES.MODAL_WINDOW]
+    : wins[WINDOW_NAMES.MAIN_WINDOW]
   const parentWin = (
     opts?.hasNoParentWin ||
-    !wins?.[WINDOW_NAMES.MAIN_WINDOW] ||
-    wins[WINDOW_NAMES.MAIN_WINDOW].isDestroyed()
+    !isMainWinAvailable(_parentWin)
   )
     ? null
-    : wins[WINDOW_NAMES.MAIN_WINDOW]
+    : _parentWin
 
   const point = screen.getCursorScreenPoint()
   const { workArea } = screen.getDisplayNearestPoint(point)
@@ -456,6 +462,13 @@ const createModalWindow = async (args, opts) => {
       didFinishLoadHook: async (win) => {
         if (shouldWinBeClosedIfClickingOutside) {
           win.once('blur', () => {
+            if (
+              winName === WINDOW_NAMES.MODAL_WINDOW &&
+              isMainWinAvailable(wins[WINDOW_NAMES.ERROR_MODAL_WINDOW])
+            ) {
+              return
+            }
+
             IpcChannelHandlers.sendCloseModalEvent(win)
           })
         }
@@ -499,11 +512,17 @@ const createModalWindow = async (args, opts) => {
 }
 
 const createErrorModalWindow = async (args, opts) => {
-  return await createModalWindow(args, {
-    ...opts,
-    IpcChannelHandlers: ErrorModalIpcChannelHandlers,
-    winName: WINDOW_NAMES.ERROR_MODAL_WINDOW
-  })
+  return await createModalWindow(
+    {
+      icon: 'error',
+      ...args
+    },
+    {
+      ...opts,
+      IpcChannelHandlers: ErrorModalIpcChannelHandlers,
+      winName: WINDOW_NAMES.ERROR_MODAL_WINDOW
+    }
+  )
 }
 
 const createErrorWindow = async () => {
