@@ -39,12 +39,18 @@ const {
   shouldUrlBeOpened,
   setWinFullScreenAndMaximize
 } = require('./helpers')
-const {
-  MenuIpcChannelHandlers,
-  ThemeIpcChannelHandlers,
-  ModalIpcChannelHandlers,
-  ErrorModalIpcChannelHandlers
-} = require('./main-renderer-ipc-bridge')
+const MenuIpcChannelHandlers = require(
+  './main-renderer-ipc-bridge/menu-ipc-channel-handlers'
+)
+const ThemeIpcChannelHandlers = require(
+  './main-renderer-ipc-bridge/theme-ipc-channel-handlers'
+)
+const ModalIpcChannelHandlers = require(
+  './main-renderer-ipc-bridge/modal-ipc-channel-handlers'
+)
+const ErrorModalIpcChannelHandlers = require(
+  './main-renderer-ipc-bridge/error-modal-ipc-channel-handlers'
+)
 
 const showNativeTitleBar = parseEnvValToBool(
   process.env.SHOW_NATIVE_TITLE_BAR
