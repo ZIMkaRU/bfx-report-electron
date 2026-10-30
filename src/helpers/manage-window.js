@@ -128,7 +128,7 @@ const isWindowInvisible = (win, opts) => {
     shouldChildWinsBeChecked
   } = opts ?? {}
   const childWins = shouldChildWinsBeChecked
-    ? win.getChildWindows()
+    ? win?.getChildWindows() ?? []
     : []
   const isFocused = (
     win?.isFocused() ||
