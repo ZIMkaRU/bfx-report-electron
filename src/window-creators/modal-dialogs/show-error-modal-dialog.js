@@ -11,10 +11,10 @@ const {
   ReportsFolderChangingError,
   SyncFrequencyChangingError
 } = require('../../errors')
-const showMessageModalDialog = require('./show-message-modal-dialog')
+const { createNativeMessageDialog } = require('./helpers')
 
-const _showErrorBox = (win, title = '', message = '') => {
-  return showMessageModalDialog(win, {
+const _showErrorBox = async (win, title = '', message = '') => {
+  return await createNativeMessageDialog(win, {
     type: 'error',
     buttons: [
       i18next.t('common.confirmButtonText')
