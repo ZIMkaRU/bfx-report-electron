@@ -4,7 +4,9 @@ const { BrowserWindow } = require('electron')
 const i18next = require('i18next')
 
 const ipcs = require('./ipcs')
-const showErrorModalDialog = require('./show-error-modal-dialog')
+const {
+  showErrorModalDialog
+} = require('./window-creators/modal-dialogs')
 const wins = require('./window-creators/windows')
 const WINDOW_NAMES = require('./window-creators/window.names')
 const { createModalWindow } = require('./window-creators')

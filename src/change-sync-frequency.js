@@ -8,7 +8,9 @@ const { createModalWindow } = require('./window-creators')
 const {
   SyncFrequencyChangingError
 } = require('./errors')
-const showErrorModalDialog = require('./show-error-modal-dialog')
+const {
+  showErrorModalDialog
+} = require('./window-creators/modal-dialogs')
 const pauseApp = require('./pause-app')
 const relaunch = require('./relaunch')
 const { getConfigsKeeperByName } = require('./configs-keeper')

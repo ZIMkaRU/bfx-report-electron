@@ -10,7 +10,7 @@ const {
   InvalidFolderPathError,
   ReportsFolderChangingError,
   SyncFrequencyChangingError
-} = require('./errors')
+} = require('../../errors')
 const showMessageModalDialog = require('./show-message-modal-dialog')
 
 const _showErrorBox = (win, title = '', message = '') => {

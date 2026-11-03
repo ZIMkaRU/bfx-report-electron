@@ -8,7 +8,9 @@ const {
   DbImportingError
 } = require('./errors')
 const { unzip } = require('./archiver')
-const showErrorModalDialog = require('./show-error-modal-dialog')
+const {
+  showErrorModalDialog
+} = require('./window-creators/modal-dialogs')
 const pauseApp = require('./pause-app')
 const relaunch = require('./relaunch')
 const { isMainWinAvailable } = require('./helpers')

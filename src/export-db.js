@@ -6,7 +6,9 @@ const i18next = require('i18next')
 
 const { InvalidFilePathError } = require('./errors')
 const { zip } = require('./archiver')
-const showErrorModalDialog = require('./show-error-modal-dialog')
+const {
+  showErrorModalDialog
+} = require('./window-creators/modal-dialogs')
 const {
   showLoadingWindow,
   hideLoadingWindow,
