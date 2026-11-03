@@ -5,9 +5,9 @@ const i18next = require('i18next')
 
 const { AppInitializationError } = require('../errors')
 const relaunch = require('../relaunch')
-const showMessageModalDialog = require(
-  '../show-message-modal-dialog'
-)
+const {
+  showMessageModalDialog
+} = require('../window-creators/modal-dialogs')
 const isMainWinAvailable = require(
   '../helpers/is-main-win-available'
 )
