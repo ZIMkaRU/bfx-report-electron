@@ -13,7 +13,9 @@ const backupDB = require('../backup-db')
 const changeReportsFolder = require('../change-reports-folder')
 const changeSyncFrequency = require('../change-sync-frequency')
 const triggerElectronLoad = require('../trigger-electron-load')
-const showAboutModalDialog = require('../show-about-modal-dialog')
+const showAboutModalDialog = require(
+  '../window-creators/modal-dialogs/show-about-modal-dialog'
+)
 const {
   checkForUpdates,
   quitAndInstall

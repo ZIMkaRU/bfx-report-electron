@@ -8,8 +8,8 @@ const {
 const path = require('node:path')
 const i18next = require('i18next')
 
-const getDebugInfo = require('./helpers/get-debug-info')
-const openExternalUrl = require('./helpers/open-external-url')
+const getDebugInfo = require('../../helpers/get-debug-info')
+const openExternalUrl = require('../../helpers/open-external-url')
 
 module.exports = () => {
   return async () => {
