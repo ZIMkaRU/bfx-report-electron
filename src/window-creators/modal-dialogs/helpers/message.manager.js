@@ -59,7 +59,7 @@ class MessageManager {
         : ''
 
       plainTextArr.push(`${title}${separator}${message} - ${ts}`)
-      htmlArr.push(`<p>${data.message} <small>${ts}<\\small><\\p>`)
+      htmlArr.push(`<p>${data.message} <small>${ts}<\\small><\\p>`) // TODO:
     }
 
     return {
