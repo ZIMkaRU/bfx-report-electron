@@ -9,7 +9,7 @@ const isMainWinAvailable = require('../../../helpers/is-main-win-available')
 
 module.exports = async (win, opts = {}) => {
   const defaultWin = isMainWinAvailable(wins[WINDOW_NAMES.MAIN_WINDOW])
-    ? WINDOW_NAMES.MAIN_WINDOW
+    ? wins[WINDOW_NAMES.MAIN_WINDOW]
     : BrowserWindow.getFocusedWindow()
   const parentWin = win ?? defaultWin
 
