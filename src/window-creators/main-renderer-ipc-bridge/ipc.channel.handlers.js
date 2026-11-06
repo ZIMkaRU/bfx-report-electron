@@ -14,10 +14,14 @@ class IpcChannelHandlers {
   }
 
   #setup () {
-    const methodNames = Object.getOwnPropertyNames(
-      Object.getPrototypeOf(this)
-    )
-    methodNames.shift()
+    const methodNames = new Set()
+    let proto = Object.getPrototypeOf(this)
+
+    while (proto && proto !== Object.prototype) {
+      const names = Object.getOwnPropertyNames(proto)
+      names.forEach(name => methodNames.add(name))
+      proto = Object.getPrototypeOf(proto)
+    }
 
     for (const handlerName of methodNames) {
       if (!handlerName.endsWith('Handler')) {
