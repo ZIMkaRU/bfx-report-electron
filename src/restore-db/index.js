@@ -8,6 +8,8 @@ const ipcs = require('../ipcs')
 const {
   createModalWindow
 } = require('../window-creators')
+const wins = require('../window-creators/windows')
+const WINDOW_NAMES = require('../window-creators/window.names')
 const {
   deserializeError
 } = require('../helpers/utils')
@@ -103,7 +105,7 @@ module.exports = () => {
     try {
       if (
         !app.isReady() ||
-        !isMainWinAvailable()
+        !isMainWinAvailable(wins[WINDOW_NAMES.MAIN_WINDOW])
       ) {
         throw new DbRestoringError()
       }

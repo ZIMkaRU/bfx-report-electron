@@ -6,6 +6,8 @@ const ipcs = require('../ipcs')
 const isMainWinAvailable = require(
   '../helpers/is-main-win-available'
 )
+const wins = require('../window-creators/windows')
+const WINDOW_NAMES = require('../window-creators/window.names')
 
 const PROCESS_STATES = require(
   '../../bfx-reports-framework/workers/loc.api/process.message.manager/process.states'
@@ -16,7 +18,7 @@ module.exports = () => {
     try {
       if (
         !app.isReady() ||
-        !isMainWinAvailable()
+        !isMainWinAvailable(wins[WINDOW_NAMES.MAIN_WINDOW])
       ) {
         return
       }

@@ -7,6 +7,8 @@ const i18next = require('i18next')
 const {
   createModalWindow
 } = require('../window-creators')
+const wins = require('../window-creators/windows')
+const WINDOW_NAMES = require('../window-creators/window.names')
 const isMainWinAvailable = require(
   '../helpers/is-main-win-available'
 )
@@ -64,7 +66,7 @@ module.exports = async (params) => {
 
     if (
       !app.isReady() ||
-      !isMainWinAvailable()
+      !isMainWinAvailable(wins[WINDOW_NAMES.MAIN_WINDOW])
     ) {
       throw new UserManualShowingError()
     }

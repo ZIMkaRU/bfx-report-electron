@@ -48,7 +48,7 @@ module.exports = (menuItemId, opts) => {
     }
   }
 
-  if (!isMainWinAvailable()) {
+  if (!isMainWinAvailable(wins[WINDOW_NAMES.MAIN_WINDOW])) {
     return
   }
 
