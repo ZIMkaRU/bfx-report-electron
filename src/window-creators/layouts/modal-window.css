@@ -87,6 +87,48 @@ body::-webkit-scrollbar-thumb,
   border-radius: 2px;
 }
 
+.badge {
+  white-space: nowrap;
+  background-color: color-mix(in srgb, var(--bgColor2, #0B1923) 60%, transparent);
+  color: var(--color2, #808B93);
+  padding: 2px;
+  font-size: 0.8em;
+}
+
+.error-modal-dialog {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.error-modal-dialog > *:not(:only-child) {
+  display: grid;
+  grid-template-columns: 15px 1fr auto;
+  align-items: start;
+  gap: 5px;
+  margin: 0;
+}
+
+.error-modal-dialog > *:not(:only-child)::before {
+  content: "•";
+  grid-column: 1;
+  color: var(--btnBg, #82baf6);
+  text-align: left;
+}
+
+.error-modal-dialog > *:not(:only-child) > .badge {
+  grid-column: 3;
+}
+
+.error-modal-dialog:has(> :only-child) > * {
+  display: block;
+}
+
+.error-modal-dialog:has(> :only-child) > *::before {
+  display: none;
+}
+
 .modal {
   display: none; /* flex */
   flex-direction: column;
