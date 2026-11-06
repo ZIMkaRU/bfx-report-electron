@@ -9,7 +9,9 @@ const { initClosedEventListener } = require('./helpers')
 class ModalIpcChannelHandlers extends IpcChannelHandlers {
   static channelName = 'modal'
 
-  static win = null
+  static lastWin = null
+  static lastToastId = null
+  static laseClosedEventPromise = null
   static isModalClosedEventListenerInited = false
   static modalClosedEventHandlerSet = new Set()
   static isModalReadyToBeShownControlObj = {
@@ -26,8 +28,9 @@ class ModalIpcChannelHandlers extends IpcChannelHandlers {
   }
 
   static async sendFireModalEvent (win, args) {
-    GeneralIpcChannelHandlers.sendNS(win, { ns: this.channelName })
-    this.win = win
+    const needLastToBeRerendered = !win
+    const _win = needLastToBeRerendered ? this.lastWin : win
+    GeneralIpcChannelHandlers.sendNS(_win, { ns: this.channelName })
 
     if (!args?.preventSettingHeightToContent) {
       this.isModalReadyToBeShownControlObj
@@ -37,6 +40,15 @@ class ModalIpcChannelHandlers extends IpcChannelHandlers {
             resolve()
           }
         })
+    }
+    if (needLastToBeRerendered) {
+      this.sendToRenderer(this.sendFireModalEvent, _win, {
+        ...args,
+        toastId: this.lastToastId,
+        needLastToBeRerendered
+      })
+
+      return await this.laseClosedEventPromise
     }
 
     const {
@@ -53,7 +65,11 @@ class ModalIpcChannelHandlers extends IpcChannelHandlers {
       }
     })
 
-    this.sendToRenderer(this.sendFireModalEvent, win, {
+    this.lastWin = _win
+    this.lastToastId = toastId
+    this.laseClosedEventPromise = closedEventPromise
+
+    this.sendToRenderer(this.sendFireModalEvent, _win, {
       ...args,
       toastId
     })
@@ -62,7 +78,7 @@ class ModalIpcChannelHandlers extends IpcChannelHandlers {
   }
 
   setWindowHeightHandler (event, args) {
-    const win = this.constructor.win
+    const win = this.constructor.lastWin
     const height = args?.height
 
     if (
