@@ -424,7 +424,7 @@ const createStartupLoadingWindow = async () => {
 }
 
 const createModalWindow = async (args, opts) => {
-  const IpcChannelHandlers = opts?.IpcChannelHandlers instanceof ModalIpcChannelHandlers
+  const IpcChannelHandlers = opts?.IpcChannelHandlers?.prototype instanceof ModalIpcChannelHandlers
     ? opts.IpcChannelHandlers
     : ModalIpcChannelHandlers
   const winName = opts?.winName ?? WINDOW_NAMES.MODAL_WINDOW
