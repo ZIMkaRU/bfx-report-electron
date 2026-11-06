@@ -47,8 +47,10 @@ class MessageManager {
 
     for (const [, data] of this.#messages) {
       const diffMs = currMts - data.mts
-      // TODO: Need to improve translation
-      const ts = i18next.t('showErrorModalDialog.timestamp', { diffMs })
+      const diffMins = Math.floor(diffMs / 60_000)
+      const ts = diffMins < 1
+        ? i18next.t('showErrorModalDialog.timestampJustNow')
+        : i18next.t('showErrorModalDialog.timestamp', { count: diffMins })
       const title = data.title ? data.title : ''
       const message = data.message ? data.message : ''
       const separator = (
@@ -57,9 +59,12 @@ class MessageManager {
       )
         ? ': '
         : ''
+      const badge = this.#messages.size > 1
+        ? `<small class="badge">${ts}</small>`
+        : ''
 
       plainTextArr.push(`${title}${separator}${message} - ${ts}`)
-      htmlArr.push(`<p>${data.message} <small>${ts}<\\small><\\p>`) // TODO:
+      htmlArr.push(`<div>${title}${separator}${message}${badge}</div>`)
     }
 
     return {
