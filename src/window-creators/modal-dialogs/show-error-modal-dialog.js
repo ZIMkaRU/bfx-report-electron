@@ -15,22 +15,63 @@ const {
   createNativeMessageDialog,
   MessageManager
 } = require('./helpers')
+const { createErrorModalWindow } = require('../')
+const wins = require('../windows')
+const WINDOW_NAMES = require('../window.names')
+const ErrorModalIpcChannelHandlers = require(
+  '../main-renderer-ipc-bridge/error-modal-ipc-channel-handlers'
+)
+const { isMainWinAvailable } = require('../../helpers')
 
 const messageManager = new MessageManager()
+let errModalWinPromise = null
 let controller = null
 let dialogPromise = null
 
-// TODO: Use custom modal window first
 const _showErrorBox = async (win, title = '', message = '') => {
   const commonTitle = i18next.t('showErrorModalDialog.title')
   const { plainText, html } = messageManager
     .setMessage({ title, message })
     .getMessages()
 
-  return await _showNativeMessageDialog(
-    win,
-    { commonTitle, plainText }
-  )
+  try {
+    const args = {
+      title: commonTitle,
+      text: html,
+      showConfirmButton: true,
+      confirmButtonText: i18next.t('common.confirmButtonText'),
+      textClassName: 'error-modal-dialog'
+    }
+
+    if (isMainWinAvailable(wins[WINDOW_NAMES.ERROR_MODAL_WINDOW])) {
+      await ErrorModalIpcChannelHandlers.sendFireModalEvent(null, args)
+      await errModalWinPromise
+
+      return
+    }
+
+    errModalWinPromise = createErrorModalWindow(
+      args,
+      {
+        width: 500,
+        height: 400
+      }
+    )
+
+    try {
+      await errModalWinPromise
+    } finally {
+      errModalWinPromise = null
+    }
+  } catch (err) {
+    console.debug(err)
+
+    // Back compatibility if no possible to create a browser window
+    await _showNativeMessageDialog(
+      win,
+      { commonTitle, plainText }
+    )
+  }
 }
 
 const _showNativeMessageDialog = async (win, args) => {
@@ -59,14 +100,15 @@ const _showNativeMessageDialog = async (win, args) => {
     signal: controller.signal
   })
   dialogPromise = currDialogPromise
-  const result = await currDialogPromise
 
-  if (dialogPromise === currDialogPromise) {
-    dialogPromise = null
-    controller = null
+  try {
+    await currDialogPromise
+  } finally {
+    if (dialogPromise === currDialogPromise) {
+      dialogPromise = null
+      controller = null
+    }
   }
-
-  return result
 }
 
 module.exports = async (win, title = 'Error', err) => {
@@ -76,7 +118,9 @@ module.exports = async (win, title = 'Error', err) => {
       ? `${message}, ${err.syscall}: '${err.path}'`
       : message
 
-    return _showErrorBox(win, title, content)
+    await _showErrorBox(win, title, content)
+
+    return
   }
   if (err.code === 'EACCES') {
     const message = i18next.t('showErrorModalDialog.eaccesErrorMessage')
@@ -84,17 +128,23 @@ module.exports = async (win, title = 'Error', err) => {
       ? `${message}, ${err.syscall}: '${err.path}'`
       : message
 
-    return _showErrorBox(win, title, content)
+    await _showErrorBox(win, title, content)
+
+    return
   }
   if (err instanceof InvalidFilePathError) {
     const message = i18next.t('showErrorModalDialog.invalidFilePathErrorMessage')
 
-    return _showErrorBox(win, title, message)
+    await _showErrorBox(win, title, message)
+
+    return
   }
   if (err instanceof InvalidFileNameInArchiveError) {
     const message = i18next.t('showErrorModalDialog.invalidFileNameInArchErrorMessage')
 
-    return _showErrorBox(win, title, message)
+    await _showErrorBox(win, title, message)
+
+    return
   }
   if (
     err instanceof DbImportingError ||
@@ -102,25 +152,33 @@ module.exports = async (win, title = 'Error', err) => {
   ) {
     const message = i18next.t('showErrorModalDialog.dbImportingErrorMessage')
 
-    return _showErrorBox(win, title, message)
+    await _showErrorBox(win, title, message)
+
+    return
   }
   if (err instanceof DbRemovingError) {
     const message = i18next.t('showErrorModalDialog.dbRemovingErrorMessage')
 
-    return _showErrorBox(win, title, message)
+    await _showErrorBox(win, title, message)
+
+    return
   }
   if (err instanceof ReportsFolderChangingError) {
     const message = i18next.t('showErrorModalDialog.reportsFolderChangingErrorMessage')
 
-    return _showErrorBox(win, title, message)
+    await _showErrorBox(win, title, message)
+
+    return
   }
   if (err instanceof SyncFrequencyChangingError) {
     const message = i18next.t('showErrorModalDialog.syncFrequencyChangingErrorMessage')
 
-    return _showErrorBox(win, title, message)
+    await _showErrorBox(win, title, message)
+
+    return
   }
 
   const message = i18next.t('showErrorModalDialog.unexpectedExceptionMessage')
 
-  return _showErrorBox(win, title, message)
+  await _showErrorBox(win, title, message)
 }
