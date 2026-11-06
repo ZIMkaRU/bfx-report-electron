@@ -173,7 +173,8 @@ window.addEventListener('load', async () => {
         inputRangeOptions = [],
         makeInputRangeInline = false,
         progressSteps = [],
-        currentProgressStep = 0
+        currentProgressStep = 0,
+        needLastToBeRerendered
       } = args ?? {}
       const elems = []
       const btnElems = []
@@ -195,7 +196,10 @@ window.addEventListener('load', async () => {
       ) {
         modalElem.classList.add(containerClassName)
       }
-      if (showWinCloseButton) {
+      if (
+        showWinCloseButton &&
+        !needLastToBeRerendered
+      ) {
         closeBtnElem.addEventListener('click', (e) => {
           finalizeModalWindow({
             ...args,
@@ -444,15 +448,20 @@ ${inputRangeElems.join('\n')}</div>`)
       })
     })
     window.bfxReportElectronApi?.[ns]?.onFireModalEvent((args) => {
-      if (commonArgs?.toastId) {
+      if (
+        commonArgs?.toastId &&
+        !args?.needLastToBeRerendered
+      ) {
         sendModalClosedEvent({
           ...commonArgs,
           dismiss: DISMISS_REASONS.CLOSE
         })
       }
 
-      commonArgs = args
-      renderModal(args)
+      commonArgs = args?.needLastToBeRerendered
+        ? { ...commonArgs, ...args }
+        : args
+      renderModal(commonArgs)
       showModal()
       setTimeout(() => {
         if (args?.preventSettingHeightToContent) {
@@ -467,7 +476,10 @@ ${inputRangeElems.join('\n')}</div>`)
         })
       }, 200)
 
-      if (!Number.isInteger(args?.timer)) {
+      if (
+        !Number.isInteger(args?.timer) ||
+        args?.needLastToBeRerendered
+      ) {
         return
       }
 
