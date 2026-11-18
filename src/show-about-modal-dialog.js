@@ -48,7 +48,7 @@ module.exports = () => {
         await openExternalUrl(repositoryUrl)
       }
 
-      clipboard.writeText(detail)
+      await clipboard.writeText(detail)
     } catch (err) {
       console.error(err)
     }
