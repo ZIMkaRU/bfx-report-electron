@@ -121,9 +121,9 @@ sed -i".bak" -E -e \
 cd "$UI_FOLDER"
 echo -e "\n${COLOR_BLUE}Installing the UI deps...${COLOR_NORMAL}"
 rm -rf ./node_modules
-npm ci --no-audit --progress=false
+npm ci
 checkNodeModulesDir "$UI_FOLDER"
-npm ls --depth=0 --only=prod 1<&-
+npm ls --depth=0 1<&-
 
 echo -e "\n${COLOR_BLUE}UI building...${COLOR_NORMAL}"
 mv -f "$ROOT/.eslintrc" "$ROOT/off-eslintrc" || [[ $? == 1 ]]
