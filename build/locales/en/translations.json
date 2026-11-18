@@ -207,6 +207,10 @@
     "gitHubButtonText": "Open GitHub"
   },
   "showErrorModalDialog": {
+    "title": "Something went wrong",
+    "timestampJustNow": "just now",
+    "timestamp_one": "{{count}} min ago",
+    "timestamp_other": "{{count}} mins ago",
     "enoentErrorMessage": "No such file or directory",
     "eaccesErrorMessage": "Permission denied",
     "invalidFilePathErrorMessage": "Invalid file path",
