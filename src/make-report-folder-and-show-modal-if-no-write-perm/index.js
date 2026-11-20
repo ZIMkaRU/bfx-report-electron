@@ -10,8 +10,8 @@ const {
     rm
   }
 } = require('node:fs')
+const { randomUUID } = require('node:crypto')
 const i18next = require('i18next')
-const { v4: uuidv4 } = require('uuid')
 const escapeHtml = require('escape-html')
 
 const { getConfigsKeeperByName } = require('../configs-keeper')
@@ -69,7 +69,7 @@ const checkAccess = async (reportFilePath) => {
   await access(reportFilePath, W_OK)
 
   // Need to write to a real file to check the dynamic antivirus blocks
-  const emptyFilePath = path.join(reportFilePath, uuidv4())
+  const emptyFilePath = path.join(reportFilePath, randomUUID())
 
   await writeFile(emptyFilePath, 'empty')
   await rm(emptyFilePath, {
