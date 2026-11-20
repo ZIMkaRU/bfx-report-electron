@@ -33,6 +33,8 @@ env:
 
 jobs:
   linux-win-docker-builder:
+    permissions:
+      contents: read
     timeout-minutes: 90
     runs-on: ubuntu-22.04
     outputs:
@@ -163,6 +165,8 @@ jobs:
         sudo chown -R $(id -u):$(id -g) ~/.cache/electron-builder
 
   mac-builder:
+    permissions:
+      contents: read
     timeout-minutes: 150
     runs-on: macos-15-intel
     outputs:
@@ -277,6 +281,8 @@ jobs:
 
   merge-file-lists:
     name: Merge release file lists for Artifacts section
+    permissions:
+      contents: read
     needs: [linux-win-docker-builder, mac-builder]
     runs-on: ubuntu-22.04
     outputs:
@@ -299,6 +305,8 @@ jobs:
 
   upload-unarchived-artifacts:
     name: Upload release files to Artifacts section
+    permissions:
+      contents: read
     needs: [merge-file-lists]
     runs-on: ubuntu-22.04
     strategy:
@@ -319,6 +327,8 @@ jobs:
 
   put-changelog-to-release-page:
     name: Put Changelog to Release Page
+    permissions:
+      contents: read
     timeout-minutes: 10
     runs-on: ubuntu-22.04
     needs: [linux-win-docker-builder, mac-builder]
@@ -383,6 +393,8 @@ jobs:
             })
   linux-e2e-test-runner:
     name: Linux E2E Test Runner
+    permissions:
+      contents: read
     timeout-minutes: 30
     runs-on: ubuntu-22.04
     needs: [linux-win-docker-builder]
@@ -413,6 +425,8 @@ jobs:
 
   win-e2e-test-runner:
     name: Win E2E Test Runner
+    permissions:
+      contents: read
     timeout-minutes: 30
     runs-on: windows-2022
     needs: [linux-win-docker-builder]
@@ -443,6 +457,8 @@ jobs:
 
   mac-e2e-test-runner:
     name: Mac E2E Test Runner
+    permissions:
+      contents: read
     timeout-minutes: 30
     runs-on: macos-15
     needs: [mac-builder]
