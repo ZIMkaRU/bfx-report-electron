@@ -38,6 +38,7 @@
     "yauzl": "3.2.1"
   },
   "devDependencies": {
+    "@bitfinex/lint-js": "^1.1.0",
     "@wdio/cli": "10.2.0",
     "@wdio/electron-service": "10.4.1",
     "@wdio/junit-reporter": "10.2.0",
@@ -51,35 +52,26 @@
     "electron": "45.3.4",
     "electron-builder": "26.18.0",
     "electron-chromedriver": "45.3.4",
-    "eslint": "8.57.0",
-    "eslint-config-standard": "17.1.0",
     "fast-xml-parser": "5.8.0",
-    "mocha": "11.1.0",
-    "standard": "17.1.2"
+    "mocha": "11.1.0"
   },
   "overrides": {
     "@wdio/electron-service": {
       "puppeteer-core": "25.18.1"
     }
   },
-  "standard": {
-    "globals": [
-      "describe",
-      "it",
-      "before",
-      "after"
-    ]
-  },
   "scripts": {
     "start": "cross-env NODE_ENV=development DEBUG=* electron . --ozone-platform=x11",
     "startWithUIOnPort": "concurrently -ki -c green,blue -n UI,ELECTRON \"npm run startUI\" \"cross-env NODE_ENV=development DEBUG=* SHOULD_LOCALHOST_BE_USED_FOR_LOADING_UI_IN_DEV_MODE=1 electron . --ozone-platform=x11\"",
-    "test": "standard && npm run unit",
+    "test": "npm run lint && npm run unit",
     "unit": "cross-env NODE_ENV=test mocha './src/**/__test__/*.spec.js' --config .mocharc.json",
     "setup": "./scripts/setup.sh",
     "launch": "./scripts/launch.sh",
     "sync-repo": "./scripts/sync-repo.sh",
     "e2e": "cross-env NODE_ENV=test wdio run ./wdio.conf.js",
     "startUI": "cd bfx-report-ui && cross-env BROWSER=none npm start",
+    "lint": "bfx-lint-js",
+    "lint:fix": "bfx-lint-js --fix",
     "rebuild": "npm rebuild electron-winstaller electron-chromedriver --ignore-scripts=false"
   },
   "allowScripts": {
