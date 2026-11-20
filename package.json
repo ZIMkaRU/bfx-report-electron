@@ -45,7 +45,7 @@
     "@wdio/mocha-framework": "10.2.0",
     "@wdio/spec-reporter": "10.2.0",
     "app-builder-bin": "4.2.0",
-    "concurrently": "9.0.1",
+    "concurrently": "10.0.7",
     "cross-env": "10.1.0",
     "dotenv": "18.0.10",
     "electron": "45.3.4",
