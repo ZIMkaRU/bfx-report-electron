@@ -1,6 +1,6 @@
 'use strict'
 
-const { v4: uuidv4 } = require('uuid')
+const { randomUUID } = require('node:crypto')
 
 module.exports = (params) => {
   const {
@@ -11,7 +11,7 @@ module.exports = (params) => {
   } = params ?? {}
 
   // Sign toast with uuid for further identification
-  const toastId = uuidv4()
+  const toastId = randomUUID()
 
   const closedEventPromise = new Promise((resolve, reject) => {
     const handler = (event, args) => {
