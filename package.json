@@ -55,6 +55,8 @@
   },
   "overrides": {
     "@wdio/electron-service": {
+      "basic-ftp": "6.2.6",
+      "glob": "14.0.4",
       "puppeteer-core": "25.18.1"
     },
     "archiver": {
