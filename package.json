@@ -30,8 +30,8 @@
     "i18next": "27.2.5",
     "i18next-fs-backend": "2.7.1",
     "js-yaml": "5.5.0",
+    "marked": "18.3.0",
     "new-github-issue-url": "0.2.1",
-    "showdown": "2.1.0",
     "truncate-utf8-bytes": "1.0.2",
     "yauzl": "3.4.0"
   },
