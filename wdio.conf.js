@@ -92,9 +92,6 @@ exports.config = {
         '--disable-features=VizDisplayCompositor',
         ...(IS_LINUX ? ['--ozone-platform=x11'] : [])
       ]
-    },
-    'wdio:chromedriverOptions': {
-      binary: path.resolve('./node_modules/electron-chromedriver/bin/chromedriver')
     }
   }],
 

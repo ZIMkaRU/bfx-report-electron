@@ -49,7 +49,6 @@
     "dotenv": "18.0.10",
     "electron": "45.3.4",
     "electron-builder": "26.18.1",
-    "electron-chromedriver": "45.3.4",
     "fast-xml-parser": "5.12.1",
     "mocha": "12.0.3"
   },
@@ -69,6 +68,7 @@
       "glob": "14.0.4",
       "minimatch": "11.0.5"
     },
+    "extract-zip": "npm:@electron-internal/extract-zip@1.0.9",
     "mocha": {
       "glob": "14.0.4",
       "minimatch": "11.0.5"
@@ -86,10 +86,9 @@
     "startUI": "cd bfx-report-ui && cross-env BROWSER=none npm start",
     "lint": "bfx-lint-js",
     "lint:fix": "bfx-lint-js --fix",
-    "rebuild": "npm rebuild electron-winstaller electron-chromedriver --ignore-scripts=false"
+    "rebuild": "npm rebuild electron-winstaller --ignore-scripts=false"
   },
   "allowScripts": {
-    "electron-chromedriver@45.3.4": true,
     "electron-winstaller@5.4.0": true
   }
 }
