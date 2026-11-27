@@ -96,7 +96,7 @@ const initI18next = () => {
   }
 
   const configs = {
-    initImmediate: false,
+    initAsync: false,
     fallbackLng: {
       es: ['es-EM', 'en'],
       zh: ['zh-CN', 'en'],

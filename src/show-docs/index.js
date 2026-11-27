@@ -1,7 +1,6 @@
 'use strict'
 
 const { app } = require('electron')
-const { Converter } = require('showdown')
 const i18next = require('i18next')
 
 const {
@@ -11,14 +10,7 @@ const isMainWinAvailable = require(
   '../helpers/is-main-win-available'
 )
 const { UserManualShowingError } = require('../errors')
-
-const converter = new Converter({
-  tables: true,
-  strikethrough: true,
-  tasklists: true,
-  disableForced4SpacesIndentedSublists: true,
-  requireSpaceBeforeHeadingText: true
-})
+const convertMdToHtml = require('../helpers/convert-md-to-html')
 
 const _fireAlert = async (params) => {
   const {
@@ -69,7 +61,7 @@ module.exports = async (params) => {
       throw new UserManualShowingError()
     }
 
-    const html = converter.makeHtml(mdDoc)
+    const html = convertMdToHtml(mdDoc)
 
     return await _fireAlert({
       icon,

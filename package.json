@@ -1,80 +1,95 @@
 {
   "name": "bfx-report-electron",
-  "version": "4.49.0",
+  "version": "5.0.0",
   "repository": "https://github.com/bitfinexcom/bfx-report-electron",
   "desktopName": "com.bitfinex.report",
   "description": "Reporting tool",
   "author": "bitfinex.com",
   "main": "index.js",
   "engines": {
-    "node": ">=24.14.0"
+    "node": ">=24.22.3"
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@bitfinex/bfx-svc-test-helper": "git+https://github.com/bitfinexcom/bfx-svc-test-helper.git",
-    "@bitfinex/lib-js-util-base": "git+https://github.com/bitfinexcom/lib-js-util-base.git",
-    "ajv": "8.18.0",
+    "@bitfinex/bfx-svc-test-helper": "git+https://github.com/bitfinexcom/bfx-svc-test-helper.git#v2.0.2",
+    "@bitfinex/lib-js-util-base": "git+https://github.com/bitfinexcom/lib-js-util-base.git#v3.0.0",
+    "ajv": "8.20.0",
     "ajv-formats": "3.0.1",
     "archiver": "7.0.1",
-    "bittorrent-dht": "10.0.2",
+    "bittorrent-dht": "10.0.7",
     "changelog-parser": "3.0.1",
-    "clean-stack": "6.0.0",
+    "clean-stack": "7.0.0",
     "compare-versions": "6.1.1",
     "cron-validate": "1.5.3",
-    "electron-log": "4.4.8",
-    "electron-updater": "6.8.9",
+    "electron-log": "5.4.4",
+    "electron-updater": "6.8.11",
     "escape-html": "1.0.3",
-    "get-port": "7.0.0",
+    "get-port": "7.2.0",
     "get-stream": "9.0.1",
-    "github-markdown-css": "5.8.1",
-    "grenache-grape": "1.0.0",
-    "i18next": "23.15.1",
-    "i18next-fs-backend": "2.6.6",
-    "js-yaml": "4.3.0",
+    "github-markdown-css": "5.9.0",
+    "i18next": "27.2.5",
+    "i18next-fs-backend": "2.7.1",
+    "js-yaml": "5.5.0",
+    "marked": "18.3.0",
     "new-github-issue-url": "0.2.1",
-    "showdown": "2.1.0",
     "truncate-utf8-bytes": "1.0.2",
-    "uuid": "11.1.1",
-    "yauzl": "3.2.1"
+    "yauzl": "3.4.0"
   },
   "devDependencies": {
-    "@wdio/cli": "9.30.0",
-    "@wdio/electron-service": "10.0.0-next.10",
-    "@wdio/junit-reporter": "9.29.1",
-    "@wdio/local-runner": "9.30.0",
-    "@wdio/mocha-framework": "9.30.0",
-    "@wdio/spec-reporter": "9.29.1",
+    "@bitfinex/lint-js": "^1.1.0",
+    "@wdio/cli": "10.2.0",
+    "@wdio/electron-service": "10.4.1",
+    "@wdio/globals": "10.2.0",
+    "@wdio/junit-reporter": "10.2.0",
+    "@wdio/local-runner": "10.2.0",
+    "@wdio/mocha-framework": "10.2.0",
+    "@wdio/spec-reporter": "10.2.0",
     "app-builder-bin": "4.2.0",
-    "concurrently": "9.0.1",
-    "cross-env": "7.0.3",
-    "dotenv": "16.3.1",
-    "electron": "43.2.0",
-    "electron-builder": "26.15.3",
-    "electron-chromedriver": "43.2.0",
-    "eslint": "8.57.0",
-    "eslint-config-standard": "17.1.0",
-    "fast-xml-parser": "5.8.0",
-    "mocha": "11.1.0",
-    "puppeteer-core": "25.3.0",
-    "standard": "17.1.2"
+    "concurrently": "10.0.7",
+    "cross-env": "10.1.0",
+    "dotenv": "18.0.10",
+    "electron": "45.3.4",
+    "electron-builder": "26.18.1",
+    "fast-xml-parser": "5.12.1",
+    "mocha": "12.0.3"
   },
-  "standard": {
-    "globals": [
-      "describe",
-      "it",
-      "before",
-      "after"
-    ]
+  "overrides": {
+    "@electron/universal": {
+      "minimatch": "11.0.5"
+    },
+    "@wdio/electron-service": {
+      "basic-ftp": "6.2.6",
+      "glob": "14.0.4",
+      "puppeteer-core": "25.18.1"
+    },
+    "app-builder-lib": {
+      "minimatch": "11.0.5"
+    },
+    "archiver": {
+      "glob": "14.0.4",
+      "minimatch": "11.0.5"
+    },
+    "extract-zip": "npm:@electron-internal/extract-zip@1.0.9",
+    "mocha": {
+      "glob": "14.0.4",
+      "minimatch": "11.0.5"
+    }
   },
   "scripts": {
     "start": "cross-env NODE_ENV=development DEBUG=* electron . --ozone-platform=x11",
     "startWithUIOnPort": "concurrently -ki -c green,blue -n UI,ELECTRON \"npm run startUI\" \"cross-env NODE_ENV=development DEBUG=* SHOULD_LOCALHOST_BE_USED_FOR_LOADING_UI_IN_DEV_MODE=1 electron . --ozone-platform=x11\"",
-    "test": "standard && npm run unit",
+    "test": "npm run lint && npm run unit",
     "unit": "cross-env NODE_ENV=test mocha './src/**/__test__/*.spec.js' --config .mocharc.json",
     "setup": "./scripts/setup.sh",
     "launch": "./scripts/launch.sh",
     "sync-repo": "./scripts/sync-repo.sh",
     "e2e": "cross-env NODE_ENV=test wdio run ./wdio.conf.js",
-    "startUI": "cd bfx-report-ui && cross-env BROWSER=none npm start"
+    "startUI": "cd bfx-report-ui && cross-env BROWSER=none npm start",
+    "lint": "bfx-lint-js",
+    "lint:fix": "bfx-lint-js --fix",
+    "rebuild": "npm rebuild electron-winstaller --ignore-scripts=false"
+  },
+  "allowScripts": {
+    "electron-winstaller@5.4.0": true
   }
 }

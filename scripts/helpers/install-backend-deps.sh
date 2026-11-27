@@ -36,15 +36,12 @@ function installBackendDeps {
   echo -e "\n${COLOR_BLUE}Target platform entered is $targetPlatform${COLOR_NORMAL}"
 
   cd "$ROOT"
-  echo -e "\n${COLOR_BLUE}Installing the main dev deps...${COLOR_NORMAL}"
+  echo -e "\n${COLOR_BLUE}Installing the main deps...${COLOR_NORMAL}"
   rm -rf ./node_modules
-  npm i --development --no-audit --progress=false --force
-  npm ls --depth=0 1<&-
-
-  echo -e "\n${COLOR_BLUE}Installing the main prod deps...${COLOR_NORMAL}"
-  npm i --omit=dev --include=dev --no-audit --progress=false --force
+  npm ci
+  npm run rebuild
   checkNodeModulesDir "$ROOT"
-  depsErr=$(npm ls --depth=0 --omit=dev 2>&1 >/dev/null | grep -E -v "missing: eslint" || [[ $? == 1 ]])
+  depsErr=$(npm ls --depth=0 2>&1 >/dev/null | grep -E -v "missing: eslint" || [[ $? == 1 ]])
   if [ -n "$depsErr" ]; then
     echo -e "$depsErr" >&2
     exit 1
@@ -53,14 +50,14 @@ function installBackendDeps {
   cd "$EXPRESS_FOLDER"
   echo -e "\n${COLOR_BLUE}Installing the prod express deps...${COLOR_NORMAL}"
   rm -rf ./node_modules
-  npm i --omit=dev --no-audit --progress=false
+  npm ci --omit=dev
   checkNodeModulesDir "$EXPRESS_FOLDER"
   npm ls --depth=0 --omit=dev 1<&-
 
   cd "$WORKER_FOLDER"
   echo -e "\n${COLOR_BLUE}Installing the prod worker deps...${COLOR_NORMAL}"
   rm -rf ./node_modules
-  npm i --omit=dev --no-audit --progress=false
+  npm ci --omit=dev
   checkNodeModulesDir "$WORKER_FOLDER"
   npm ls --depth=0 --omit=dev 1<&-
 

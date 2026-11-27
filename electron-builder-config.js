@@ -197,7 +197,7 @@ module.exports = {
       }
     ],
     category: 'public.app-category.finance',
-    minimumSystemVersion: '11',
+    minimumSystemVersion: '13',
     darkModeSupport: true,
     notarize: !!(
       IS_MAC &&
@@ -236,6 +236,7 @@ module.exports = {
     '!bfx-reports-framework/*.sh',
     '!bfx-reports-framework/.mocharc.json',
     '!bfx-reports-framework/node_modules/phantomjs-prebuilt',
+    '!bfx-reports-framework/node_modules/puppeteer',
 
     '!**/.dockerignore',
     '!**/*Dockerfile*',

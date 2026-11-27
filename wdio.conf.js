@@ -21,9 +21,9 @@ const getAppBinaryPath = () => {
 exports.config = {
   // Use Xvfb when needed
   // https://webdriver.io/docs/headless-and-xvfb/
-  autoXvfb: true,
-  // Auto-install Xvfb packages
-  xvfbAutoInstall: true,
+  displayServerEnabled: true,
+  displayServerAutoInstall: false,
+  displayServer: 'xvfb',
   //
   // ====================
   // Runner Configuration
@@ -92,9 +92,6 @@ exports.config = {
         '--disable-features=VizDisplayCompositor',
         ...(IS_LINUX ? ['--ozone-platform=x11'] : [])
       ]
-    },
-    'wdio:chromedriverOptions': {
-      binary: path.resolve('./node_modules/electron-chromedriver/bin/chromedriver')
     }
   }],
 

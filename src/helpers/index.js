@@ -24,6 +24,7 @@ const isWaylandSession = require('./is-wayland-session')
 const forceX11OnWayland = require('./force-x11-on-wayland')
 const migrateDbFilesToSandboxOnMacOS = require('./migrate-db-files-to-sandbox-on-macos')
 const openExternalUrl = require('./open-external-url')
+const convertMdToHtml = require('./convert-md-to-html')
 
 module.exports = {
   getFreePort,
@@ -43,5 +44,6 @@ module.exports = {
   isWaylandSession,
   forceX11OnWayland,
   migrateDbFilesToSandboxOnMacOS,
-  openExternalUrl
+  openExternalUrl,
+  convertMdToHtml
 }

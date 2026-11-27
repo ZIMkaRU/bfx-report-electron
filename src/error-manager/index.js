@@ -220,10 +220,10 @@ const initLogger = () => {
   Object.assign(console, log.functions)
 
   // Catch and log unhandled errors/rejected promises
-  log.catchErrors({
+  log.errorHandler.startCatching({
     showDialog: false,
-    onError (error) {
-      manageNewGithubIssue({ error })
+    onError (params) {
+      manageNewGithubIssue(params)
     }
   })
 
