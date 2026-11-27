@@ -1,4 +1,5 @@
 const path = require('node:path')
+const os = require('node:os')
 
 const {
   IS_MAC,
@@ -19,16 +20,27 @@ const getAppBinaryPath = () => {
 }
 
 const getAppArgs = () => {
+  const baseArgs = [
+    '--no-sandbox',
+    '--disable-gpu',
+    '--disable-dev-shm-usage'
+  ]
+
   if (IS_LINUX) {
     return [
-      '--no-sandbox',
-      '--disable-gpu',
-      '--disable-dev-shm-usage',
+      ...baseArgs,
       '--ozone-platform=x11'
     ]
   }
   if (IS_WIN) {
-    return ['--disable-gpu']
+    return baseArgs
+  }
+  if (IS_MAC) {
+    return [
+      ...baseArgs,
+      '--remote-debugging-port=0',
+      `--user-data-dir=${path.join(os.tmpdir(), 'wdio-electron-profile')}`
+    ]
   }
 
   return []
