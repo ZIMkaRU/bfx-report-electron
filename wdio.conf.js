@@ -18,6 +18,22 @@ const getAppBinaryPath = () => {
   }
 }
 
+const getAppArgs = () => {
+  if (IS_LINUX) {
+    return [
+      '--no-sandbox',
+      '--disable-gpu',
+      '--disable-dev-shm-usage',
+      '--ozone-platform=x11'
+    ]
+  }
+  if (IS_WIN) {
+    return ['--disable-gpu']
+  }
+
+  return []
+}
+
 exports.config = {
   // Use Xvfb when needed
   // https://webdriver.io/docs/headless-and-xvfb/
@@ -81,17 +97,8 @@ exports.config = {
     // see https://webdriver.io/docs/wdio-electron-service/#configuration
     'wdio:electronServiceOptions': {
       appBinaryPath: getAppBinaryPath(),
-
       // custom application args
-      appArgs: [
-        '--no-sandbox',
-        '--disable-gpu',
-        '--disable-dev-shm-usage',
-        '--remote-debugging-port=9222',
-        '--headless=new',
-        '--disable-features=VizDisplayCompositor',
-        ...(IS_LINUX ? ['--ozone-platform=x11'] : [])
-      ]
+      appArgs: getAppArgs()
     }
   }],
 
